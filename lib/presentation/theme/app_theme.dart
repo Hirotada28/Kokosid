@@ -43,7 +43,7 @@ class AppTheme {
         ),
 
         // BottomNavigationBar
-        bottomNavigationBarTheme: const BottomNavigationBarTheme(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: surfaceColor,
           selectedItemColor: primaryColor,
           unselectedItemColor: textSecondary,
@@ -52,7 +52,7 @@ class AppTheme {
         ),
 
         // Card
-        cardTheme: CardTheme(
+        cardTheme: CardThemeData(
           color: surfaceColor,
           elevation: 2,
           shape: RoundedRectangleBorder(

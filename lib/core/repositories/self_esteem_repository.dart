@@ -102,7 +102,7 @@ class SelfEsteemRepository {
     final isar = _databaseService.isar;
 
     return isar.writeTxn(() async =>
-        await isar.selfEsteemScores.filter().uuidEqualTo(uuid).deleteFirst());
+        isar.selfEsteemScores.filter().uuidEqualTo(uuid).deleteFirst());
   }
 
   /// 平均スコアを計算

@@ -48,7 +48,7 @@ class UserRepository {
     final isar = _databaseService.isar;
 
     return isar.writeTxn(
-        () async => await isar.users.filter().uuidEqualTo(uuid).deleteFirst());
+        () async => isar.users.filter().uuidEqualTo(uuid).deleteFirst());
   }
 
   /// 最初のユーザーを取得（シングルユーザーアプリの場合）

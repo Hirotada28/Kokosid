@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/voice_input_button.dart';
+
 import '../widgets/dialogue_history.dart';
 import '../widgets/emotion_tags.dart';
+import '../widgets/voice_input_button.dart';
 
 /// 対話タブ画面
 /// 音声入力ボタン、過去の対話履歴、感情タグを表示

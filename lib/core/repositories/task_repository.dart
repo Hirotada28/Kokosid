@@ -125,7 +125,7 @@ class TaskRepository {
     final isar = _databaseService.isar;
 
     return isar.writeTxn(
-        () async => await isar.tasks.filter().uuidEqualTo(uuid).deleteFirst());
+        () async => isar.tasks.filter().uuidEqualTo(uuid).deleteFirst());
   }
 
   /// 期間内の完了タスク数を取得

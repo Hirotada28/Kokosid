@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:math' as math;
-import '../models/self_esteem_score.dart';
+
+import 'package:uuid/uuid.dart';
+
 import '../models/journal_entry.dart';
-import '../repositories/task_repository.dart';
+import '../models/self_esteem_score.dart';
 import '../repositories/journal_repository.dart';
 import '../repositories/self_esteem_repository.dart';
-import 'package:uuid/uuid.dart';
+import '../repositories/task_repository.dart';
 
 /// 自己肯定感スコア計算サービス
 class SelfEsteemCalculator {

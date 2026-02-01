@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../widgets/self_esteem_chart.dart';
-import '../widgets/monthly_stats_card.dart';
+
 import '../widgets/growth_trend_indicator.dart';
+import '../widgets/monthly_stats_card.dart';
+import '../widgets/self_esteem_chart.dart';
 
 /// 軌跡タブ画面
 /// 自己肯定感グラフ、月間達成統計、成長トレンドを表示

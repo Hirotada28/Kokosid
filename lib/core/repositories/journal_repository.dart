@@ -123,7 +123,7 @@ class JournalRepository {
     final isar = _databaseService.isar;
 
     return isar.writeTxn(() async =>
-        await isar.journalEntrys.filter().uuidEqualTo(uuid).deleteFirst());
+        isar.journalEntrys.filter().uuidEqualTo(uuid).deleteFirst());
   }
 
   /// 暗号化されたコンテンツを復号化

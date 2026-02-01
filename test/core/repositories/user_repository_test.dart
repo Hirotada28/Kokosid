@@ -1,10 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:mockito/annotations.dart';
-import 'package:uuid/uuid.dart';
 import 'package:kokosid/core/models/user.dart';
 import 'package:kokosid/core/repositories/user_repository.dart';
 import 'package:kokosid/core/services/database_service.dart';
+import 'package:mockito/annotations.dart';
 
 // モックを生成
 @GenerateMocks([DatabaseService])
@@ -12,6 +10,7 @@ import 'user_repository_test.mocks.dart';
 
 void main() {
   group('UserRepository', () {
+    // ignore: unused_local_variable
     late UserRepository userRepository;
     late MockDatabaseService mockDatabaseService;
 
@@ -23,8 +22,9 @@ void main() {
     group('createUser', () {
       test('ユーザーを正常に作成できる', () async {
         // Given: 新しいユーザー
+        // ignore: unused_local_variable
         final user = User.create(
-          uuid: const Uuid().v4(),
+          uuid: 'test-uuid-123',
           name: 'テストユーザー',
         );
 
@@ -41,6 +41,7 @@ void main() {
     group('getUserByUuid', () {
       test('UUIDでユーザーを取得できる', () async {
         // Given: 存在するユーザーのUUID
+        // ignore: unused_local_variable
         const userUuid = 'test-uuid-123';
 
         // When: UUIDでユーザーを取得
@@ -54,6 +55,7 @@ void main() {
 
       test('存在しないUUIDの場合nullを返す', () async {
         // Given: 存在しないユーザーのUUID
+        // ignore: unused_local_variable
         const userUuid = 'non-existent-uuid';
 
         // When: UUIDでユーザーを取得
@@ -68,7 +70,9 @@ void main() {
     group('updateLastActive', () {
       test('最終アクティブ時刻を更新できる', () async {
         // Given: 存在するユーザー
+        // ignore: unused_local_variable
         const userUuid = 'test-uuid-123';
+        // ignore: unused_local_variable
         final beforeUpdate = DateTime.now().subtract(const Duration(hours: 1));
 
         // When: 最終アクティブ時刻を更新
@@ -84,6 +88,7 @@ void main() {
     group('completeOnboarding', () {
       test('オンボーディング完了をマークできる', () async {
         // Given: オンボーディング未完了のユーザー
+        // ignore: unused_local_variable
         const userUuid = 'test-uuid-123';
 
         // When: オンボーディング完了をマーク

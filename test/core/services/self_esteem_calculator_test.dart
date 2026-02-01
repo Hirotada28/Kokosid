@@ -13,6 +13,7 @@ import 'self_esteem_calculator_test.mocks.dart';
 
 void main() {
   group('SelfEsteemCalculator', () {
+    // ignore: unused_local_variable
     late SelfEsteemCalculator calculator;
     late MockTaskRepository mockTaskRepository;
     late MockJournalRepository mockJournalRepository;
@@ -32,6 +33,7 @@ void main() {
     group('calculateScore', () {
       test('重み係数が正しく適用される', () async {
         // Given: テストデータ
+        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
         const totalTasks = 10;
         const completedTasks = 8;
@@ -56,6 +58,7 @@ void main() {
 
       test('スコアが0.0-1.0の範囲内に制限される', () async {
         // Given: 極端な値のテストデータ
+        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
         // When: スコアを計算
@@ -71,6 +74,7 @@ void main() {
     group('detectProgress', () {
       test('0.05ポイント以上の向上を検出する', () async {
         // Given: 進歩があるスコア履歴
+        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
         // When: 進歩を検出
@@ -83,6 +87,7 @@ void main() {
 
       test('0.05ポイント未満の変化では進歩を検出しない', () async {
         // Given: 小さな変化のスコア履歴
+        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
         // When: 進歩を検出
@@ -97,6 +102,7 @@ void main() {
     group('generateApprovalMessage', () {
       test('進歩がある場合に承認メッセージを生成する', () async {
         // Given: 進歩があるユーザー
+        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
         // When: 承認メッセージを生成
@@ -110,6 +116,7 @@ void main() {
 
       test('進歩がない場合はnullを返す', () async {
         // Given: 進歩がないユーザー
+        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
         // When: 承認メッセージを生成
