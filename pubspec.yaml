@@ -1,69 +1,39 @@
 name: kokosid
 description: ACTベース自己管理パートナーアプリケーション - ツールからパートナーへ
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.0.0 <4.0.0"
   flutter: ">=3.10.0"
 
 dependencies:
+  audioplayers: ^5.2.1
+  crypto: ^3.0.3
+  cupertino_icons: ^1.0.2
+  encrypt: ^5.0.1
   flutter:
     sdk: flutter
-  
-  # ローカルデータベース
+  flutter_local_notifications: ^16.3.2
+  flutter_secure_storage: ^9.0.0
+  http: ^1.1.0
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1
-  
-  # セキュアストレージ
-  flutter_secure_storage: ^9.0.0
-  
-  # 暗号化
-  crypto: ^3.0.3
-  encrypt: ^5.0.1
-  
-  # UUID生成
-  uuid: ^4.0.0
-  
-  # 状態管理
-  provider: ^6.0.5
-  
-  # HTTP通信
-  http: ^1.1.0
-  
-  # JSON処理
   json_annotation: ^4.8.1
-  
-  # ファイル操作
-  path_provider: ^2.1.1
-  
-  # 音声録音・再生
-  record: ^5.0.4
-  audioplayers: ^5.2.1
-  
-  # アニメーション
   lottie: ^2.7.0
-  
-  # 通知
-  flutter_local_notifications: ^16.3.2
-  
-  # UI
-  cupertino_icons: ^1.0.2
+  path_provider: ^2.1.1
+  provider: ^6.0.5
+  record: ^5.0.4
+  uuid: ^4.0.0
 
 dev_dependencies:
+  build_runner: ^2.4.7
+  flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter
-  
-  # コード生成
-  build_runner: ^2.4.7
   isar_generator: ^3.1.0+1
   json_serializable: ^6.7.1
-  
-  # テスト
   mockito: ^5.4.2
-  
-  # リント
-  flutter_lints: ^3.0.0
 
 flutter:
   uses-material-design: true

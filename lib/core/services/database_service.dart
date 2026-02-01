@@ -14,7 +14,9 @@ class DatabaseService {
 
   /// データベースの初期化
   Future<void> initialize() async {
-    if (_isInitialized) return;
+    if (_isInitialized) {
+      return;
+    }
 
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -55,7 +57,9 @@ class DatabaseService {
 
   /// 全データを削除（アカウント削除時に使用）
   Future<void> clearAllData() async {
-    if (!_isInitialized) return;
+    if (!_isInitialized) {
+      return;
+    }
 
     await isar.writeTxn(() async {
       await isar.clear();
@@ -64,7 +68,9 @@ class DatabaseService {
 
   /// データベースサイズを取得
   Future<int> getDatabaseSize() async {
-    if (!_isInitialized) return 0;
+    if (!_isInitialized) {
+      return 0;
+    }
 
     final userCount = await isar.users.count();
     final taskCount = await isar.tasks.count();
@@ -79,7 +85,9 @@ class DatabaseService {
 
   /// 特定ユーザーのデータを削除
   Future<void> clearUserData(String userUuid) async {
-    if (!_isInitialized) return;
+    if (!_isInitialized) {
+      return;
+    }
 
     await isar.writeTxn(() async {
       // 注意: 実際のコード生成後に適切なコレクション名に修正
@@ -120,7 +128,9 @@ class DatabaseService {
   /// データベースの健全性チェック
   Future<bool> performHealthCheck() async {
     try {
-      if (!_isInitialized) return false;
+      if (!_isInitialized) {
+        return false;
+      }
 
       // 基本的な読み取りテスト
       // 注意: 実際のコード生成後に適切なコレクション名に修正
@@ -130,14 +140,16 @@ class DatabaseService {
       // await isar.selfEsteemScores.count();
 
       return true;
-    } catch (e) {
+    } on Exception {
       return false;
     }
   }
 
   /// データベースの最適化
   Future<void> optimize() async {
-    if (!_isInitialized) return;
+    if (!_isInitialized) {
+      return;
+    }
 
     try {
       await isar.writeTxn(() async {

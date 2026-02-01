@@ -128,11 +128,13 @@ class JournalRepository {
 
   /// 暗号化されたコンテンツを復号化
   String? decryptContent(JournalEntry entry) {
-    if (entry.encryptedContent == null) return null;
+    if (entry.encryptedContent == null) {
+      return null;
+    }
 
     try {
       return _encryptionService.decrypt(entry.encryptedContent!);
-    } catch (e) {
+    } on Exception {
       // 復号化に失敗した場合はnullを返す
       return null;
     }
@@ -140,11 +142,13 @@ class JournalRepository {
 
   /// AI応答を復号化
   String? decryptAiResponse(JournalEntry entry) {
-    if (entry.encryptedAiResponse == null) return null;
+    if (entry.encryptedAiResponse == null) {
+      return null;
+    }
 
     try {
       return _encryptionService.decrypt(entry.encryptedAiResponse!);
-    } catch (e) {
+    } on Exception {
       // 復号化に失敗した場合はnullを返す
       return null;
     }

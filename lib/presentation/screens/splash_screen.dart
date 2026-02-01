@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -58,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _initializeApp() async {
     try {
       // アニメーション開始
-      _animationController.forward();
+      unawaited(_animationController.forward());
 
       // サービスの初期化状態を確認
       final encryptionService = context.read<EncryptionService>();
@@ -71,24 +73,26 @@ class _SplashScreenState extends State<SplashScreen>
       if (encryptionService.isInitialized && databaseService.isInitialized) {
         // ホーム画面に遷移
         if (mounted) {
-          Navigator.of(context).pushReplacement(
+          unawaited(Navigator.of(context).pushReplacement(
             MaterialPageRoute(
               builder: (context) => const HomeScreen(),
             ),
-          );
+          ));
         }
       } else {
         // 初期化エラーの場合
         _showInitializationError();
       }
-    } catch (e) {
+    } on Exception {
       _showInitializationError();
     }
   }
 
   /// 初期化エラーを表示
   void _showInitializationError() {
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     showDialog(
       context: context,
@@ -134,7 +138,7 @@ class _SplashScreenState extends State<SplashScreen>
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -166,7 +170,7 @@ class _SplashScreenState extends State<SplashScreen>
                     Text(
                       'ツールからパートナーへ',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
+                        color: Colors.white.withValues(alpha: 0.8),
                         fontSize: 16,
                         fontWeight: FontWeight.w400,
                       ),
@@ -180,7 +184,7 @@ class _SplashScreenState extends State<SplashScreen>
                       height: 32,
                       child: CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white.withOpacity(0.8),
+                          Colors.white.withValues(alpha: 0.8),
                         ),
                         strokeWidth: 3,
                       ),

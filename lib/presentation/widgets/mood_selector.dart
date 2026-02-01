@@ -62,7 +62,7 @@ class _MoodSelectorState extends State<MoodSelector> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -75,7 +75,7 @@ class _MoodSelectorState extends State<MoodSelector> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.1),
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -124,7 +124,7 @@ class _MoodSelectorState extends State<MoodSelector> {
             Text(
               'この気分について詳しく話してみませんか？',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
             const SizedBox(height: 8),
@@ -159,7 +159,7 @@ class _MoodSelectorState extends State<MoodSelector> {
 
   void _saveMood(String moodId) {
     // 実際の実装では気分をデータベースに保存
-    print('気分を保存: $moodId');
+    debugPrint('気分を保存: $moodId');
   }
 
   void _navigateToDialogue() {
@@ -201,7 +201,7 @@ class _MoodButton extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       child: Material(
         color: isSelected
-            ? mood.color.withOpacity(0.2)
+            ? mood.color.withValues(alpha: 0.2)
             : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         elevation: isSelected ? 2 : 0,
@@ -214,7 +214,7 @@ class _MoodButton extends StatelessWidget {
               border: Border.all(
                 color: isSelected
                     ? mood.color
-                    : theme.colorScheme.outline.withOpacity(0.3),
+                    : theme.colorScheme.outline.withValues(alpha: 0.3),
                 width: isSelected ? 2 : 1,
               ),
             ),

@@ -99,7 +99,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
           color: theme.colorScheme.surface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               blurRadius: 8,
               offset: const Offset(0, -2),
             ),
@@ -173,7 +173,7 @@ class _NavigationButton extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: isSelected
-                  ? colorScheme.primary.withOpacity(0.1)
+                  ? colorScheme.primary.withValues(alpha: 0.1)
                   : Colors.transparent,
             ),
             child: Column(
@@ -187,7 +187,7 @@ class _NavigationButton extends StatelessWidget {
                     size: 24,
                     color: isSelected
                         ? colorScheme.primary
-                        : colorScheme.onSurface.withOpacity(0.6),
+                        : colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -196,7 +196,7 @@ class _NavigationButton extends StatelessWidget {
                   style: theme.textTheme.labelSmall!.copyWith(
                     color: isSelected
                         ? colorScheme.primary
-                        : colorScheme.onSurface.withOpacity(0.6),
+                        : colorScheme.onSurface.withValues(alpha: 0.6),
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),

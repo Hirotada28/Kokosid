@@ -106,7 +106,7 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
               Text(
                 '心の声を聞かせてください',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -134,7 +134,7 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -154,7 +154,7 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
           Text(
             _isRecording ? 'タップして録音を停止' : 'ボタンを押して音声で気持ちを記録できます',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),

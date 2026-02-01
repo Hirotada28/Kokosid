@@ -165,12 +165,14 @@ class SelfEsteemCalculator {
   Future<Map<String, dynamic>?> getCalculationBasis(String userUuid) async {
     final latestScore = await _scoreRepository.getLatestScore(userUuid);
 
-    if (latestScore?.calculationBasisJson == null) return null;
+    if (latestScore?.calculationBasisJson == null) {
+      return null;
+    }
 
     try {
       return jsonDecode(latestScore!.calculationBasisJson!)
           as Map<String, dynamic>;
-    } catch (e) {
+    } on Exception {
       return null;
     }
   }
@@ -179,7 +181,9 @@ class SelfEsteemCalculator {
   Future<bool> detectProgress(String userUuid) async {
     final recentScores = await _scoreRepository.getRecentScores(userUuid, 7);
 
-    if (recentScores.length < 2) return false;
+    if (recentScores.length < 2) {
+      return false;
+    }
 
     final latest = recentScores.first.score;
     final previous = recentScores[1].score;
@@ -191,10 +195,14 @@ class SelfEsteemCalculator {
   Future<String?> generateApprovalMessage(String userUuid) async {
     final hasProgress = await detectProgress(userUuid);
 
-    if (!hasProgress) return null;
+    if (!hasProgress) {
+      return null;
+    }
 
     final latestScore = await _scoreRepository.getLatestScore(userUuid);
-    if (latestScore == null) return null;
+    if (latestScore == null) {
+      return null;
+    }
 
     final level = latestScore.getLevel();
     final messages = _getApprovalMessages(level);

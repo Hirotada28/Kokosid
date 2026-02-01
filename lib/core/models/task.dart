@@ -69,13 +69,17 @@ class Task {
 
   /// 期限切れかチェック
   bool get isOverdue {
-    if (dueDate == null || isCompleted) return false;
+    if (dueDate == null || isCompleted) {
+      return false;
+    }
     return DateTime.now().isAfter(dueDate!);
   }
 
   /// 今日が期限かチェック
   bool get isDueToday {
-    if (dueDate == null) return false;
+    if (dueDate == null) {
+      return false;
+    }
     final now = DateTime.now();
     final due = dueDate!;
     return now.year == due.year && now.month == due.month && now.day == due.day;

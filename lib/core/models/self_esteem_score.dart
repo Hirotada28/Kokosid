@@ -56,10 +56,18 @@ class SelfEsteemScore {
 
   /// スコアレベルを取得（計算プロパティ）
   ScoreLevel getLevel() {
-    if (score >= 0.8) return ScoreLevel.excellent;
-    if (score >= 0.6) return ScoreLevel.good;
-    if (score >= 0.4) return ScoreLevel.fair;
-    if (score >= 0.2) return ScoreLevel.poor;
+    if (score >= 0.8) {
+      return ScoreLevel.excellent;
+    }
+    if (score >= 0.6) {
+      return ScoreLevel.good;
+    }
+    if (score >= 0.4) {
+      return ScoreLevel.fair;
+    }
+    if (score >= 0.2) {
+      return ScoreLevel.poor;
+    }
     return ScoreLevel.veryPoor;
   }
 

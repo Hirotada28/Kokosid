@@ -7,7 +7,7 @@ void main() {
 
   group('EncryptionService', () {
     late EncryptionService encryptionService;
-    final Map<String, String> mockStorage = {};
+    final mockStorage = <String, String>{};
 
     setUp(() {
       mockStorage.clear();

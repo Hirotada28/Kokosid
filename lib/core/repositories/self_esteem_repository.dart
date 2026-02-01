@@ -109,7 +109,9 @@ class SelfEsteemRepository {
   Future<double?> getAverageScore(String userUuid, int days) async {
     final scores = await getRecentScores(userUuid, days);
 
-    if (scores.isEmpty) return null;
+    if (scores.isEmpty) {
+      return null;
+    }
 
     final sum = scores.fold<double>(0.0, (sum, score) => sum + score.score);
     return sum / scores.length;
@@ -119,12 +121,16 @@ class SelfEsteemRepository {
   Future<ScoreTrend> getScoreTrend(String userUuid, int days) async {
     final scores = await getRecentScores(userUuid, days);
 
-    if (scores.length < 2) return ScoreTrend.stable;
+    if (scores.length < 2) {
+      return ScoreTrend.stable;
+    }
 
     final recent = scores.takeLast(3).toList();
     final older = scores.take(scores.length - 3).toList();
 
-    if (recent.isEmpty || older.isEmpty) return ScoreTrend.stable;
+    if (recent.isEmpty || older.isEmpty) {
+      return ScoreTrend.stable;
+    }
 
     final recentAvg =
         recent.fold<double>(0.0, (sum, s) => sum + s.score) / recent.length;
@@ -204,7 +210,9 @@ class MonthlyScoreStats {
 
 extension ListExtension<T> on List<T> {
   List<T> takeLast(int count) {
-    if (count >= length) return this;
+    if (count >= length) {
+      return this;
+    }
     return sublist(length - count);
   }
 }

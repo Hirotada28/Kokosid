@@ -35,16 +35,16 @@ class EncryptedStorageService {
       }
 
       // JournalEntryオブジェクトを作成
-      final entry = JournalEntry();
-      entry.uuid = uuid;
-      entry.userUuid = userUuid;
-      entry.encryptedContent = encryptedContent;
-      entry.audioUrl = audioUrl;
-      entry.transcription = transcription;
-      entry.emotionDetected = emotion;
-      entry.emotionConfidence = emotionConfidence;
-      entry.encryptedAiResponse = encryptedAiResponse;
-      entry.aiReflection = aiReflection;
+      final entry = JournalEntry()
+        ..uuid = uuid
+        ..userUuid = userUuid
+        ..encryptedContent = encryptedContent
+        ..audioUrl = audioUrl
+        ..transcription = transcription
+        ..emotionDetected = emotion
+        ..emotionConfidence = emotionConfidence
+        ..encryptedAiResponse = encryptedAiResponse
+        ..aiReflection = aiReflection;
 
       // データベースに保存
       final isar = _databaseService.isar;
@@ -60,11 +60,13 @@ class EncryptedStorageService {
 
   /// JournalEntryのコンテンツを復号化
   String? decryptJournalContent(JournalEntry entry) {
-    if (entry.encryptedContent == null) return null;
+    if (entry.encryptedContent == null) {
+      return null;
+    }
 
     try {
       return _encryptionService.decrypt(entry.encryptedContent!);
-    } catch (e) {
+    } on Exception {
       // 復号化に失敗した場合はnullを返す（キー変更等の場合）
       return null;
     }
@@ -72,11 +74,13 @@ class EncryptedStorageService {
 
   /// JournalEntryのAI応答を復号化
   String? decryptJournalAiResponse(JournalEntry entry) {
-    if (entry.encryptedAiResponse == null) return null;
+    if (entry.encryptedAiResponse == null) {
+      return null;
+    }
 
     try {
       return _encryptionService.decrypt(entry.encryptedAiResponse!);
-    } catch (e) {
+    } on Exception {
       // 復号化に失敗した場合はnullを返す
       return null;
     }
@@ -124,7 +128,7 @@ class EncryptedStorageService {
       // 注意: この例では簡単のためnameフィールドを使用していますが、
       // 実際の実装では専用のsettingsフィールドから復号化
       return null; // 実装時に適切なフィールドから復号化
-    } catch (e) {
+    } on Exception {
       // 復号化に失敗した場合はnullを返す
       return null;
     }
@@ -248,7 +252,7 @@ class EncryptedStorageService {
       }
 
       return true; // 全て正常に復号化できた
-    } catch (e) {
+    } on Exception {
       return false;
     }
   }
@@ -322,19 +326,18 @@ extension UserJson on User {
       };
 
   static User fromJson(Map<String, dynamic> json) {
-    final user = User();
-    user.uuid = json['uuid'] as String;
-    user.name = json['name'] as String?;
-    user.timezone = json['timezone'] as String?;
-    user.onboardingCompleted = json['onboardingCompleted'] as bool? ?? false;
-    user.preferredLanguage = json['preferredLanguage'] as String?;
-    user.createdAt = DateTime.parse(json['createdAt'] as String);
+    final user = User()
+      ..uuid = json['uuid'] as String
+      ..name = json['name'] as String?
+      ..timezone = json['timezone'] as String?
+      ..onboardingCompleted = json['onboardingCompleted'] as bool? ?? false
+      ..preferredLanguage = json['preferredLanguage'] as String?
+      ..createdAt = DateTime.parse(json['createdAt'] as String)
+      ..notificationsEnabled = json['notificationsEnabled'] as bool? ?? true;
 
     if (json['lastActiveAt'] != null) {
       user.lastActiveAt = DateTime.parse(json['lastActiveAt'] as String);
     }
-
-    user.notificationsEnabled = json['notificationsEnabled'] as bool? ?? true;
 
     return user;
   }
@@ -358,16 +361,16 @@ extension TaskJson on Task {
       };
 
   static Task fromJson(Map<String, dynamic> json) {
-    final task = Task();
-    task.uuid = json['uuid'] as String;
-    task.userUuid = json['userUuid'] as String;
-    task.title = json['title'] as String;
-    task.description = json['description'] as String?;
-    task.originalTaskUuid = json['originalTaskUuid'] as String?;
-    task.isMicroTask = json['isMicroTask'] as bool? ?? false;
-    task.estimatedMinutes = json['estimatedMinutes'] as int?;
-    task.context = json['context'] as String?;
-    task.createdAt = DateTime.parse(json['createdAt'] as String);
+    final task = Task()
+      ..uuid = json['uuid'] as String
+      ..userUuid = json['userUuid'] as String
+      ..title = json['title'] as String
+      ..description = json['description'] as String?
+      ..originalTaskUuid = json['originalTaskUuid'] as String?
+      ..isMicroTask = json['isMicroTask'] as bool? ?? false
+      ..estimatedMinutes = json['estimatedMinutes'] as int?
+      ..context = json['context'] as String?
+      ..createdAt = DateTime.parse(json['createdAt'] as String);
 
     if (json['dueDate'] != null) {
       task.dueDate = DateTime.parse(json['dueDate'] as String);
@@ -408,26 +411,25 @@ extension JournalEntryJson on JournalEntry {
       };
 
   static JournalEntry fromJson(Map<String, dynamic> json) {
-    final entry = JournalEntry();
-    entry.uuid = json['uuid'] as String;
-    entry.userUuid = json['userUuid'] as String;
-    entry.encryptedContent = json['encryptedContent'] as String?;
-    entry.audioUrl = json['audioUrl'] as String?;
-    entry.transcription = json['transcription'] as String?;
-    entry.emotionDetected = json['emotionDetected'] != null
-        ? EmotionType.values
-            .firstWhere((e) => e.name == json['emotionDetected'])
-        : null;
-    entry.emotionConfidence = json['emotionConfidence'] as double?;
-    entry.aiReflection = json['aiReflection'] as String?;
-    entry.encryptedAiResponse = json['encryptedAiResponse'] as String?;
-    entry.createdAt = DateTime.parse(json['createdAt'] as String);
+    final entry = JournalEntry()
+      ..uuid = json['uuid'] as String
+      ..userUuid = json['userUuid'] as String
+      ..encryptedContent = json['encryptedContent'] as String?
+      ..audioUrl = json['audioUrl'] as String?
+      ..transcription = json['transcription'] as String?
+      ..emotionDetected = json['emotionDetected'] != null
+          ? EmotionType.values
+              .firstWhere((e) => e.name == json['emotionDetected'])
+          : null
+      ..emotionConfidence = json['emotionConfidence'] as double?
+      ..aiReflection = json['aiReflection'] as String?
+      ..encryptedAiResponse = json['encryptedAiResponse'] as String?
+      ..createdAt = DateTime.parse(json['createdAt'] as String)
+      ..isEncrypted = json['isEncrypted'] as bool? ?? true;
 
     if (json['syncedAt'] != null) {
       entry.syncedAt = DateTime.parse(json['syncedAt'] as String);
     }
-
-    entry.isEncrypted = json['isEncrypted'] as bool? ?? true;
 
     return entry;
   }
@@ -446,17 +448,15 @@ extension SelfEsteemScoreJson on SelfEsteemScore {
         'measuredAt': measuredAt.toIso8601String(),
       };
 
-  static SelfEsteemScore fromJson(Map<String, dynamic> json) {
-    final score = SelfEsteemScore();
-    score.uuid = json['uuid'] as String;
-    score.userUuid = json['userUuid'] as String;
-    score.score = json['score'] as double;
-    score.calculationBasisJson = json['calculationBasisJson'] as String?;
-    score.completionRate = json['completionRate'] as double?;
-    score.positiveEmotionRatio = json['positiveEmotionRatio'] as double?;
-    score.streakScore = json['streakScore'] as double?;
-    score.engagementScore = json['engagementScore'] as double?;
-    score.measuredAt = DateTime.parse(json['measuredAt'] as String);
-    return score;
-  }
+  static SelfEsteemScore fromJson(Map<String, dynamic> json) =>
+      SelfEsteemScore()
+        ..uuid = json['uuid'] as String
+        ..userUuid = json['userUuid'] as String
+        ..score = json['score'] as double
+        ..calculationBasisJson = json['calculationBasisJson'] as String?
+        ..completionRate = json['completionRate'] as double?
+        ..positiveEmotionRatio = json['positiveEmotionRatio'] as double?
+        ..streakScore = json['streakScore'] as double?
+        ..engagementScore = json['engagementScore'] as double?
+        ..measuredAt = DateTime.parse(json['measuredAt'] as String);
 }

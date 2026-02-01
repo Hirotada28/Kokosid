@@ -26,7 +26,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
-    );
+    )..addListener(() => setState(() {}));
 
     _pulseAnimation = Tween<double>(
       begin: 1.0,
@@ -49,8 +49,9 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
       if (widget.isRecording) {
         _pulseController.repeat(reverse: true);
       } else {
-        _pulseController.stop();
-        _pulseController.reset();
+        _pulseController
+          ..stop()
+          ..reset();
       }
     }
   }
@@ -88,7 +89,7 @@ class _VoiceInputButtonState extends State<VoiceInputButton>
                   color: (widget.isRecording
                           ? Colors.red
                           : theme.colorScheme.primary)
-                      .withOpacity(0.3),
+                      .withValues(alpha: 0.3),
                   blurRadius: 20,
                   spreadRadius: widget.isRecording ? 5 : 0,
                 ),

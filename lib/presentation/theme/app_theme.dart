@@ -25,7 +25,6 @@ class AppTheme {
           primary: primaryColor,
           secondary: secondaryColor,
           error: errorColor,
-          background: backgroundColor,
           surface: surfaceColor,
         ),
 
@@ -177,7 +176,6 @@ class AppTheme {
           primary: primaryColor,
           secondary: secondaryColor,
           error: errorColor,
-          background: const Color(0xFF121212),
           surface: const Color(0xFF1E1E1E),
         ),
 
