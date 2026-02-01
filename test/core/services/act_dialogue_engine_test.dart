@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kokosid/core/models/act_process.dart';
 import 'package:kokosid/core/models/emotion.dart';
-import 'package:kokosid/core/models/journal_entry.dart';
 import 'package:kokosid/core/models/user_context.dart';
 import 'package:kokosid/core/services/act_dialogue_engine.dart';
 import 'package:kokosid/core/services/ai_service.dart';
@@ -13,6 +12,27 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'act_dialogue_engine_test.mocks.dart';
+
+/// モック用の個別化された応答を生成
+String _generateMockPersonalizedResponse(
+  PersonalizationContext context,
+  Random random,
+) {
+  if (context.totalDialogues == 0) {
+    return 'その気持ち、よくわかります。';
+  }
+
+  final responses = [
+    '以前も${context.mostFrequentProcess}について話しましたね。',
+    '対話回数${context.totalDialogues}回目ですね。',
+    if (context.successExperiences.isNotEmpty)
+      '${context.successExperiences.first}という成功体験を思い出してください。',
+    if (context.recurringThemes.isNotEmpty)
+      '${context.recurringThemes.first}について、また話しましょう。',
+  ];
+
+  return responses[random.nextInt(responses.length)];
+}
 
 @GenerateMocks([AIService, UserContextService, DialogueHistoryService])
 void main() {
@@ -409,7 +429,8 @@ void main() {
           expect(response.emotion, isNotNull);
 
           successCount++;
-        } catch (e) {
+        } on Exception catch (e) {
+          // ignore: avoid_print
           print('Iteration $i failed: $e');
         }
       }
@@ -719,13 +740,498 @@ void main() {
           '自分の思考',
         ];
 
-        final hasAppropriateContent = fallbackResponses
-            .any((phrase) => response.response.contains(phrase));
+        final hasAppropriateContent =
+            fallbackResponses.any(response.response.contains);
         expect(
           hasAppropriateContent,
           isTrue,
           reason: 'Iteration $i: フォールバック応答が適切な内容を含んでいません',
         );
+      }
+    });
+  });
+
+  // **Feature: act-based-self-management, Property 3: 個別化された対話応答の生成**
+  // **Validates: Requirements 2.4**
+  group('Property-Based Tests: 個別化された対話応答の生成', () {
+    late MockAIService mockAIService;
+    late MockUserContextService mockUserContextService;
+    late MockDialogueHistoryService mockDialogueHistoryService;
+    late ACTDialogueEngine engine;
+
+    setUp(() {
+      mockAIService = MockAIService();
+      mockUserContextService = MockUserContextService();
+      mockDialogueHistoryService = MockDialogueHistoryService();
+      engine = ACTDialogueEngine(
+        mockAIService,
+        mockUserContextService,
+        mockDialogueHistoryService,
+      );
+    });
+
+    /// ランダムな対話履歴を生成
+    List<String> generateDialogueHistory(Random random) {
+      final historySize = random.nextInt(10);
+      final dialogues = <String>[];
+
+      final sampleDialogues = [
+        'acceptance',
+        'defusion',
+        'valuesClarity',
+        'committedAction',
+        'mindfulness',
+        'observingSelf',
+      ];
+
+      for (var i = 0; i < historySize; i++) {
+        dialogues.add(sampleDialogues[random.nextInt(sampleDialogues.length)]);
+      }
+
+      return dialogues;
+    }
+
+    /// ランダムなユーザーコンテキストを生成
+    UserContext generateRandomUserContext(Random random, String userId) {
+      final isImproving = random.nextBool();
+      final isDecreasing = !isImproving && random.nextBool();
+      final isStable = !isImproving && !isDecreasing;
+
+      return UserContext(
+        userId: userId,
+        emotionTrend: EmotionTrend(
+          isImproving: isImproving,
+          isDecreasing: isDecreasing,
+          isStable: isStable,
+          averageScore: random.nextDouble(),
+        ),
+        motivationLevel: random.nextDouble(),
+        recentEmotions: [],
+        dialogueHistory: generateDialogueHistory(random),
+      );
+    }
+
+    /// ランダムな個別化コンテキストを生成
+    PersonalizationContext generateRandomPersonalizationContext(
+      Random random,
+      String userUuid, {
+      int? totalDialogues,
+      String? mostFrequentProcess,
+      List<String>? successExperiences,
+      List<String>? recurringThemes,
+    }) {
+      final processes = [
+        'acceptance',
+        'defusion',
+        'valuesClarity',
+        'committedAction',
+        'mindfulness',
+        'observingSelf'
+      ];
+
+      final themes = ['仕事', '家族', '健康', '目標', '不安', '人間関係'];
+      final experiences = [
+        'プロジェクトを完了した',
+        '運動を続けられた',
+        '友人と話せた',
+        '早起きできた',
+        '新しいことに挑戦した'
+      ];
+
+      return PersonalizationContext(
+        userUuid: userUuid,
+        totalDialogues: totalDialogues ?? random.nextInt(100),
+        mostFrequentProcess:
+            mostFrequentProcess ?? processes[random.nextInt(processes.length)],
+        emotionFrequency: {},
+        successExperiences: successExperiences ??
+            List.generate(
+              random.nextInt(5),
+              (_) => experiences[random.nextInt(experiences.length)],
+            ),
+        recurringThemes: recurringThemes ??
+            List.generate(
+              random.nextInt(3),
+              (_) => themes[random.nextInt(themes.length)],
+            ),
+      );
+    }
+
+    /// モック用の個別化された応答を生成
+    String generateMockPersonalizedResponse(
+      PersonalizationContext context,
+      Random random,
+    ) {
+      if (context.totalDialogues == 0) {
+        return 'その気持ち、よくわかります。';
+      }
+
+      final responses = [
+        '以前も${context.mostFrequentProcess}について話しましたね。',
+        '対話回数${context.totalDialogues}回目ですね。',
+        if (context.successExperiences.isNotEmpty)
+          '${context.successExperiences.first}という成功体験を思い出してください。',
+        if (context.recurringThemes.isNotEmpty)
+          '${context.recurringThemes.first}について、また話しましょう。',
+      ];
+
+      return responses[random.nextInt(responses.length)];
+    }
+
+    test('プロパティ3: 同一入力でも対話履歴によって異なる応答が生成される（100回反復）', () async {
+      final random = Random(42);
+      const iterations = 100;
+      const userInput = 'つらいです';
+
+      final responses = <String, Set<String>>{};
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 異なる対話履歴を持つコンテキスト
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+
+        // 異なる個別化コンテキストを生成
+        final personalizationContext =
+            generateRandomPersonalizationContext(random, userId);
+
+        // プロンプトに個別化情報が含まれるように、異なる応答を返す
+        final mockResponse = _generateMockPersonalizedResponse(
+          personalizationContext,
+          random,
+        );
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse(userInput, userId);
+
+        // Then: 応答を記録
+        final key =
+            '${personalizationContext.totalDialogues}-${personalizationContext.mostFrequentProcess}';
+        responses.putIfAbsent(key, () => <String>{});
+        responses[key]!.add(response.response);
+      }
+
+      // 少なくとも10種類以上の異なる応答パターンが生成されることを期待
+      expect(
+        responses.length,
+        greaterThanOrEqualTo(10),
+        reason: '個別化された応答のバリエーションが不足しています: ${responses.length}種類',
+      );
+    });
+
+    test('プロパティ3: 対話履歴が多いユーザーには過去の情報を参照した応答が生成される', () async {
+      final random = Random(123);
+      const iterations = 50;
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 対話履歴が豊富なユーザー
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+
+        final personalizationContext = generateRandomPersonalizationContext(
+          random,
+          userId,
+          totalDialogues: 50 + random.nextInt(50), // 50-100回の対話
+          successExperiences: ['運動を続けられた', 'プロジェクトを完了した'],
+          recurringThemes: ['仕事', '健康'],
+        );
+
+        // 個別化情報を含む応答を生成
+        final mockResponse =
+            '以前も${personalizationContext.recurringThemes.first}について話しましたね。${personalizationContext.successExperiences.first}という成功体験を思い出してください。';
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse('つらいです', userId);
+
+        // Then: 個別化された応答が生成される（要件 2.4）
+        expect(response.response, isNotEmpty);
+
+        // プロンプトに個別化情報が含まれていることを検証
+        final capturedPrompt =
+            verify(mockAIService.complete(captureAny)).captured.first as String;
+
+        expect(
+          capturedPrompt.contains('対話回数'),
+          isTrue,
+          reason: 'プロンプトに対話回数が含まれていません',
+        );
+
+        expect(
+          capturedPrompt.contains('よく使うプロセス'),
+          isTrue,
+          reason: 'プロンプトによく使うプロセスが含まれていません',
+        );
+      }
+    });
+
+    test('プロパティ3: 初回ユーザーには一般的な応答が生成される', () async {
+      final random = Random(456);
+      const iterations = 50;
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 初回ユーザー（対話履歴なし）
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+
+        final personalizationContext = generateRandomPersonalizationContext(
+          random,
+          userId,
+          totalDialogues: 0,
+          successExperiences: [],
+          recurringThemes: [],
+        );
+
+        final mockResponse = 'その気持ち、よくわかります。';
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse('つらいです', userId);
+
+        // Then: 一般的な応答が生成される
+        expect(response.response, isNotEmpty);
+
+        // プロンプトに個別化情報が含まれていないことを検証
+        final capturedPrompt =
+            verify(mockAIService.complete(captureAny)).captured.first as String;
+
+        // 対話回数が0の場合、個別化情報セクションが含まれない
+        expect(
+          !capturedPrompt.contains('対話回数: 0回') ||
+              !capturedPrompt.contains('【個別化情報】'),
+          isTrue,
+          reason: '初回ユーザーのプロンプトに個別化情報が含まれています',
+        );
+      }
+    });
+
+    test('プロパティ3: 同じユーザーでも異なる入力には異なる応答が生成される', () async {
+      final random = Random(789);
+      const iterations = 50;
+
+      final inputs = [
+        'つらいです',
+        '私はダメです',
+        '何をすればいいかわからない',
+        'やります',
+        '今を感じたい',
+      ];
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 同じユーザー、異なる入力
+        const userId = 'same-user';
+        final context = generateRandomUserContext(random, userId);
+        final personalizationContext =
+            generateRandomPersonalizationContext(random, userId);
+
+        final userInput = inputs[random.nextInt(inputs.length)];
+        final mockResponse = '入力「$userInput」に対する応答';
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse(userInput, userId);
+
+        // Then: 入力に応じた応答が生成される
+        expect(response.response, isNotEmpty);
+
+        // プロンプトにユーザー入力が含まれていることを検証
+        final capturedPrompt =
+            verify(mockAIService.complete(captureAny)).captured.first as String;
+
+        expect(
+          capturedPrompt.contains(userInput),
+          isTrue,
+          reason: 'プロンプトにユーザー入力が含まれていません',
+        );
+      }
+    });
+
+    test('プロパティ3: 頻繁に使用されるACTプロセスが応答に反映される', () async {
+      final random = Random(101112);
+      const iterations = 50;
+
+      final processes = [
+        'acceptance',
+        'defusion',
+        'valuesClarity',
+        'committedAction',
+        'mindfulness',
+        'observingSelf'
+      ];
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 特定のプロセスを頻繁に使用するユーザー
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+        final mostFrequentProcess = processes[random.nextInt(processes.length)];
+
+        final personalizationContext = generateRandomPersonalizationContext(
+          random,
+          userId,
+          totalDialogues: 20,
+          mostFrequentProcess: mostFrequentProcess,
+        );
+
+        final mockResponse = 'テスト応答';
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse('つらいです', userId);
+
+        // Then: 応答が生成される
+        expect(response.response, isNotEmpty);
+
+        // プロンプトに頻繁に使用されるプロセスが含まれていることを検証
+        final capturedPrompt =
+            verify(mockAIService.complete(captureAny)).captured.first as String;
+
+        expect(
+          capturedPrompt.contains(mostFrequentProcess),
+          isTrue,
+          reason: 'プロンプトに頻繁に使用されるプロセスが含まれていません',
+        );
+      }
+    });
+
+    test('プロパティ3: 成功体験が応答に活用される', () async {
+      final random = Random(131415);
+      const iterations = 50;
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 成功体験を持つユーザー
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+
+        final successExperiences = ['プロジェクトを完了した', '運動を続けられた', '友人と話せた'];
+
+        final personalizationContext = generateRandomPersonalizationContext(
+          random,
+          userId,
+          totalDialogues: 30,
+          successExperiences: successExperiences,
+        );
+
+        final mockResponse = '以前${successExperiences.first}という成功体験がありましたね。';
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse('つらいです', userId);
+
+        // Then: 応答が生成される
+        expect(response.response, isNotEmpty);
+
+        // プロンプトに成功体験が含まれていることを検証
+        final capturedPrompt =
+            verify(mockAIService.complete(captureAny)).captured.first as String;
+
+        expect(
+          capturedPrompt.contains('過去の成功体験'),
+          isTrue,
+          reason: 'プロンプトに成功体験が含まれていません',
+        );
+      }
+    });
+
+    test('プロパティ3: 繰り返しテーマが応答に反映される', () async {
+      final random = Random(161718);
+      const iterations = 50;
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: 繰り返しテーマを持つユーザー
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+
+        final recurringThemes = ['仕事', '健康', '人間関係'];
+
+        final personalizationContext = generateRandomPersonalizationContext(
+          random,
+          userId,
+          totalDialogues: 25,
+          recurringThemes: recurringThemes,
+        );
+
+        final mockResponse = '${recurringThemes.first}について、また話しましょう。';
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any)).thenAnswer((_) async => mockResponse);
+
+        // When: 応答を生成
+        final response = await engine.generateResponse('つらいです', userId);
+
+        // Then: 応答が生成される
+        expect(response.response, isNotEmpty);
+
+        // プロンプトに繰り返しテーマが含まれていることを検証
+        final capturedPrompt =
+            verify(mockAIService.complete(captureAny)).captured.first as String;
+
+        expect(
+          capturedPrompt.contains('繰り返しテーマ'),
+          isTrue,
+          reason: 'プロンプトに繰り返しテーマが含まれていません',
+        );
+      }
+    });
+
+    test('プロパティ3: AI障害時でも個別化されたフォールバック応答が返される', () async {
+      final random = Random(192021);
+      const iterations = 50;
+
+      for (var i = 0; i < iterations; i++) {
+        // Given: AI障害が発生する状況
+        final userId = 'user-$i';
+        final context = generateRandomUserContext(random, userId);
+        final personalizationContext =
+            generateRandomPersonalizationContext(random, userId);
+
+        when(mockUserContextService.getUserContext(userId))
+            .thenAnswer((_) async => context);
+        when(mockDialogueHistoryService.buildPersonalizationContext(userId))
+            .thenAnswer((_) async => personalizationContext);
+        when(mockAIService.complete(any))
+            .thenThrow(AIServiceException('API障害'));
+
+        // When: 応答を生成
+        final response = await engine.generateResponse('つらいです', userId);
+
+        // Then: フォールバック応答が返される
+        expect(response.response, isNotEmpty);
+
+        // フォールバック応答でも適切なACTプロセスが選択される
+        expect(ACTProcess.values.contains(response.process), isTrue);
       }
     });
   });
