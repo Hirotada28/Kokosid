@@ -152,4 +152,20 @@ class TaskRepository {
         .createdAtBetween(start, end)
         .count();
   }
+
+  /// 期間内のタスクを取得
+  Future<List<Task>> getTasksByDateRange(
+    String userUuid,
+    DateTime start,
+    DateTime end,
+  ) async {
+    final isar = _databaseService.isar;
+
+    return isar.tasks
+        .filter()
+        .userUuidEqualTo(userUuid)
+        .createdAtBetween(start, end)
+        .sortByCreatedAtDesc()
+        .findAll();
+  }
 }

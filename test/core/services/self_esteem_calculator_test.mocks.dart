@@ -239,6 +239,24 @@ class MockTaskRepository extends _i1.Mock implements _i6.TaskRepository {
         ),
         returnValue: _i7.Future<int>.value(0),
       ) as _i7.Future<int>);
+
+  @override
+  _i7.Future<List<_i2.Task>> getTasksByDateRange(
+    String? userUuid,
+    DateTime? start,
+    DateTime? end,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getTasksByDateRange,
+          [
+            userUuid,
+            start,
+            end,
+          ],
+        ),
+        returnValue: _i7.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i7.Future<List<_i2.Task>>);
 }
 
 /// A class which mocks [JournalRepository].
