@@ -32,6 +32,16 @@ class _FakeIsar_0 extends _i1.SmartFake implements _i2.Isar {
         );
 }
 
+class _FakeDatabaseStats_1 extends _i1.SmartFake implements _i3.DatabaseStats {
+  _FakeDatabaseStats_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [DatabaseService].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -93,4 +103,48 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
         ),
         returnValue: _i4.Future<int>.value(0),
       ) as _i4.Future<int>);
+
+  @override
+  _i4.Future<void> clearUserData(String? userUuid) => (super.noSuchMethod(
+        Invocation.method(
+          #clearUserData,
+          [userUuid],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<_i3.DatabaseStats> getStats() => (super.noSuchMethod(
+        Invocation.method(
+          #getStats,
+          [],
+        ),
+        returnValue: _i4.Future<_i3.DatabaseStats>.value(_FakeDatabaseStats_1(
+          this,
+          Invocation.method(
+            #getStats,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i3.DatabaseStats>);
+
+  @override
+  _i4.Future<bool> performHealthCheck() => (super.noSuchMethod(
+        Invocation.method(
+          #performHealthCheck,
+          [],
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
+
+  @override
+  _i4.Future<void> optimize() => (super.noSuchMethod(
+        Invocation.method(
+          #optimize,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

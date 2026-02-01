@@ -37,33 +37,38 @@ const SelfEsteemScoreSchema = CollectionSchema(
       name: r'isToday',
       type: IsarType.bool,
     ),
-    r'measuredAt': PropertySchema(
+    r'levelDescription': PropertySchema(
       id: 4,
+      name: r'levelDescription',
+      type: IsarType.string,
+    ),
+    r'measuredAt': PropertySchema(
+      id: 5,
       name: r'measuredAt',
       type: IsarType.dateTime,
     ),
     r'positiveEmotionRatio': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'positiveEmotionRatio',
       type: IsarType.double,
     ),
     r'score': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'score',
       type: IsarType.double,
     ),
     r'streakScore': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'streakScore',
       type: IsarType.double,
     ),
     r'userUuid': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'userUuid',
       type: IsarType.string,
     ),
     r'uuid': PropertySchema(
-      id: 9,
+      id: 10,
       name: r'uuid',
       type: IsarType.string,
     )
@@ -134,6 +139,7 @@ int _selfEsteemScoreEstimateSize(
       bytesCount += 3 + value.length * 3;
     }
   }
+  bytesCount += 3 + object.levelDescription.length * 3;
   bytesCount += 3 + object.userUuid.length * 3;
   bytesCount += 3 + object.uuid.length * 3;
   return bytesCount;
@@ -149,12 +155,13 @@ void _selfEsteemScoreSerialize(
   writer.writeDouble(offsets[1], object.completionRate);
   writer.writeDouble(offsets[2], object.engagementScore);
   writer.writeBool(offsets[3], object.isToday);
-  writer.writeDateTime(offsets[4], object.measuredAt);
-  writer.writeDouble(offsets[5], object.positiveEmotionRatio);
-  writer.writeDouble(offsets[6], object.score);
-  writer.writeDouble(offsets[7], object.streakScore);
-  writer.writeString(offsets[8], object.userUuid);
-  writer.writeString(offsets[9], object.uuid);
+  writer.writeString(offsets[4], object.levelDescription);
+  writer.writeDateTime(offsets[5], object.measuredAt);
+  writer.writeDouble(offsets[6], object.positiveEmotionRatio);
+  writer.writeDouble(offsets[7], object.score);
+  writer.writeDouble(offsets[8], object.streakScore);
+  writer.writeString(offsets[9], object.userUuid);
+  writer.writeString(offsets[10], object.uuid);
 }
 
 SelfEsteemScore _selfEsteemScoreDeserialize(
@@ -168,12 +175,12 @@ SelfEsteemScore _selfEsteemScoreDeserialize(
   object.completionRate = reader.readDoubleOrNull(offsets[1]);
   object.engagementScore = reader.readDoubleOrNull(offsets[2]);
   object.id = id;
-  object.measuredAt = reader.readDateTime(offsets[4]);
-  object.positiveEmotionRatio = reader.readDoubleOrNull(offsets[5]);
-  object.score = reader.readDouble(offsets[6]);
-  object.streakScore = reader.readDoubleOrNull(offsets[7]);
-  object.userUuid = reader.readString(offsets[8]);
-  object.uuid = reader.readString(offsets[9]);
+  object.measuredAt = reader.readDateTime(offsets[5]);
+  object.positiveEmotionRatio = reader.readDoubleOrNull(offsets[6]);
+  object.score = reader.readDouble(offsets[7]);
+  object.streakScore = reader.readDoubleOrNull(offsets[8]);
+  object.userUuid = reader.readString(offsets[9]);
+  object.uuid = reader.readString(offsets[10]);
   return object;
 }
 
@@ -193,16 +200,18 @@ P _selfEsteemScoreDeserializeProp<P>(
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
-      return (reader.readDateTime(offset)) as P;
-    case 5:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 6:
-      return (reader.readDouble(offset)) as P;
-    case 7:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 8:
       return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readDateTime(offset)) as P;
+    case 6:
+      return (reader.readDoubleOrNull(offset)) as P;
+    case 7:
+      return (reader.readDouble(offset)) as P;
+    case 8:
+      return (reader.readDoubleOrNull(offset)) as P;
     case 9:
+      return (reader.readString(offset)) as P;
+    case 10:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -884,6 +893,142 @@ extension SelfEsteemScoreQueryFilter
   }
 
   QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'levelDescription',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'levelDescription',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'levelDescription',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'levelDescription',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'levelDescription',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'levelDescription',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'levelDescription',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'levelDescription',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'levelDescription',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
+      levelDescriptionIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'levelDescription',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterFilterCondition>
       measuredAtEqualTo(DateTime value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -1510,6 +1655,20 @@ extension SelfEsteemScoreQuerySortBy
   }
 
   QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterSortBy>
+      sortByLevelDescription() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'levelDescription', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterSortBy>
+      sortByLevelDescriptionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'levelDescription', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterSortBy>
       sortByMeasuredAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'measuredAt', Sort.asc);
@@ -1662,6 +1821,20 @@ extension SelfEsteemScoreQuerySortThenBy
   }
 
   QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterSortBy>
+      thenByLevelDescription() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'levelDescription', Sort.asc);
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterSortBy>
+      thenByLevelDescriptionDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'levelDescription', Sort.desc);
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QAfterSortBy>
       thenByMeasuredAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'measuredAt', Sort.asc);
@@ -1776,6 +1949,14 @@ extension SelfEsteemScoreQueryWhereDistinct
   }
 
   QueryBuilder<SelfEsteemScore, SelfEsteemScore, QDistinct>
+      distinctByLevelDescription({bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'levelDescription',
+          caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, SelfEsteemScore, QDistinct>
       distinctByMeasuredAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'measuredAt');
@@ -1849,6 +2030,13 @@ extension SelfEsteemScoreQueryProperty
   QueryBuilder<SelfEsteemScore, bool, QQueryOperations> isTodayProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'isToday');
+    });
+  }
+
+  QueryBuilder<SelfEsteemScore, String, QQueryOperations>
+      levelDescriptionProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'levelDescription');
     });
   }
 
