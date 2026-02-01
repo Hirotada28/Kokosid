@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/services/audio_recording_service.dart';
 import '../widgets/dialogue_history.dart';
 import '../widgets/emotion_tags.dart';
 import '../widgets/voice_input_button.dart';
@@ -19,6 +20,19 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
   bool get wantKeepAlive => true;
 
   bool _isRecording = false;
+  late AudioRecordingService _audioService;
+
+  @override
+  void initState() {
+    super.initState();
+    _audioService = AudioRecordingService();
+  }
+
+  @override
+  void dispose() {
+    _audioService.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -161,11 +175,7 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
           const SizedBox(height: 24),
           VoiceInputButton(
             isRecording: _isRecording,
-            onRecordingChanged: (isRecording) {
-              setState(() {
-                _isRecording = isRecording;
-              });
-            },
+            onRecordingChanged: _handleRecordingChanged,
           ),
         ],
       ),
@@ -290,5 +300,45 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
   /// 全履歴を表示
   void _showAllHistory() {
     Navigator.of(context).pushNamed('/dialogue_history');
+  }
+
+  /// 録音状態変更ハンドラー
+  Future<void> _handleRecordingChanged(bool isRecording) async {
+    if (isRecording) {
+      // 録音開始
+      try {
+        await _audioService.startRecording();
+        setState(() {
+          _isRecording = true;
+        });
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('録音を開始できませんでした: $e')),
+          );
+        }
+      }
+    } else {
+      // 録音停止
+      try {
+        final path = await _audioService.stopRecording();
+        setState(() {
+          _isRecording = false;
+        });
+
+        if (path != null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('録音が完了しました')),
+          );
+          // TODO: 音声分析処理を呼び出す
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('録音を停止できませんでした: $e')),
+          );
+        }
+      }
+    }
   }
 }
