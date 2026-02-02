@@ -1,3 +1,5 @@
+import 'package:isar/isar.dart';
+
 import '../models/journal_entry.dart';
 import '../models/self_esteem_score.dart';
 import '../models/task.dart';
@@ -95,19 +97,14 @@ class EncryptedStorageService {
 
       // ユーザーレコードを取得して更新
       final isar = _databaseService.isar;
-      // TODO: flutter pub run build_runner build 実行後に有効化
-      // final user = await isar.users.where().uuidEqualTo(userUuid).findFirst();
-      User? user;
-      await isar.txn(() async {
-        user = await isar.users.get(1); // プレースホルダー
-      });
+      final user = await isar.users.filter().uuidEqualTo(userUuid).findFirst();
 
       if (user != null) {
         // 設定を暗号化してユーザーレコードに保存
         // 注意: この例では簡単のためnameフィールドを使用していますが、
         // 実際の実装では専用のsettingsフィールドを追加することを推奨
         await isar.writeTxn(() async {
-          await isar.users.put(user!);
+          await isar.users.put(user);
         });
       }
     } catch (e) {
@@ -119,10 +116,9 @@ class EncryptedStorageService {
   Future<Map<String, dynamic>?> loadEncryptedUserSettings(
       String userUuid) async {
     try {
-      // ignore: unused_local_variable
       final isar = _databaseService.isar;
-      // TODO: flutter pub run build_runner build 実行後に有効化
-      // final user = await isar.users.where().uuidEqualTo(userUuid).findFirst();
+      // ignore: unused_local_variable
+      final user = await isar.users.filter().uuidEqualTo(userUuid).findFirst();
 
       // 設定を復号化
       // 注意: この例では簡単のためnameフィールドを使用していますが、
@@ -137,24 +133,27 @@ class EncryptedStorageService {
   /// バックアップデータを暗号化
   Future<String> createEncryptedBackup(String userUuid) async {
     try {
-      // ignore: unused_local_variable
       final isar = _databaseService.isar;
 
-      // TODO: flutter pub run build_runner build 実行後に有効化
       // ユーザーの全データを取得
-      // final user = await isar.users.where().uuidEqualTo(userUuid).findFirst();
-      // final tasks = await isar.tasks.where().userUuidEqualTo(userUuid).findAll();
-      // final journalEntries = await isar.journalEntrys.where().userUuidEqualTo(userUuid).findAll();
-      // final scores = await isar.selfEsteemScores.where().userUuidEqualTo(userUuid).findAll();
+      final user = await isar.users.filter().uuidEqualTo(userUuid).findFirst();
+      final tasks =
+          await isar.tasks.filter().userUuidEqualTo(userUuid).findAll();
+      final journalEntries =
+          await isar.journalEntrys.filter().userUuidEqualTo(userUuid).findAll();
+      final scores = await isar.selfEsteemScores
+          .filter()
+          .userUuidEqualTo(userUuid)
+          .findAll();
 
-      // バックアップデータを構築（プレースホルダー）
+      // バックアップデータを構築
       final backupData = <String, dynamic>{
         'version': '1.0',
         'exportedAt': DateTime.now().toIso8601String(),
-        'user': null,
-        'tasks': <Map<String, dynamic>>[],
-        'journalEntries': <Map<String, dynamic>>[],
-        'scores': <Map<String, dynamic>>[],
+        'user': user != null ? _userToJson(user) : null,
+        'tasks': tasks.map(_taskToJson).toList(),
+        'journalEntries': journalEntries.map(_journalEntryToJson).toList(),
+        'scores': scores.map(_selfEsteemScoreToJson).toList(),
       };
 
       // バックアップデータを暗号化
@@ -185,7 +184,7 @@ class EncryptedStorageService {
         // ユーザーデータを復元
         if (backupData['user'] != null) {
           final userData = backupData['user'] as Map<String, dynamic>;
-          final user = UserJson.fromJson(userData);
+          final user = _userFromJson(userData);
           await isar.users.put(user);
         }
 
@@ -193,7 +192,7 @@ class EncryptedStorageService {
         if (backupData['tasks'] != null) {
           final tasksData = backupData['tasks'] as List;
           for (final taskData in tasksData) {
-            final task = TaskJson.fromJson(taskData as Map<String, dynamic>);
+            final task = _taskFromJson(taskData as Map<String, dynamic>);
             await isar.tasks.put(task);
           }
         }
@@ -203,7 +202,7 @@ class EncryptedStorageService {
           final entriesData = backupData['journalEntries'] as List;
           for (final entryData in entriesData) {
             final entry =
-                JournalEntryJson.fromJson(entryData as Map<String, dynamic>);
+                _journalEntryFromJson(entryData as Map<String, dynamic>);
             await isar.journalEntrys.put(entry);
           }
         }
@@ -213,7 +212,7 @@ class EncryptedStorageService {
           final scoresData = backupData['scores'] as List;
           for (final scoreData in scoresData) {
             final score =
-                SelfEsteemScoreJson.fromJson(scoreData as Map<String, dynamic>);
+                _selfEsteemScoreFromJson(scoreData as Map<String, dynamic>);
             await isar.selfEsteemScores.put(score);
           }
         }
@@ -226,13 +225,11 @@ class EncryptedStorageService {
   /// データ整合性チェック
   Future<bool> verifyDataIntegrity(String userUuid) async {
     try {
-      // ignore: unused_local_variable
       final isar = _databaseService.isar;
 
       // ユーザーの日記エントリを取得
-      // TODO: flutter pub run build_runner build 実行後に有効化
-      // final entries = await isar.journalEntrys.where().userUuidEqualTo(userUuid).findAll();
-      final entries = <JournalEntry>[];
+      final entries =
+          await isar.journalEntrys.filter().userUuidEqualTo(userUuid).findAll();
 
       // 各エントリの復号化を試行
       for (final entry in entries) {
@@ -264,9 +261,8 @@ class EncryptedStorageService {
       final isar = _databaseService.isar;
 
       // 古いキーで復号化し、新しいキーで再暗号化
-      // TODO: flutter pub run build_runner build 実行後に有効化
-      // final entries = await isar.journalEntrys.where().userUuidEqualTo(userUuid).findAll();
-      final entries = <JournalEntry>[];
+      final entries =
+          await isar.journalEntrys.filter().userUuidEqualTo(userUuid).findAll();
 
       await isar.writeTxn(() async {
         for (final entry in entries) {
@@ -301,6 +297,22 @@ class EncryptedStorageService {
       throw EncryptedStorageException('データの再暗号化に失敗しました: $e');
     }
   }
+
+  // プライベートヘルパーメソッド: モデルをJSONに変換
+  Map<String, dynamic> _userToJson(User user) => user.toJson();
+  Map<String, dynamic> _taskToJson(Task task) => task.toJson();
+  Map<String, dynamic> _journalEntryToJson(JournalEntry entry) =>
+      entry.toJson();
+  Map<String, dynamic> _selfEsteemScoreToJson(SelfEsteemScore score) =>
+      score.toJson();
+
+  // プライベートヘルパーメソッド: JSONからモデルに変換
+  User _userFromJson(Map<String, dynamic> json) => UserJson.fromJson(json);
+  Task _taskFromJson(Map<String, dynamic> json) => TaskJson.fromJson(json);
+  JournalEntry _journalEntryFromJson(Map<String, dynamic> json) =>
+      JournalEntryJson.fromJson(json);
+  SelfEsteemScore _selfEsteemScoreFromJson(Map<String, dynamic> json) =>
+      SelfEsteemScoreJson.fromJson(json);
 }
 
 /// 暗号化ストレージ関連の例外

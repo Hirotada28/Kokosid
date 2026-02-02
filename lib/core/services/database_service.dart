@@ -90,11 +90,20 @@ class DatabaseService {
     }
 
     await isar.writeTxn(() async {
-      // 注意: 実際のコード生成後に適切なコレクション名に修正
-      // await isar.tasks.filter().userUuidEqualTo(userUuid).deleteAll();
-      // await isar.journalEntrys.filter().userUuidEqualTo(userUuid).deleteAll();
-      // await isar.selfEsteemScores.filter().userUuidEqualTo(userUuid).deleteAll();
-      // await isar.users.filter().uuidEqualTo(userUuid).deleteAll();
+      // タスクを削除
+      await isar.tasks.filter().userUuidEqualTo(userUuid).deleteAll();
+
+      // 日記エントリを削除
+      await isar.journalEntrys.filter().userUuidEqualTo(userUuid).deleteAll();
+
+      // 自己肯定感スコアを削除
+      await isar.selfEsteemScores
+          .filter()
+          .userUuidEqualTo(userUuid)
+          .deleteAll();
+
+      // ユーザーを削除
+      await isar.users.filter().uuidEqualTo(userUuid).deleteAll();
     });
   }
 

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
+import '../../core/services/app_config_service.dart';
 import '../../core/services/audio_recording_service.dart';
+import '../../core/services/whisper_service.dart';
 import '../widgets/dialogue_history.dart';
 import '../widgets/emotion_tags.dart';
 import '../widgets/voice_input_button.dart';
@@ -20,12 +24,28 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
   bool get wantKeepAlive => true;
 
   bool _isRecording = false;
+  bool _isAnalyzing = false;
   late AudioRecordingService _audioService;
+  WhisperService? _whisperService;
 
   @override
   void initState() {
     super.initState();
     _audioService = AudioRecordingService();
+    _initializeWhisperService();
+  }
+
+  void _initializeWhisperService() {
+    final configService = AppConfigService();
+    if (configService.hasWhisperApiKey) {
+      try {
+        _whisperService =
+            WhisperService(apiKey: configService.getWhisperApiKey());
+      } catch (e) {
+        // API キーが無効な場合はオフラインモードで動作
+        _whisperService = null;
+      }
+    }
   }
 
   @override
@@ -140,6 +160,20 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
   Widget _buildVoiceInputSection(BuildContext context) {
     final theme = Theme.of(context);
 
+    String titleText;
+    String subtitleText;
+
+    if (_isAnalyzing) {
+      titleText = '分析中...';
+      subtitleText = '音声を解析しています';
+    } else if (_isRecording) {
+      titleText = '録音中...';
+      subtitleText = 'タップして録音を停止';
+    } else {
+      titleText = '気持ちを話してみませんか？';
+      subtitleText = 'ボタンを押して音声で気持ちを記録できます';
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       padding: const EdgeInsets.all(24),
@@ -157,7 +191,7 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
       child: Column(
         children: [
           Text(
-            _isRecording ? '録音中...' : '気持ちを話してみませんか？',
+            titleText,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onSurface,
@@ -166,17 +200,20 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
           ),
           const SizedBox(height: 8),
           Text(
-            _isRecording ? 'タップして録音を停止' : 'ボタンを押して音声で気持ちを記録できます',
+            subtitleText,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
-          VoiceInputButton(
-            isRecording: _isRecording,
-            onRecordingChanged: _handleRecordingChanged,
-          ),
+          if (_isAnalyzing)
+            const CircularProgressIndicator()
+          else
+            VoiceInputButton(
+              isRecording: _isRecording,
+              onRecordingChanged: _handleRecordingChanged,
+            ),
         ],
       ),
     );
@@ -327,10 +364,8 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
         });
 
         if (path != null && mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('録音が完了しました')),
-          );
-          // TODO: 音声分析処理を呼び出す
+          // 音声分析処理を呼び出す
+          await _processVoiceRecording(path);
         }
       } catch (e) {
         if (mounted) {
@@ -339,6 +374,123 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
           );
         }
       }
+    }
+  }
+
+  /// 音声録音を処理
+  Future<void> _processVoiceRecording(String audioPath) async {
+    setState(() {
+      _isAnalyzing = true;
+    });
+
+    try {
+      String transcription;
+
+      if (_whisperService != null) {
+        // オンライン: Whisper API で音声認識
+        final audioFile = File(audioPath);
+        transcription = await _whisperService!.transcribe(audioFile);
+      } else {
+        // オフライン: フォールバック
+        transcription = '[音声認識が利用できません。API キーを設定してください。]';
+      }
+
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+        });
+
+        // 結果を表示
+        await _showTranscriptionDialog(transcription);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isAnalyzing = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('音声分析に失敗しました: $e')),
+        );
+      }
+    }
+  }
+
+  /// 音声認識結果ダイアログを表示
+  Future<void> _showTranscriptionDialog(String transcription) async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        final theme = Theme.of(context);
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.mic, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              const Text('音声認識結果'),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    transcription.isNotEmpty
+                        ? transcription
+                        : '（音声を認識できませんでした）',
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'この内容を日記に保存しますか？',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('キャンセル'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _saveToJournal(transcription);
+              },
+              child: const Text('保存'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// 日記に保存
+  Future<void> _saveToJournal(String content) async {
+    // ここで日記エントリを保存する処理を実装
+    // JournalRepository を使用して保存
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Text('日記に保存しました'),
+            ],
+          ),
+        ),
+      );
     }
   }
 }

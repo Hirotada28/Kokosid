@@ -3,6 +3,7 @@ import '../../core/models/task.dart';
 import '../../core/repositories/task_repository.dart';
 import '../../core/services/micro_chunking_engine.dart';
 import '../../core/services/ai_service.dart';
+import '../../core/services/app_config_service.dart';
 
 /// タスク詳細画面
 class TaskDetailScreen extends StatefulWidget {
@@ -33,8 +34,16 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   void _initializeMicroChunkingEngine() {
-    // TODO: API キーを環境変数から取得
-    final aiService = ClaudeAIService(apiKey: 'your-api-key-here');
+    // AppConfigService から API キーを取得
+    final configService = AppConfigService();
+    String apiKey;
+    try {
+      apiKey = configService.getClaudeApiKey();
+    } catch (e) {
+      // 開発時はデモモードで動作
+      apiKey = '';
+    }
+    final aiService = ClaudeAIService(apiKey: apiKey);
     _microChunkingEngine = MicroChunkingEngine(
       aiService: aiService,
       taskRepository: widget.taskRepository,
@@ -517,8 +526,195 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   }
 
   void _onEdit() {
-    // TODO: 編集画面を実装
-    _showErrorSnackBar('編集機能は未実装です');
+    _showEditDialog();
+  }
+
+  /// タスク編集ダイアログを表示
+  Future<void> _showEditDialog() async {
+    final titleController = TextEditingController(text: widget.task.title);
+    final descriptionController = TextEditingController(
+      text: widget.task.description ?? '',
+    );
+    final estimatedMinutesController = TextEditingController(
+      text: widget.task.estimatedMinutes?.toString() ?? '',
+    );
+
+    var selectedPriority = widget.task.priority;
+    var selectedDueDate = widget.task.dueDate;
+
+    final result = await showDialog<Map<String, dynamic>>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('タスクを編集'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // タイトル
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'タイトル',
+                        border: OutlineInputBorder(),
+                      ),
+                      autofocus: true,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 説明
+                    TextField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: '説明（任意）',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 見積もり時間
+                    TextField(
+                      controller: estimatedMinutesController,
+                      decoration: const InputDecoration(
+                        labelText: '見積もり時間（分）',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 優先度
+                    DropdownButtonFormField<TaskPriority>(
+                      value: selectedPriority,
+                      decoration: const InputDecoration(
+                        labelText: '優先度',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: TaskPriority.values.map((priority) {
+                        return DropdownMenuItem(
+                          value: priority,
+                          child: Text(_getPriorityLabel(priority)),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null) {
+                          setDialogState(() {
+                            selectedPriority = value;
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // 期限日
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('期限日'),
+                      subtitle: Text(
+                        selectedDueDate != null
+                            ? '${selectedDueDate!.year}/${selectedDueDate!.month}/${selectedDueDate!.day}'
+                            : '未設定',
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate: selectedDueDate ?? DateTime.now(),
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now()
+                                    .add(const Duration(days: 365)),
+                              );
+                              if (date != null) {
+                                setDialogState(() {
+                                  selectedDueDate = date;
+                                });
+                              }
+                            },
+                          ),
+                          if (selectedDueDate != null)
+                            IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                setDialogState(() {
+                                  selectedDueDate = null;
+                                });
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(null),
+                  child: const Text('キャンセル'),
+                ),
+                FilledButton(
+                  onPressed: () {
+                    if (titleController.text.trim().isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('タイトルを入力してください')),
+                      );
+                      return;
+                    }
+                    Navigator.of(context).pop({
+                      'title': titleController.text.trim(),
+                      'description': descriptionController.text.trim().isEmpty
+                          ? null
+                          : descriptionController.text.trim(),
+                      'estimatedMinutes': int.tryParse(
+                        estimatedMinutesController.text,
+                      ),
+                      'priority': selectedPriority,
+                      'dueDate': selectedDueDate,
+                    });
+                  },
+                  child: const Text('保存'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (result != null) {
+      await _updateTask(result);
+    }
+  }
+
+  /// タスクを更新
+  Future<void> _updateTask(Map<String, dynamic> updates) async {
+    try {
+      // タスクの各フィールドを更新
+      widget.task.title = updates['title'] as String;
+      widget.task.description = updates['description'] as String?;
+      widget.task.estimatedMinutes = updates['estimatedMinutes'] as int?;
+      widget.task.priority = updates['priority'] as TaskPriority;
+      widget.task.dueDate = updates['dueDate'] as DateTime?;
+
+      // リポジトリに保存
+      await widget.taskRepository.updateTask(widget.task);
+
+      if (mounted) {
+        setState(() {});
+        _showSuccessSnackBar('タスクを更新しました');
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorSnackBar('タスクの更新に失敗しました: $e');
+      }
+    }
   }
 
   Future<void> _onDelete() async {
