@@ -1,64 +1,45 @@
-import 'package:isar/isar.dart';
 import '../models/self_esteem_score.dart';
 import '../services/database_service.dart';
+import '../services/local_storage_service.dart';
 
 /// 自己肯定感スコアデータリポジトリ
 class SelfEsteemRepository {
   SelfEsteemRepository(this._databaseService);
   final DatabaseService _databaseService;
 
+  /// ストレージサービスを取得
+  LocalStorageService get _storage => _databaseService.storage;
+
   /// スコアを作成
   Future<SelfEsteemScore> createScore(SelfEsteemScore score) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.selfEsteemScores.put(score);
-    });
-
+    await _storage.putSelfEsteemScore(score);
     return score;
   }
 
   /// UUIDでスコアを取得
   Future<SelfEsteemScore?> getScoreByUuid(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.selfEsteemScores.filter().uuidEqualTo(uuid).findFirst();
+    return _storage.getSelfEsteemScoreByUuid(uuid);
   }
 
   /// ユーザーの全スコアを取得
   Future<List<SelfEsteemScore>> getScoresByUser(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.selfEsteemScores
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByMeasuredAtDesc()
-        .findAll();
+    return _storage.getSelfEsteemScoresByUserUuid(userUuid);
   }
 
   /// ユーザーの最新スコアを取得
   Future<SelfEsteemScore?> getLatestScore(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.selfEsteemScores
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByMeasuredAtDesc()
-        .findFirst();
+    return _storage.getLatestSelfEsteemScoreByUserUuid(userUuid);
   }
 
   /// 今日のスコアを取得
   Future<SelfEsteemScore?> getTodayScore(String userUuid) async {
-    final isar = _databaseService.isar;
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
 
-    return isar.selfEsteemScores
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .measuredAtBetween(startOfDay, endOfDay)
-        .findFirst();
+    final scores = await _storage.getSelfEsteemScoresByUserUuidAndDateRange(
+        userUuid, startOfDay, endOfDay);
+    return scores.isEmpty ? null : scores.first;
   }
 
   /// 期間内のスコアを取得
@@ -67,14 +48,8 @@ class SelfEsteemRepository {
     DateTime start,
     DateTime end,
   ) async {
-    final isar = _databaseService.isar;
-
-    return isar.selfEsteemScores
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .measuredAtBetween(start, end)
-        .sortByMeasuredAt()
-        .findAll();
+    return _storage.getSelfEsteemScoresByUserUuidAndDateRange(
+        userUuid, start, end);
   }
 
   /// 過去N日間のスコアを取得
@@ -88,21 +63,13 @@ class SelfEsteemRepository {
 
   /// スコアを更新
   Future<SelfEsteemScore> updateScore(SelfEsteemScore score) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.selfEsteemScores.put(score);
-    });
-
+    await _storage.putSelfEsteemScore(score);
     return score;
   }
 
   /// スコアを削除
   Future<bool> deleteScore(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.writeTxn(() async =>
-        isar.selfEsteemScores.filter().uuidEqualTo(uuid).deleteFirst());
+    return _storage.deleteSelfEsteemScoreByUuid(uuid);
   }
 
   /// 平均スコアを計算

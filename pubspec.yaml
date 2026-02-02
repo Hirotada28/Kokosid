@@ -16,9 +16,13 @@ dependencies:
   fl_chart: ^0.68.0
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_dotenv: ^5.1.0
   flutter_local_notifications: ^16.3.2
   flutter_secure_storage: ^9.0.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
   http: ^1.1.0
   isar: ^3.1.0+1
   isar_flutter_libs: ^3.1.0+1

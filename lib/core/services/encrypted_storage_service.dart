@@ -1,11 +1,10 @@
-import 'package:isar/isar.dart';
-
 import '../models/journal_entry.dart';
 import '../models/self_esteem_score.dart';
 import '../models/task.dart';
 import '../models/user.dart';
 import 'database_service.dart';
 import 'encryption_service.dart';
+import 'local_storage_service.dart';
 
 /// 暗号化データ永続化サービス
 /// 機密データの暗号化保存と復号化読み込みを管理
@@ -13,6 +12,9 @@ class EncryptedStorageService {
   EncryptedStorageService(this._encryptionService, this._databaseService);
   final EncryptionService _encryptionService;
   final DatabaseService _databaseService;
+
+  /// ストレージサービスを取得
+  LocalStorageService get _storage => _databaseService.storage;
 
   /// 暗号化してJournalEntryを保存
   Future<JournalEntry> saveEncryptedJournalEntry({
@@ -49,10 +51,7 @@ class EncryptedStorageService {
         ..aiReflection = aiReflection;
 
       // データベースに保存
-      final isar = _databaseService.isar;
-      await isar.writeTxn(() async {
-        await isar.journalEntrys.put(entry);
-      });
+      await _storage.putJournalEntry(entry);
 
       return entry;
     } catch (e) {
@@ -96,16 +95,13 @@ class EncryptedStorageService {
       final encryptedSettings = _encryptionService.encryptJson(settings);
 
       // ユーザーレコードを取得して更新
-      final isar = _databaseService.isar;
-      final user = await isar.users.filter().uuidEqualTo(userUuid).findFirst();
+      final user = await _storage.getUserByUuid(userUuid);
 
       if (user != null) {
         // 設定を暗号化してユーザーレコードに保存
         // 注意: この例では簡単のためnameフィールドを使用していますが、
         // 実際の実装では専用のsettingsフィールドを追加することを推奨
-        await isar.writeTxn(() async {
-          await isar.users.put(user);
-        });
+        await _storage.putUser(user);
       }
     } catch (e) {
       throw EncryptedStorageException('ユーザー設定の暗号化保存に失敗しました: $e');
@@ -116,9 +112,8 @@ class EncryptedStorageService {
   Future<Map<String, dynamic>?> loadEncryptedUserSettings(
       String userUuid) async {
     try {
-      final isar = _databaseService.isar;
       // ignore: unused_local_variable
-      final user = await isar.users.filter().uuidEqualTo(userUuid).findFirst();
+      final user = await _storage.getUserByUuid(userUuid);
 
       // 設定を復号化
       // 注意: この例では簡単のためnameフィールドを使用していますが、
@@ -133,18 +128,12 @@ class EncryptedStorageService {
   /// バックアップデータを暗号化
   Future<String> createEncryptedBackup(String userUuid) async {
     try {
-      final isar = _databaseService.isar;
-
       // ユーザーの全データを取得
-      final user = await isar.users.filter().uuidEqualTo(userUuid).findFirst();
-      final tasks =
-          await isar.tasks.filter().userUuidEqualTo(userUuid).findAll();
+      final user = await _storage.getUserByUuid(userUuid);
+      final tasks = await _storage.getTasksByUserUuid(userUuid);
       final journalEntries =
-          await isar.journalEntrys.filter().userUuidEqualTo(userUuid).findAll();
-      final scores = await isar.selfEsteemScores
-          .filter()
-          .userUuidEqualTo(userUuid)
-          .findAll();
+          await _storage.getJournalEntriesByUserUuid(userUuid);
+      final scores = await _storage.getSelfEsteemScoresByUserUuid(userUuid);
 
       // バックアップデータを構築
       final backupData = <String, dynamic>{
@@ -175,48 +164,41 @@ class EncryptedStorageService {
         throw EncryptedStorageException('サポートされていないバックアップバージョンです: $version');
       }
 
-      final isar = _databaseService.isar;
+      // ユーザーデータを復元
+      if (backupData['user'] != null) {
+        final userData = backupData['user'] as Map<String, dynamic>;
+        final user = _userFromJson(userData);
+        await _storage.putUser(user);
+      }
 
-      await isar.writeTxn(() async {
-        // 既存データをクリア（必要に応じて）
-        // await isar.clear();
-
-        // ユーザーデータを復元
-        if (backupData['user'] != null) {
-          final userData = backupData['user'] as Map<String, dynamic>;
-          final user = _userFromJson(userData);
-          await isar.users.put(user);
+      // タスクデータを復元
+      if (backupData['tasks'] != null) {
+        final tasksData = backupData['tasks'] as List;
+        for (final taskData in tasksData) {
+          final task = _taskFromJson(taskData as Map<String, dynamic>);
+          await _storage.putTask(task);
         }
+      }
 
-        // タスクデータを復元
-        if (backupData['tasks'] != null) {
-          final tasksData = backupData['tasks'] as List;
-          for (final taskData in tasksData) {
-            final task = _taskFromJson(taskData as Map<String, dynamic>);
-            await isar.tasks.put(task);
-          }
+      // 日記エントリを復元
+      if (backupData['journalEntries'] != null) {
+        final entriesData = backupData['journalEntries'] as List;
+        for (final entryData in entriesData) {
+          final entry =
+              _journalEntryFromJson(entryData as Map<String, dynamic>);
+          await _storage.putJournalEntry(entry);
         }
+      }
 
-        // 日記エントリを復元
-        if (backupData['journalEntries'] != null) {
-          final entriesData = backupData['journalEntries'] as List;
-          for (final entryData in entriesData) {
-            final entry =
-                _journalEntryFromJson(entryData as Map<String, dynamic>);
-            await isar.journalEntrys.put(entry);
-          }
+      // スコアデータを復元
+      if (backupData['scores'] != null) {
+        final scoresData = backupData['scores'] as List;
+        for (final scoreData in scoresData) {
+          final score =
+              _selfEsteemScoreFromJson(scoreData as Map<String, dynamic>);
+          await _storage.putSelfEsteemScore(score);
         }
-
-        // スコアデータを復元
-        if (backupData['scores'] != null) {
-          final scoresData = backupData['scores'] as List;
-          for (final scoreData in scoresData) {
-            final score =
-                _selfEsteemScoreFromJson(scoreData as Map<String, dynamic>);
-            await isar.selfEsteemScores.put(score);
-          }
-        }
-      });
+      }
     } catch (e) {
       throw EncryptedStorageException('バックアップの復元に失敗しました: $e');
     }
@@ -225,11 +207,8 @@ class EncryptedStorageService {
   /// データ整合性チェック
   Future<bool> verifyDataIntegrity(String userUuid) async {
     try {
-      final isar = _databaseService.isar;
-
       // ユーザーの日記エントリを取得
-      final entries =
-          await isar.journalEntrys.filter().userUuidEqualTo(userUuid).findAll();
+      final entries = await _storage.getJournalEntriesByUserUuid(userUuid);
 
       // 各エントリの復号化を試行
       for (final entry in entries) {
@@ -258,41 +237,36 @@ class EncryptedStorageService {
   Future<void> reencryptAllData(
       String userUuid, String oldKey, String newKey) async {
     try {
-      final isar = _databaseService.isar;
-
       // 古いキーで復号化し、新しいキーで再暗号化
-      final entries =
-          await isar.journalEntrys.filter().userUuidEqualTo(userUuid).findAll();
+      final entries = await _storage.getJournalEntriesByUserUuid(userUuid);
 
-      await isar.writeTxn(() async {
-        for (final entry in entries) {
-          var updated = false;
+      for (final entry in entries) {
+        var updated = false;
 
-          // コンテンツの再暗号化
-          if (entry.encryptedContent != null) {
-            // 注意: 実際の実装では古いキーでの復号化が必要
-            // ここでは簡略化
-            final decrypted = decryptJournalContent(entry);
-            if (decrypted != null) {
-              entry.encryptedContent = _encryptionService.encrypt(decrypted);
-              updated = true;
-            }
-          }
-
-          // AI応答の再暗号化
-          if (entry.encryptedAiResponse != null) {
-            final decrypted = decryptJournalAiResponse(entry);
-            if (decrypted != null) {
-              entry.encryptedAiResponse = _encryptionService.encrypt(decrypted);
-              updated = true;
-            }
-          }
-
-          if (updated) {
-            await isar.journalEntrys.put(entry);
+        // コンテンツの再暗号化
+        if (entry.encryptedContent != null) {
+          // 注意: 実際の実装では古いキーでの復号化が必要
+          // ここでは簡略化
+          final decrypted = decryptJournalContent(entry);
+          if (decrypted != null) {
+            entry.encryptedContent = _encryptionService.encrypt(decrypted);
+            updated = true;
           }
         }
-      });
+
+        // AI応答の再暗号化
+        if (entry.encryptedAiResponse != null) {
+          final decrypted = decryptJournalAiResponse(entry);
+          if (decrypted != null) {
+            entry.encryptedAiResponse = _encryptionService.encrypt(decrypted);
+            updated = true;
+          }
+        }
+
+        if (updated) {
+          await _storage.putJournalEntry(entry);
+        }
+      }
     } catch (e) {
       throw EncryptedStorageException('データの再暗号化に失敗しました: $e');
     }

@@ -1,7 +1,7 @@
-import 'package:isar/isar.dart';
 import '../models/journal_entry.dart';
 import '../services/database_service.dart';
 import '../services/encryption_service.dart';
+import '../services/local_storage_service.dart';
 
 /// 日記エントリデータリポジトリ
 class JournalRepository {
@@ -9,14 +9,12 @@ class JournalRepository {
   final DatabaseService _databaseService;
   final EncryptionService _encryptionService;
 
+  /// ストレージサービスを取得
+  LocalStorageService get _storage => _databaseService.storage;
+
   /// 日記エントリを作成
   Future<JournalEntry> createEntry(JournalEntry entry) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.journalEntrys.put(entry);
-    });
-
+    await _storage.putJournalEntry(entry);
     return entry;
   }
 
@@ -45,35 +43,17 @@ class JournalRepository {
 
   /// UUIDで日記エントリを取得
   Future<JournalEntry?> getEntryByUuid(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.journalEntrys.filter().uuidEqualTo(uuid).findFirst();
+    return _storage.getJournalEntryByUuid(uuid);
   }
 
   /// ユーザーの全日記エントリを取得
   Future<List<JournalEntry>> getEntriesByUser(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.journalEntrys
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getJournalEntriesByUserUuid(userUuid);
   }
 
   /// 今日の日記エントリを取得
   Future<List<JournalEntry>> getTodayEntries(String userUuid) async {
-    final isar = _databaseService.isar;
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
-    return isar.journalEntrys
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .createdAtBetween(startOfDay, endOfDay)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getTodayJournalEntriesByUserUuid(userUuid);
   }
 
   /// 期間内の日記エントリを取得
@@ -82,14 +62,8 @@ class JournalRepository {
     DateTime start,
     DateTime end,
   ) async {
-    final isar = _databaseService.isar;
-
-    return isar.journalEntrys
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .createdAtBetween(start, end)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getJournalEntriesByUserUuidAndDateRange(
+        userUuid, start, end);
   }
 
   /// 感情別の日記エントリを取得
@@ -97,33 +71,19 @@ class JournalRepository {
     String userUuid,
     EmotionType emotion,
   ) async {
-    final isar = _databaseService.isar;
-
-    return isar.journalEntrys
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .emotionDetectedEqualTo(emotion)
-        .sortByCreatedAtDesc()
-        .findAll();
+    final entries = await _storage.getJournalEntriesByUserUuid(userUuid);
+    return entries.where((entry) => entry.emotionDetected == emotion).toList();
   }
 
   /// 日記エントリを更新
   Future<JournalEntry> updateEntry(JournalEntry entry) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.journalEntrys.put(entry);
-    });
-
+    await _storage.putJournalEntry(entry);
     return entry;
   }
 
   /// 日記エントリを削除
   Future<bool> deleteEntry(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.writeTxn(() async =>
-        isar.journalEntrys.filter().uuidEqualTo(uuid).deleteFirst());
+    return _storage.deleteJournalEntryByUuid(uuid);
   }
 
   /// 暗号化されたコンテンツを復号化
@@ -179,13 +139,8 @@ class JournalRepository {
 
   /// 同期待ちエントリを取得
   Future<List<JournalEntry>> getUnsyncedEntries(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.journalEntrys
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .syncedAtIsNull()
-        .findAll();
+    final entries = await _storage.getJournalEntriesByUserUuid(userUuid);
+    return entries.where((entry) => entry.syncedAt == null).toList();
   }
 
   /// エントリを同期済みとしてマーク

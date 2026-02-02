@@ -15,7 +15,7 @@ extension GetSelfEsteemScoreCollection on Isar {
 
 const SelfEsteemScoreSchema = CollectionSchema(
   name: r'SelfEsteemScore',
-  id: -6891320114721402583,
+  id: 8194514410197289,
   properties: {
     r'calculationBasisJson': PropertySchema(
       id: 0,
@@ -80,7 +80,7 @@ const SelfEsteemScoreSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'uuid': IndexSchema(
-      id: 2134397340427724972,
+      id: 8698316308850860,
       name: r'uuid',
       unique: false,
       replace: false,
@@ -93,7 +93,7 @@ const SelfEsteemScoreSchema = CollectionSchema(
       ],
     ),
     r'userUuid': IndexSchema(
-      id: -2441299026227353304,
+      id: 8659171062196520,
       name: r'userUuid',
       unique: false,
       replace: false,
@@ -106,7 +106,7 @@ const SelfEsteemScoreSchema = CollectionSchema(
       ],
     ),
     r'measuredAt': IndexSchema(
-      id: -8950142462655383883,
+      id: 3013596557162165,
       name: r'measuredAt',
       unique: false,
       replace: false,

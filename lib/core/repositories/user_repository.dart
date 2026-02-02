@@ -1,61 +1,46 @@
-import 'package:isar/isar.dart';
 import '../models/user.dart';
 import '../services/database_service.dart';
+import '../services/local_storage_service.dart';
 
 /// ユーザーデータリポジトリ
 class UserRepository {
   UserRepository(this._databaseService);
   final DatabaseService _databaseService;
 
+  /// ストレージサービスを取得
+  LocalStorageService get _storage => _databaseService.storage;
+
   /// ユーザーを作成
   Future<User> createUser(User user) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.users.put(user);
-    });
-
+    await _storage.putUser(user);
     return user;
   }
 
   /// UUIDでユーザーを取得
   Future<User?> getUserByUuid(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.users.filter().uuidEqualTo(uuid).findFirst();
+    return _storage.getUserByUuid(uuid);
   }
 
   /// 全ユーザーを取得
   Future<List<User>> getAllUsers() async {
-    final isar = _databaseService.isar;
-
-    return isar.users.where().findAll();
+    return _storage.getAllUsers();
   }
 
   /// ユーザーを更新
   Future<User> updateUser(User user) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.users.put(user);
-    });
-
+    await _storage.putUser(user);
     return user;
   }
 
   /// ユーザーを削除
   Future<bool> deleteUser(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.writeTxn(
-        () async => isar.users.filter().uuidEqualTo(uuid).deleteFirst());
+    return _storage.deleteUserByUuid(uuid);
   }
 
   /// 最初のユーザーを取得（シングルユーザーアプリの場合）
   Future<User?> getFirstUser() async {
-    final isar = _databaseService.isar;
-
-    return isar.users.where().findFirst();
+    final users = await _storage.getAllUsers();
+    return users.isEmpty ? null : users.first;
   }
 
   /// ユーザーの最終アクティブ時刻を更新

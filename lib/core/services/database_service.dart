@@ -1,15 +1,13 @@
-import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:hive_flutter/hive_flutter.dart';
 
-import '../models/journal_entry.dart';
-import '../models/self_esteem_score.dart';
-import '../models/task.dart';
-import '../models/user.dart';
+import 'local_storage_service.dart';
+import 'storage_service_factory.dart';
 
 /// ローカルデータベースサービス
-/// Isarを使用した高速NoSQLデータベース管理
+/// プラットフォームに応じてIsar（ネイティブ）またはHive（Web）を使用
 class DatabaseService {
-  static Isar? _isar;
+  LocalStorageService? _storageService;
   bool _isInitialized = false;
 
   /// データベースの初期化
@@ -19,18 +17,14 @@ class DatabaseService {
     }
 
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      // Web環境の場合はHiveを初期化
+      if (kIsWeb) {
+        await Hive.initFlutter();
+      }
 
-      _isar = await Isar.open(
-        [
-          UserSchema,
-          TaskSchema,
-          JournalEntrySchema,
-          SelfEsteemScoreSchema,
-        ],
-        directory: dir.path,
-        name: 'kokosid_db',
-      );
+      // プラットフォームに応じたストレージサービスを取得
+      _storageService = StorageServiceFactory.instance;
+      await _storageService!.initialize();
 
       _isInitialized = true;
     } catch (e) {
@@ -38,19 +32,19 @@ class DatabaseService {
     }
   }
 
-  /// Isarインスタンスを取得
-  Isar get isar {
-    if (!_isInitialized || _isar == null) {
+  /// ストレージサービスを取得
+  LocalStorageService get storage {
+    if (!_isInitialized || _storageService == null) {
       throw const DatabaseException('データベースが初期化されていません');
     }
-    return _isar!;
+    return _storageService!;
   }
 
   /// データベースを閉じる
   Future<void> close() async {
-    if (_isar != null) {
-      await _isar!.close();
-      _isar = null;
+    if (_storageService != null) {
+      await _storageService!.close();
+      _storageService = null;
       _isInitialized = false;
     }
   }
@@ -60,10 +54,7 @@ class DatabaseService {
     if (!_isInitialized) {
       return;
     }
-
-    await isar.writeTxn(() async {
-      await isar.clear();
-    });
+    await storage.clearAllData();
   }
 
   /// データベースサイズを取得
@@ -71,13 +62,7 @@ class DatabaseService {
     if (!_isInitialized) {
       return 0;
     }
-
-    final userCount = await isar.users.count();
-    final taskCount = await isar.tasks.count();
-    final journalCount = await isar.journalEntrys.count();
-    final scoreCount = await isar.selfEsteemScores.count();
-
-    return userCount + taskCount + journalCount + scoreCount;
+    return storage.getDatabaseSize();
   }
 
   /// 初期化状態を確認
@@ -88,23 +73,7 @@ class DatabaseService {
     if (!_isInitialized) {
       return;
     }
-
-    await isar.writeTxn(() async {
-      // タスクを削除
-      await isar.tasks.filter().userUuidEqualTo(userUuid).deleteAll();
-
-      // 日記エントリを削除
-      await isar.journalEntrys.filter().userUuidEqualTo(userUuid).deleteAll();
-
-      // 自己肯定感スコアを削除
-      await isar.selfEsteemScores
-          .filter()
-          .userUuidEqualTo(userUuid)
-          .deleteAll();
-
-      // ユーザーを削除
-      await isar.users.filter().uuidEqualTo(userUuid).deleteAll();
-    });
+    await storage.clearUserData(userUuid);
   }
 
   /// データベース統計を取得
@@ -119,18 +88,14 @@ class DatabaseService {
       );
     }
 
-    // 注意: 実際のコード生成後に適切なコレクション名に修正
-    const userCount = 0; // await isar.users.count();
-    const taskCount = 0; // await isar.tasks.count();
-    const journalCount = 0; // await isar.journalEntrys.count();
-    const scoreCount = 0; // await isar.selfEsteemScores.count();
+    final totalSize = await storage.getDatabaseSize();
 
     return DatabaseStats(
-      userCount: userCount,
-      taskCount: taskCount,
-      journalEntryCount: journalCount,
-      scoreCount: scoreCount,
-      totalSize: userCount + taskCount + journalCount + scoreCount,
+      userCount: 0, // 詳細カウントは必要に応じて実装
+      taskCount: 0,
+      journalEntryCount: 0,
+      scoreCount: 0,
+      totalSize: totalSize,
     );
   }
 
@@ -142,11 +107,7 @@ class DatabaseService {
       }
 
       // 基本的な読み取りテスト
-      // 注意: 実際のコード生成後に適切なコレクション名に修正
-      // await isar.users.count();
-      // await isar.tasks.count();
-      // await isar.journalEntrys.count();
-      // await isar.selfEsteemScores.count();
+      await storage.getDatabaseSize();
 
       return true;
     } on Exception {
@@ -155,18 +116,19 @@ class DatabaseService {
   }
 
   /// データベースの最適化
+  /// ネイティブプラットフォームでのみ効果がある
   Future<void> optimize() async {
     if (!_isInitialized) {
       return;
     }
 
-    try {
-      await isar.writeTxn(() async {
-        // 最適化処理（必要に応じて実装）
-      });
-    } catch (e) {
-      throw DatabaseException('データベースの最適化に失敗しました: $e');
+    // Web環境では最適化は不要
+    if (kIsWeb) {
+      return;
     }
+
+    // ネイティブ環境での最適化
+    // Isarは自動的に最適化されるため、現時点では特別な処理は不要
   }
 }
 

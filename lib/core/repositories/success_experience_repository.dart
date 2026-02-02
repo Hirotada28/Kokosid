@@ -1,37 +1,31 @@
-import 'package:isar/isar.dart';
-
 import '../models/success_experience.dart';
+import '../services/database_service.dart';
+import '../services/local_storage_service.dart';
 
 /// 成功体験リポジトリ
 class SuccessExperienceRepository {
-  SuccessExperienceRepository({required Isar isar}) : _isar = isar;
+  SuccessExperienceRepository({required DatabaseService databaseService})
+      : _storage = databaseService.storage;
 
-  final Isar _isar;
+  final LocalStorageService _storage;
 
   /// 成功体験を作成
   Future<SuccessExperience> createSuccessExperience(
     SuccessExperience experience,
   ) async {
-    await _isar.writeTxn(() async {
-      await _isar.successExperiences.put(experience);
-    });
-    return experience;
+    return _storage.putSuccessExperience(experience);
   }
 
   /// 成功体験を取得
   Future<SuccessExperience?> getSuccessExperience(String uuid) async {
-    return _isar.successExperiences.filter().uuidEqualTo(uuid).findFirst();
+    return _storage.getSuccessExperienceByUuid(uuid);
   }
 
   /// ユーザーの全成功体験を取得
   Future<List<SuccessExperience>> getUserSuccessExperiences(
     String userUuid,
   ) async {
-    return _isar.successExperiences
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getSuccessExperiencesByUserUuid(userUuid);
   }
 
   /// タグで成功体験を検索
@@ -39,12 +33,7 @@ class SuccessExperienceRepository {
     String userUuid,
     String tag,
   ) async {
-    return _isar.successExperiences
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .tagsContains(tag)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.searchSuccessExperiencesByTag(userUuid, tag);
   }
 
   /// 感情状態で成功体験を検索
@@ -52,13 +41,7 @@ class SuccessExperienceRepository {
     String userUuid,
     String emotion,
   ) async {
-    return _isar.successExperiences
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .group((q) =>
-            q.emotionBeforeContains(emotion).or().emotionAfterContains(emotion))
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.searchSuccessExperiencesByEmotion(userUuid, emotion);
   }
 
   /// 最近の成功体験を取得
@@ -66,12 +49,8 @@ class SuccessExperienceRepository {
     String userUuid, {
     int limit = 10,
   }) async {
-    return _isar.successExperiences
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByCreatedAtDesc()
-        .limit(limit)
-        .findAll();
+    return _storage.getRecentSuccessExperiencesByUserUuid(userUuid,
+        limit: limit);
   }
 
   /// よく参照される成功体験を取得
@@ -79,27 +58,17 @@ class SuccessExperienceRepository {
     String userUuid, {
     int limit = 5,
   }) async {
-    final experiences = await _isar.successExperiences
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .findAll();
-
-    experiences.sort((a, b) => b.referenceCount.compareTo(a.referenceCount));
-    return experiences.take(limit).toList();
+    return _storage.getMostReferencedSuccessExperiences(userUuid, limit: limit);
   }
 
   /// 成功体験を更新
   Future<void> updateSuccessExperience(SuccessExperience experience) async {
-    await _isar.writeTxn(() async {
-      await _isar.successExperiences.put(experience);
-    });
+    await _storage.putSuccessExperience(experience);
   }
 
   /// 成功体験を削除
   Future<void> deleteSuccessExperience(String uuid) async {
-    await _isar.writeTxn(() async {
-      await _isar.successExperiences.filter().uuidEqualTo(uuid).deleteFirst();
-    });
+    await _storage.deleteSuccessExperienceByUuid(uuid);
   }
 
   /// 成功体験の参照を記録

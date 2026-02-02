@@ -1,12 +1,11 @@
 import 'dart:async';
 
-import 'package:isar/isar.dart';
-
 import '../models/journal_entry.dart';
 import '../models/self_esteem_score.dart';
 import '../models/task.dart';
 import '../models/user.dart' as models;
 import 'database_service.dart';
+import 'local_storage_service.dart';
 import 'network_service.dart';
 import 'sync_queue_service.dart';
 
@@ -21,6 +20,9 @@ class OfflineManager {
   final NetworkService _networkService = NetworkService.instance;
   final SyncQueueService _syncQueue = SyncQueueService.instance;
   final DatabaseService _databaseService = DatabaseService();
+
+  /// ストレージサービスを取得
+  LocalStorageService get _storage => _databaseService.storage;
 
   StreamSubscription<bool>? _networkSubscription;
   bool _isInitialized = false;
@@ -98,9 +100,7 @@ class OfflineManager {
   /// ユーザーデータを保存（オフライン対応）
   Future<void> saveUser(models.User user) async {
     // ローカルに保存
-    await _databaseService.isar.writeTxn(() async {
-      await _databaseService.isar.users.put(user);
-    });
+    await _storage.putUser(user);
 
     // オンラインの場合は同期キューに追加
     if (isOnlineMode) {
@@ -114,9 +114,7 @@ class OfflineManager {
   /// タスクを保存（オフライン対応）
   Future<void> saveTask(Task task) async {
     // ローカルに保存
-    await _databaseService.isar.writeTxn(() async {
-      await _databaseService.isar.tasks.put(task);
-    });
+    await _storage.putTask(task);
 
     // 同期キューに追加
     _syncQueue.enqueueTaskSync(task);
@@ -125,9 +123,7 @@ class OfflineManager {
   /// 日記エントリを保存（オフライン対応）
   Future<void> saveJournalEntry(JournalEntry entry) async {
     // ローカルに保存
-    await _databaseService.isar.writeTxn(() async {
-      await _databaseService.isar.journalEntrys.put(entry);
-    });
+    await _storage.putJournalEntry(entry);
 
     // 同期キューに追加
     _syncQueue.enqueueJournalEntrySync(entry);
@@ -136,9 +132,7 @@ class OfflineManager {
   /// 自己肯定感スコアを保存（オフライン対応）
   Future<void> saveSelfEsteemScore(SelfEsteemScore score) async {
     // ローカルに保存
-    await _databaseService.isar.writeTxn(() async {
-      await _databaseService.isar.selfEsteemScores.put(score);
-    });
+    await _storage.putSelfEsteemScore(score);
 
     // 同期キューに追加
     _syncQueue.enqueueSelfEsteemScoreSync(score);
@@ -148,53 +142,32 @@ class OfflineManager {
 
   /// ユーザーデータを取得（ローカルから）
   Future<models.User?> getUser(String uuid) async {
-    return await _databaseService.isar.users
-        .filter()
-        .uuidEqualTo(uuid)
-        .findFirst();
+    return await _storage.getUserByUuid(uuid);
   }
 
   /// タスクを取得（ローカルから）
   Future<Task?> getTask(String uuid) async {
-    return await _databaseService.isar.tasks
-        .filter()
-        .uuidEqualTo(uuid)
-        .findFirst();
+    return await _storage.getTaskByUuid(uuid);
   }
 
   /// ユーザーの全タスクを取得（ローカルから）
   Future<List<Task>> getUserTasks(String userUuid) async {
-    return await _databaseService.isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return await _storage.getTasksByUserUuid(userUuid);
   }
 
   /// 日記エントリを取得（ローカルから）
   Future<JournalEntry?> getJournalEntry(String uuid) async {
-    return await _databaseService.isar.journalEntrys
-        .filter()
-        .uuidEqualTo(uuid)
-        .findFirst();
+    return await _storage.getJournalEntryByUuid(uuid);
   }
 
   /// ユーザーの全日記エントリを取得（ローカルから）
   Future<List<JournalEntry>> getUserJournalEntries(String userUuid) async {
-    return await _databaseService.isar.journalEntrys
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return await _storage.getJournalEntriesByUserUuid(userUuid);
   }
 
   /// 自己肯定感スコアを取得（ローカルから）
   Future<List<SelfEsteemScore>> getUserSelfEsteemScores(String userUuid) async {
-    return await _databaseService.isar.selfEsteemScores
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByMeasuredAtDesc()
-        .findAll();
+    return await _storage.getSelfEsteemScoresByUserUuid(userUuid);
   }
 
   // ==================== Sync Management ====================

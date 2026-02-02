@@ -1,100 +1,54 @@
-import 'package:isar/isar.dart';
 import '../models/task.dart';
 import '../services/database_service.dart';
+import '../services/local_storage_service.dart';
 
 /// タスクデータリポジトリ
 class TaskRepository {
   TaskRepository(this._databaseService);
   final DatabaseService _databaseService;
 
+  /// ストレージサービスを取得
+  LocalStorageService get _storage => _databaseService.storage;
+
   /// タスクを作成
   Future<Task> createTask(Task task) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.tasks.put(task);
-    });
-
+    await _storage.putTask(task);
     return task;
   }
 
   /// UUIDでタスクを取得
   Future<Task?> getTaskByUuid(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks.filter().uuidEqualTo(uuid).findFirst();
+    return _storage.getTaskByUuid(uuid);
   }
 
   /// ユーザーの全タスクを取得
   Future<List<Task>> getTasksByUser(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getTasksByUserUuid(userUuid);
   }
 
   /// ユーザーの未完了タスクを取得
   Future<List<Task>> getPendingTasksByUser(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .statusEqualTo(TaskStatus.pending)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getPendingTasksByUserUuid(userUuid);
   }
 
   /// ユーザーの完了済みタスクを取得
   Future<List<Task>> getCompletedTasksByUser(String userUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .statusEqualTo(TaskStatus.completed)
-        .sortByCompletedAtDesc()
-        .findAll();
+    return _storage.getCompletedTasksByUserUuid(userUuid);
   }
 
   /// 今日のタスクを取得
   Future<List<Task>> getTodayTasks(String userUuid) async {
-    final isar = _databaseService.isar;
-    final today = DateTime.now();
-    final startOfDay = DateTime(today.year, today.month, today.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .createdAtBetween(startOfDay, endOfDay)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getTodayTasksByUserUuid(userUuid);
   }
 
   /// マイクロタスクを取得
   Future<List<Task>> getMicroTasks(String originalTaskUuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .originalTaskUuidEqualTo(originalTaskUuid)
-        .isMicroTaskEqualTo(true)
-        .sortByCreatedAt()
-        .findAll();
+    return _storage.getMicroTasksByOriginalUuid(originalTaskUuid);
   }
 
   /// タスクを更新
   Future<Task> updateTask(Task task) async {
-    final isar = _databaseService.isar;
-
-    await isar.writeTxn(() async {
-      await isar.tasks.put(task);
-    });
-
+    await _storage.putTask(task);
     return task;
   }
 
@@ -122,35 +76,21 @@ class TaskRepository {
 
   /// タスクを削除
   Future<bool> deleteTask(String uuid) async {
-    final isar = _databaseService.isar;
-
-    return isar.writeTxn(
-        () async => isar.tasks.filter().uuidEqualTo(uuid).deleteFirst());
+    return _storage.deleteTaskByUuid(uuid);
   }
 
   /// 期間内の完了タスク数を取得
   Future<int> getCompletedTaskCount(
       String userUuid, DateTime start, DateTime end) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .statusEqualTo(TaskStatus.completed)
-        .completedAtBetween(start, end)
-        .count();
+    return _storage.getCompletedTaskCountByUserUuidAndDateRange(
+        userUuid, start, end);
   }
 
   /// 期間内の総タスク数を取得
   Future<int> getTotalTaskCount(
       String userUuid, DateTime start, DateTime end) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .createdAtBetween(start, end)
-        .count();
+    return _storage.getTotalTaskCountByUserUuidAndDateRange(
+        userUuid, start, end);
   }
 
   /// 期間内のタスクを取得
@@ -159,13 +99,6 @@ class TaskRepository {
     DateTime start,
     DateTime end,
   ) async {
-    final isar = _databaseService.isar;
-
-    return isar.tasks
-        .filter()
-        .userUuidEqualTo(userUuid)
-        .createdAtBetween(start, end)
-        .sortByCreatedAtDesc()
-        .findAll();
+    return _storage.getTasksByUserUuidAndDateRange(userUuid, start, end);
   }
 }

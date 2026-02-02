@@ -15,7 +15,7 @@ extension GetSuccessExperienceCollection on Isar {
 
 const SuccessExperienceSchema = CollectionSchema(
   name: r'SuccessExperience',
-  id: -7900895761510359090,
+  id: 7425184152231886,
   properties: {
     r'createdAt': PropertySchema(
       id: 0,
@@ -90,7 +90,7 @@ const SuccessExperienceSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'uuid': IndexSchema(
-      id: 2134397340427724972,
+      id: 8698316308850860,
       name: r'uuid',
       unique: false,
       replace: false,
@@ -103,7 +103,7 @@ const SuccessExperienceSchema = CollectionSchema(
       ],
     ),
     r'userUuid': IndexSchema(
-      id: -2441299026227353304,
+      id: 8659171062196520,
       name: r'userUuid',
       unique: false,
       replace: false,
@@ -116,7 +116,7 @@ const SuccessExperienceSchema = CollectionSchema(
       ],
     ),
     r'createdAt': IndexSchema(
-      id: -3433535483987302584,
+      id: 7214631323756360,
       name: r'createdAt',
       unique: false,
       replace: false,
