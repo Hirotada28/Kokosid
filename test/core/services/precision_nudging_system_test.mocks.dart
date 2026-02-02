@@ -5,14 +5,16 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as _i9;
 import 'package:kokosid/core/models/journal_entry.dart' as _i3;
 import 'package:kokosid/core/models/notification_tone.dart' as _i8;
 import 'package:kokosid/core/models/task.dart' as _i6;
 import 'package:kokosid/core/models/user_context.dart' as _i2;
-import 'package:kokosid/core/repositories/journal_repository.dart' as _i10;
+import 'package:kokosid/core/repositories/journal_repository.dart' as _i11;
 import 'package:kokosid/core/services/notification_service.dart' as _i7;
 import 'package:kokosid/core/services/productive_hour_predictor.dart' as _i4;
-import 'package:kokosid/core/services/user_context_service.dart' as _i9;
+import 'package:kokosid/core/services/user_context_service.dart' as _i10;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -119,6 +121,16 @@ class MockNotificationService extends _i1.Mock
   }
 
   @override
+  _i5.Future<void> initialize() => (super.noSuchMethod(
+        Invocation.method(
+          #initialize,
+          [],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+
+  @override
   _i5.Future<void> schedule({
     required _i8.NotificationMessage? message,
     required DateTime? scheduledTime,
@@ -168,13 +180,24 @@ class MockNotificationService extends _i1.Mock
         returnValue: _i5.Future<void>.value(),
         returnValueForMissingStub: _i5.Future<void>.value(),
       ) as _i5.Future<void>);
+
+  @override
+  _i5.Future<List<_i9.PendingNotificationRequest>> getPendingNotifications() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPendingNotifications,
+          [],
+        ),
+        returnValue: _i5.Future<List<_i9.PendingNotificationRequest>>.value(
+            <_i9.PendingNotificationRequest>[]),
+      ) as _i5.Future<List<_i9.PendingNotificationRequest>>);
 }
 
 /// A class which mocks [UserContextService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUserContextService extends _i1.Mock
-    implements _i9.UserContextService {
+    implements _i10.UserContextService {
   MockUserContextService() {
     _i1.throwOnMissingStub(this);
   }
@@ -199,7 +222,7 @@ class MockUserContextService extends _i1.Mock
 /// A class which mocks [JournalRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockJournalRepository extends _i1.Mock implements _i10.JournalRepository {
+class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
   MockJournalRepository() {
     _i1.throwOnMissingStub(this);
   }

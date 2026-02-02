@@ -36,7 +36,6 @@ void main() {
     group('calculateScore', () {
       test('重み係数が正しく適用される', () async {
         // Given: テストデータ
-        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
         const totalTasks = 10;
         const completedTasks = 8;
@@ -49,85 +48,192 @@ void main() {
             .thenAnswer((_) async => completedTasks);
         when(mockJournalRepository.getEntriesByDateRange(any, any, any))
             .thenAnswer((_) async => journalEntries);
+        when(mockScoreRepository.createScore(any)).thenAnswer(
+            (invocation) async =>
+                invocation.positionalArguments[0] as SelfEsteemScore);
 
         // When: スコアを計算
-        // 注意: 実際のテストでは完全なモック設定が必要
-        // final result = await calculator.calculateScore(userUuid);
+        final result = await calculator.calculateScore(userUuid);
 
         // Then: 重み係数が適用されたスコアが計算される
-        // expect(result.score, inInclusiveRange(0.0, 1.0));
-        // expect(result.completionRate, equals(0.8)); // 8/10
+        expect(result.score, inInclusiveRange(0.0, 1.0));
+        expect(result.completionRate, equals(0.8)); // 8/10
       });
 
       test('スコアが0.0-1.0の範囲内に制限される', () async {
         // Given: 極端な値のテストデータ
-        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
+        // 極端な値でモック設定
+        when(mockTaskRepository.getTotalTaskCount(any, any, any))
+            .thenAnswer((_) async => 100);
+        when(mockTaskRepository.getCompletedTaskCount(any, any, any))
+            .thenAnswer((_) async => 100);
+        when(mockJournalRepository.getEntriesByDateRange(any, any, any))
+            .thenAnswer((_) async => <JournalEntry>[]);
+        when(mockScoreRepository.createScore(any)).thenAnswer(
+            (invocation) async =>
+                invocation.positionalArguments[0] as SelfEsteemScore);
+
         // When: スコアを計算
-        // 注意: 実際のテストでは完全なモック設定が必要
-        // final result = await calculator.calculateScore(userUuid);
+        final result = await calculator.calculateScore(userUuid);
 
         // Then: スコアが0.0-1.0の範囲内
-        // expect(result.score, greaterThanOrEqualTo(0.0));
-        // expect(result.score, lessThanOrEqualTo(1.0));
+        expect(result.score, greaterThanOrEqualTo(0.0));
+        expect(result.score, lessThanOrEqualTo(1.0));
       });
     });
 
     group('detectProgress', () {
       test('0.05ポイント以上の向上を検出する', () async {
         // Given: 進歩があるスコア履歴
-        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
+        final scores = [
+          SelfEsteemScore.create(
+            uuid: 'score-1',
+            userUuid: userUuid,
+            score: 0.7, // 現在
+            completionRate: 0.8,
+            positiveEmotionRatio: 0.6,
+            streakScore: 0.5,
+            engagementScore: 0.4,
+          ),
+          SelfEsteemScore.create(
+            uuid: 'score-2',
+            userUuid: userUuid,
+            score: 0.6, // 前回（0.1ポイント差）
+            completionRate: 0.7,
+            positiveEmotionRatio: 0.5,
+            streakScore: 0.4,
+            engagementScore: 0.3,
+          ),
+        ];
+
+        when(mockScoreRepository.getRecentScores(userUuid, 7))
+            .thenAnswer((_) async => scores);
+        when(mockScoreRepository.getLatestScore(userUuid))
+            .thenAnswer((_) async => scores.first);
+
         // When: 進歩を検出
-        // 注意: 実際のテストでは完全なモック設定が必要
-        // final hasProgress = await calculator.detectProgress(userUuid);
+        final hasProgress = await calculator.detectProgress(userUuid);
 
         // Then: 進歩が検出される
-        // expect(hasProgress, isTrue);
+        expect(hasProgress, isTrue);
       });
 
       test('0.05ポイント未満の変化では進歩を検出しない', () async {
         // Given: 小さな変化のスコア履歴
-        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
+        final scores = [
+          SelfEsteemScore.create(
+            uuid: 'score-1',
+            userUuid: userUuid,
+            score: 0.62, // 現在
+            completionRate: 0.8,
+            positiveEmotionRatio: 0.6,
+            streakScore: 0.5,
+            engagementScore: 0.4,
+          ),
+          SelfEsteemScore.create(
+            uuid: 'score-2',
+            userUuid: userUuid,
+            score: 0.60, // 前回（0.02ポイント差）
+            completionRate: 0.7,
+            positiveEmotionRatio: 0.5,
+            streakScore: 0.4,
+            engagementScore: 0.3,
+          ),
+        ];
+
+        when(mockScoreRepository.getRecentScores(userUuid, 7))
+            .thenAnswer((_) async => scores);
+        when(mockScoreRepository.getLatestScore(userUuid))
+            .thenAnswer((_) async => scores.first);
+
         // When: 進歩を検出
-        // 注意: 実際のテストでは完全なモック設定が必要
-        // final hasProgress = await calculator.detectProgress(userUuid);
+        final hasProgress = await calculator.detectProgress(userUuid);
 
         // Then: 進歩が検出されない
-        // expect(hasProgress, isFalse);
+        expect(hasProgress, isFalse);
       });
     });
 
     group('generateApprovalMessage', () {
       test('進歩がある場合に承認メッセージを生成する', () async {
         // Given: 進歩があるユーザー
-        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
+        final scores = [
+          SelfEsteemScore.create(
+            uuid: 'score-1',
+            userUuid: userUuid,
+            score: 0.75,
+            completionRate: 0.8,
+            positiveEmotionRatio: 0.6,
+            streakScore: 0.5,
+            engagementScore: 0.4,
+          ),
+          SelfEsteemScore.create(
+            uuid: 'score-2',
+            userUuid: userUuid,
+            score: 0.65, // 0.1ポイント差
+            completionRate: 0.7,
+            positiveEmotionRatio: 0.5,
+            streakScore: 0.4,
+            engagementScore: 0.3,
+          ),
+        ];
+
+        when(mockScoreRepository.getRecentScores(userUuid, 7))
+            .thenAnswer((_) async => scores);
+        when(mockScoreRepository.getLatestScore(userUuid))
+            .thenAnswer((_) async => scores.first);
+
         // When: 承認メッセージを生成
-        // 注意: 実際のテストでは完全なモック設定が必要
-        // final message = await calculator.generateApprovalMessage(userUuid);
+        final message = await calculator.generateApprovalMessage(userUuid);
 
         // Then: メッセージが生成される
-        // expect(message, isNotNull);
-        // expect(message!.isNotEmpty, isTrue);
+        expect(message, isNotNull);
+        expect(message!.isNotEmpty, isTrue);
       });
 
       test('進歩がない場合はnullを返す', () async {
         // Given: 進歩がないユーザー
-        // ignore: unused_local_variable
         const userUuid = 'test-user-uuid';
 
+        final scores = [
+          SelfEsteemScore.create(
+            uuid: 'score-1',
+            userUuid: userUuid,
+            score: 0.60,
+            completionRate: 0.8,
+            positiveEmotionRatio: 0.6,
+            streakScore: 0.5,
+            engagementScore: 0.4,
+          ),
+          SelfEsteemScore.create(
+            uuid: 'score-2',
+            userUuid: userUuid,
+            score: 0.58, // 0.02ポイント差
+            completionRate: 0.7,
+            positiveEmotionRatio: 0.5,
+            streakScore: 0.4,
+            engagementScore: 0.3,
+          ),
+        ];
+
+        when(mockScoreRepository.getRecentScores(userUuid, 7))
+            .thenAnswer((_) async => scores);
+        when(mockScoreRepository.getLatestScore(userUuid))
+            .thenAnswer((_) async => scores.first);
+
         // When: 承認メッセージを生成
-        // 注意: 実際のテストでは完全なモック設定が必要
-        // final message = await calculator.generateApprovalMessage(userUuid);
+        final message = await calculator.generateApprovalMessage(userUuid);
 
         // Then: nullが返される
-        // expect(message, isNull);
+        expect(message, isNull);
       });
     });
 

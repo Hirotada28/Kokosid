@@ -5,6 +5,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i4;
 
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'
+    as _i7;
 import 'package:kokosid/core/models/notification_tone.dart' as _i6;
 import 'package:kokosid/core/models/task.dart' as _i2;
 import 'package:kokosid/core/repositories/task_repository.dart' as _i3;
@@ -235,6 +237,16 @@ class MockNotificationService extends _i1.Mock
   }
 
   @override
+  _i4.Future<void> initialize() => (super.noSuchMethod(
+        Invocation.method(
+          #initialize,
+          [],
+        ),
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
+
+  @override
   _i4.Future<void> schedule({
     required _i6.NotificationMessage? message,
     required DateTime? scheduledTime,
@@ -284,4 +296,15 @@ class MockNotificationService extends _i1.Mock
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<List<_i7.PendingNotificationRequest>> getPendingNotifications() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPendingNotifications,
+          [],
+        ),
+        returnValue: _i4.Future<List<_i7.PendingNotificationRequest>>.value(
+            <_i7.PendingNotificationRequest>[]),
+      ) as _i4.Future<List<_i7.PendingNotificationRequest>>);
 }

@@ -47,28 +47,31 @@ void main() {
             uuid: 'task-1',
             userUuid: 'user-1',
             title: 'タスク1',
-          )..completedAt = DateTime(now.year, now.month, now.day - 5, 14, 0),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 5, 14, 0),
           Task.create(
             uuid: 'task-2',
             userUuid: 'user-1',
             title: 'タスク2',
-          )..completedAt = DateTime(now.year, now.month, now.day - 4, 14, 0),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 4, 14, 0),
           Task.create(
             uuid: 'task-3',
             userUuid: 'user-1',
             title: 'タスク3',
-          )..completedAt = DateTime(now.year, now.month, now.day - 3, 14, 0),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 3, 14, 0),
           Task.create(
             uuid: 'task-4',
             userUuid: 'user-1',
             title: 'タスク4',
-          )..completedAt = DateTime(now.year, now.month, now.day - 2, 9, 0),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 2, 9, 0),
         ];
-
-        // Mark all tasks as completed
-        for (final task in completedTasks) {
-          task.complete();
-        }
 
         when(mockTaskRepository.getTasksByDateRange(any, any, any))
             .thenAnswer((_) async => completedTasks);
@@ -145,23 +148,24 @@ void main() {
             uuid: 'task-1',
             userUuid: 'user-1',
             title: 'タスク1',
-          )..completedAt = DateTime(now.year, now.month, now.day - 1, 9, 0),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 1, 9, 0),
           Task.create(
             uuid: 'task-2',
             userUuid: 'user-1',
             title: 'タスク2',
-          )..completedAt = DateTime(now.year, now.month, now.day - 2, 9, 30),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 2, 9, 30),
           Task.create(
             uuid: 'task-3',
             userUuid: 'user-1',
             title: 'タスク3',
-          )..completedAt = DateTime(now.year, now.month, now.day - 3, 14, 0),
+          )
+            ..status = TaskStatus.completed
+            ..completedAt = DateTime(now.year, now.month, now.day - 3, 14, 0),
         ];
-
-        // Mark all tasks as completed
-        for (final task in completedTasks) {
-          task.complete();
-        }
 
         when(mockTaskRepository.getTasksByDateRange(any, any, any))
             .thenAnswer((_) async => completedTasks);

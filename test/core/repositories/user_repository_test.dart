@@ -1,103 +1,124 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kokosid/core/models/user.dart';
-import 'package:kokosid/core/repositories/user_repository.dart';
-import 'package:kokosid/core/services/database_service.dart';
-import 'package:mockito/annotations.dart';
-
-// モックを生成
-@GenerateMocks([DatabaseService])
-import 'user_repository_test.mocks.dart';
 
 void main() {
-  group('UserRepository', () {
-    // ignore: unused_local_variable
-    late UserRepository userRepository;
-    late MockDatabaseService mockDatabaseService;
+  group('User Model', () {
+    group('create', () {
+      test('ユーザーを正常に作成できる', () {
+        // Given: 新しいユーザー情報
+        const uuid = 'test-uuid-123';
+        const name = 'テストユーザー';
 
-    setUp(() {
-      mockDatabaseService = MockDatabaseService();
-      userRepository = UserRepository(mockDatabaseService);
+        // When: ユーザーを作成
+        final user = User.create(
+          uuid: uuid,
+          name: name,
+        );
+
+        // Then: ユーザーが正しく作成される
+        expect(user.uuid, equals(uuid));
+        expect(user.name, equals(name));
+        expect(user.timezone, equals('Asia/Tokyo'));
+        expect(user.onboardingCompleted, isFalse);
+        expect(user.preferredLanguage, equals('ja'));
+        expect(user.createdAt, isNotNull);
+        expect(user.lastActiveAt, isNotNull);
+      });
+
+      test('デフォルト値が正しく設定される', () {
+        // Given & When: 最小限の情報でユーザーを作成
+        final user = User.create(
+          uuid: 'test-uuid',
+        );
+
+        // Then: デフォルト値が設定される
+        expect(user.name, isNull);
+        expect(user.timezone, equals('Asia/Tokyo'));
+        expect(user.onboardingCompleted, isFalse);
+        expect(user.preferredLanguage, equals('ja'));
+        expect(user.notificationsEnabled, isTrue);
+      });
+
+      test('カスタム値が正しく設定される', () {
+        // Given & When: カスタム値でユーザーを作成
+        final user = User.create(
+          uuid: 'test-uuid',
+          name: 'カスタムユーザー',
+          timezone: 'America/New_York',
+          onboardingCompleted: true,
+          preferredLanguage: 'en',
+        );
+
+        // Then: カスタム値が設定される
+        expect(user.name, equals('カスタムユーザー'));
+        expect(user.timezone, equals('America/New_York'));
+        expect(user.onboardingCompleted, isTrue);
+        expect(user.preferredLanguage, equals('en'));
+      });
     });
 
-    group('createUser', () {
-      test('ユーザーを正常に作成できる', () async {
-        // Given: 新しいユーザー
-        // ignore: unused_local_variable
+    group('updateLastActive', () {
+      test('最終アクティブ時刻を更新できる', () {
+        // Given: 作成されたユーザー
+        final user = User.create(uuid: 'test-uuid');
+        final beforeUpdate = user.lastActiveAt;
+
+        // When: 最終アクティブ時刻を更新
+        user.updateLastActive();
+
+        // Then: 最終アクティブ時刻が更新される
+        expect(user.lastActiveAt, isNotNull);
+        expect(
+          user.lastActiveAt!.isAfter(beforeUpdate!) ||
+              user.lastActiveAt!.isAtSameMomentAs(beforeUpdate),
+          isTrue,
+        );
+      });
+    });
+
+    group('completeOnboarding', () {
+      test('オンボーディング完了をマークできる', () {
+        // Given: オンボーディング未完了のユーザー
+        final user = User.create(uuid: 'test-uuid');
+        expect(user.onboardingCompleted, isFalse);
+
+        // When: オンボーディング完了をマーク
+        user.completeOnboarding();
+
+        // Then: オンボーディングが完了状態になる
+        expect(user.onboardingCompleted, isTrue);
+      });
+
+      test('既に完了済みでも問題なく処理される', () {
+        // Given: オンボーディング完了済みのユーザー
+        final user = User.create(
+          uuid: 'test-uuid',
+          onboardingCompleted: true,
+        );
+
+        // When: 再度オンボーディング完了をマーク
+        user.completeOnboarding();
+
+        // Then: 完了状態が維持される
+        expect(user.onboardingCompleted, isTrue);
+      });
+    });
+
+    group('toString', () {
+      test('適切な文字列表現を返す', () {
+        // Given: ユーザー
         final user = User.create(
           uuid: 'test-uuid-123',
           name: 'テストユーザー',
         );
 
-        // When: ユーザーを作成
-        // 注意: 実際のテストではIsarのモックが必要
-        // final result = await userRepository.createUser(user);
+        // When: toString を呼び出す
+        final result = user.toString();
 
-        // Then: ユーザーが作成される
-        // expect(result.uuid, equals(user.uuid));
-        // expect(result.name, equals('テストユーザー'));
-      });
-    });
-
-    group('getUserByUuid', () {
-      test('UUIDでユーザーを取得できる', () async {
-        // Given: 存在するユーザーのUUID
-        // ignore: unused_local_variable
-        const userUuid = 'test-uuid-123';
-
-        // When: UUIDでユーザーを取得
-        // 注意: 実際のテストではIsarのモックが必要
-        // final result = await userRepository.getUserByUuid(userUuid);
-
-        // Then: ユーザーが取得される
-        // expect(result, isNotNull);
-        // expect(result!.uuid, equals(userUuid));
-      });
-
-      test('存在しないUUIDの場合nullを返す', () async {
-        // Given: 存在しないユーザーのUUID
-        // ignore: unused_local_variable
-        const userUuid = 'non-existent-uuid';
-
-        // When: UUIDでユーザーを取得
-        // 注意: 実際のテストではIsarのモックが必要
-        // final result = await userRepository.getUserByUuid(userUuid);
-
-        // Then: nullが返される
-        // expect(result, isNull);
-      });
-    });
-
-    group('updateLastActive', () {
-      test('最終アクティブ時刻を更新できる', () async {
-        // Given: 存在するユーザー
-        // ignore: unused_local_variable
-        const userUuid = 'test-uuid-123';
-        // ignore: unused_local_variable
-        final beforeUpdate = DateTime.now().subtract(const Duration(hours: 1));
-
-        // When: 最終アクティブ時刻を更新
-        // 注意: 実際のテストではIsarのモックが必要
-        // await userRepository.updateLastActive(userUuid);
-
-        // Then: 最終アクティブ時刻が更新される
-        // final updatedUser = await userRepository.getUserByUuid(userUuid);
-        // expect(updatedUser!.lastActiveAt!.isAfter(beforeUpdate), isTrue);
-      });
-    });
-
-    group('completeOnboarding', () {
-      test('オンボーディング完了をマークできる', () async {
-        // Given: オンボーディング未完了のユーザー
-        // ignore: unused_local_variable
-        const userUuid = 'test-uuid-123';
-
-        // When: オンボーディング完了をマーク
-        // 注意: 実際のテストではIsarのモックが必要
-        // await userRepository.completeOnboarding(userUuid);
-
-        // Then: オンボーディングが完了状態になる
-        // final updatedUser = await userRepository.getUserByUuid(userUuid);
-        // expect(updatedUser!.onboardingCompleted, isTrue);
+        // Then: 適切な文字列表現が返される
+        expect(result, contains('test-uuid-123'));
+        expect(result, contains('テストユーザー'));
+        expect(result, contains('onboardingCompleted'));
       });
     });
   });
