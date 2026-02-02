@@ -1,34 +1,56 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 /// アプリケーション設定サービス
 /// API キーや環境変数を安全に管理
 class AppConfigService {
   // シングルトンパターン
+  AppConfigService._internal();
   static final AppConfigService _instance = AppConfigService._internal();
   factory AppConfigService() => _instance;
-  AppConfigService._internal();
 
-  // コンパイル時の環境変数から取得（flutter run --dart-define で設定）
+  bool _initialized = false;
+
+  /// 環境変数を初期化（.env.local を優先）
+  Future<void> initialize() async {
+    if (_initialized) return;
+
+    try {
+      // .env.local が存在する場合は優先的に読み込む
+      final localEnvExists = await _fileExists('.env.local');
+      if (localEnvExists) {
+        await dotenv.load(fileName: '.env.local');
+      } else {
+        // .env.local がない場合は .env を読み込む
+        await dotenv.load(fileName: '.env');
+      }
+      _initialized = true;
+    } catch (e) {
+      // 環境変数ファイルが見つからない場合は警告のみ
+      print('警告: 環境変数ファイルの読み込みに失敗しました: $e');
+    }
+  }
+
+  /// ファイルが存在するかチェック
+  Future<bool> _fileExists(String fileName) async {
+    try {
+      await rootBundle.load(fileName);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // Anthropic Claude API キー
-  static const String claudeApiKey = String.fromEnvironment(
-    'CLAUDE_API_KEY',
-    defaultValue: '',
-  );
+  String get claudeApiKey => dotenv.get('CLAUDE_API_KEY', fallback: '');
 
   // OpenAI Whisper API キー
-  static const String whisperApiKey = String.fromEnvironment(
-    'WHISPER_API_KEY',
-    defaultValue: '',
-  );
+  String get whisperApiKey => dotenv.get('WHISPER_API_KEY', fallback: '');
 
   // Supabase 設定
-  static const String supabaseUrl = String.fromEnvironment(
-    'SUPABASE_URL',
-    defaultValue: '',
-  );
+  String get supabaseUrl => dotenv.get('SUPABASE_URL', fallback: '');
 
-  static const String supabaseAnonKey = String.fromEnvironment(
-    'SUPABASE_ANON_KEY',
-    defaultValue: '',
-  );
+  String get supabaseAnonKey => dotenv.get('SUPABASE_ANON_KEY', fallback: '');
 
   /// API キーが設定されているかチェック
   bool get hasClaudeApiKey => claudeApiKey.isNotEmpty;
@@ -81,16 +103,11 @@ class AppConfigService {
   }
 
   /// デバッグモードかどうか
-  static const bool isDebugMode = bool.fromEnvironment(
-    'DEBUG_MODE',
-    defaultValue: false,
-  );
+  bool get isDebugMode => dotenv.get('DEBUG_MODE', fallback: 'false') == 'true';
 
   /// ログ出力するかどうか
-  static const bool enableLogging = bool.fromEnvironment(
-    'ENABLE_LOGGING',
-    defaultValue: true,
-  );
+  bool get enableLogging =>
+      dotenv.get('ENABLE_LOGGING', fallback: 'true') == 'true';
 }
 
 /// 設定エラー例外

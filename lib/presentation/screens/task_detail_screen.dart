@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/models/task.dart';
 import '../../core/repositories/task_repository.dart';
 import '../../core/services/micro_chunking_engine.dart';
@@ -29,13 +30,18 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _initializeMicroChunkingEngine();
     _loadMicroTasks();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeMicroChunkingEngine();
   }
 
   void _initializeMicroChunkingEngine() {
     // AppConfigService から API キーを取得
-    final configService = AppConfigService();
+    final configService = context.read<AppConfigService>();
     String apiKey;
     try {
       apiKey = configService.getClaudeApiKey();

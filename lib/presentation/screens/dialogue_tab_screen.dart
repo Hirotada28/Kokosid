@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/services/app_config_service.dart';
 import '../../core/services/audio_recording_service.dart';
@@ -32,11 +33,16 @@ class _DialogueTabScreenState extends State<DialogueTabScreen>
   void initState() {
     super.initState();
     _audioService = AudioRecordingService();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _initializeWhisperService();
   }
 
   void _initializeWhisperService() {
-    final configService = AppConfigService();
+    final configService = context.read<AppConfigService>();
     if (configService.hasWhisperApiKey) {
       try {
         _whisperService =
