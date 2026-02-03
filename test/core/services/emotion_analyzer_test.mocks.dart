@@ -3,15 +3,11 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
-import 'dart:io' as _i7;
+import 'dart:async' as _i4;
 
 import 'package:kokosid/core/models/journal_entry.dart' as _i2;
-import 'package:kokosid/core/repositories/journal_repository.dart' as _i8;
-import 'package:kokosid/core/services/acoustic_analyzer.dart' as _i3;
-import 'package:kokosid/core/services/whisper_service.dart' as _i4;
+import 'package:kokosid/core/repositories/journal_repository.dart' as _i3;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -36,92 +32,32 @@ class _FakeJournalEntry_0 extends _i1.SmartFake implements _i2.JournalEntry {
         );
 }
 
-class _FakeAcousticFeatures_1 extends _i1.SmartFake
-    implements _i3.AcousticFeatures {
-  _FakeAcousticFeatures_1(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-/// A class which mocks [WhisperService].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockWhisperService extends _i1.Mock implements _i4.WhisperService {
-  MockWhisperService() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  String get apiKey => (super.noSuchMethod(
-        Invocation.getter(#apiKey),
-        returnValue: _i5.dummyValue<String>(
-          this,
-          Invocation.getter(#apiKey),
-        ),
-      ) as String);
-
-  @override
-  _i6.Future<String> transcribe(_i7.File? audioFile) => (super.noSuchMethod(
-        Invocation.method(
-          #transcribe,
-          [audioFile],
-        ),
-        returnValue: _i6.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #transcribe,
-            [audioFile],
-          ),
-        )),
-      ) as _i6.Future<String>);
-
-  @override
-  _i6.Future<String> transcribeOffline(_i7.File? audioFile) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #transcribeOffline,
-          [audioFile],
-        ),
-        returnValue: _i6.Future<String>.value(_i5.dummyValue<String>(
-          this,
-          Invocation.method(
-            #transcribeOffline,
-            [audioFile],
-          ),
-        )),
-      ) as _i6.Future<String>);
-}
-
 /// A class which mocks [JournalRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
+class MockJournalRepository extends _i1.Mock implements _i3.JournalRepository {
   MockJournalRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i6.Future<_i2.JournalEntry> createEntry(_i2.JournalEntry? entry) =>
+  _i4.Future<_i2.JournalEntry> createEntry(_i2.JournalEntry? entry) =>
       (super.noSuchMethod(
         Invocation.method(
           #createEntry,
           [entry],
         ),
-        returnValue: _i6.Future<_i2.JournalEntry>.value(_FakeJournalEntry_0(
+        returnValue: _i4.Future<_i2.JournalEntry>.value(_FakeJournalEntry_0(
           this,
           Invocation.method(
             #createEntry,
             [entry],
           ),
         )),
-      ) as _i6.Future<_i2.JournalEntry>);
+      ) as _i4.Future<_i2.JournalEntry>);
 
   @override
-  _i6.Future<_i2.JournalEntry> createEncryptedEntry({
+  _i4.Future<_i2.JournalEntry> createEncryptedEntry({
     required String? uuid,
     required String? userUuid,
     required String? content,
@@ -142,7 +78,7 @@ class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
             #emotionConfidence: emotionConfidence,
           },
         ),
-        returnValue: _i6.Future<_i2.JournalEntry>.value(_FakeJournalEntry_0(
+        returnValue: _i4.Future<_i2.JournalEntry>.value(_FakeJournalEntry_0(
           this,
           Invocation.method(
             #createEncryptedEntry,
@@ -157,42 +93,42 @@ class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
             },
           ),
         )),
-      ) as _i6.Future<_i2.JournalEntry>);
+      ) as _i4.Future<_i2.JournalEntry>);
 
   @override
-  _i6.Future<_i2.JournalEntry?> getEntryByUuid(String? uuid) =>
+  _i4.Future<_i2.JournalEntry?> getEntryByUuid(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEntryByUuid,
           [uuid],
         ),
-        returnValue: _i6.Future<_i2.JournalEntry?>.value(),
-      ) as _i6.Future<_i2.JournalEntry?>);
+        returnValue: _i4.Future<_i2.JournalEntry?>.value(),
+      ) as _i4.Future<_i2.JournalEntry?>);
 
   @override
-  _i6.Future<List<_i2.JournalEntry>> getEntriesByUser(String? userUuid) =>
+  _i4.Future<List<_i2.JournalEntry>> getEntriesByUser(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEntriesByUser,
           [userUuid],
         ),
         returnValue:
-            _i6.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
-      ) as _i6.Future<List<_i2.JournalEntry>>);
+            _i4.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
+      ) as _i4.Future<List<_i2.JournalEntry>>);
 
   @override
-  _i6.Future<List<_i2.JournalEntry>> getTodayEntries(String? userUuid) =>
+  _i4.Future<List<_i2.JournalEntry>> getTodayEntries(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getTodayEntries,
           [userUuid],
         ),
         returnValue:
-            _i6.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
-      ) as _i6.Future<List<_i2.JournalEntry>>);
+            _i4.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
+      ) as _i4.Future<List<_i2.JournalEntry>>);
 
   @override
-  _i6.Future<List<_i2.JournalEntry>> getEntriesByDateRange(
+  _i4.Future<List<_i2.JournalEntry>> getEntriesByDateRange(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -207,11 +143,11 @@ class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
           ],
         ),
         returnValue:
-            _i6.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
-      ) as _i6.Future<List<_i2.JournalEntry>>);
+            _i4.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
+      ) as _i4.Future<List<_i2.JournalEntry>>);
 
   @override
-  _i6.Future<List<_i2.JournalEntry>> getEntriesByEmotion(
+  _i4.Future<List<_i2.JournalEntry>> getEntriesByEmotion(
     String? userUuid,
     _i2.EmotionType? emotion,
   ) =>
@@ -224,33 +160,33 @@ class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
           ],
         ),
         returnValue:
-            _i6.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
-      ) as _i6.Future<List<_i2.JournalEntry>>);
+            _i4.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
+      ) as _i4.Future<List<_i2.JournalEntry>>);
 
   @override
-  _i6.Future<_i2.JournalEntry> updateEntry(_i2.JournalEntry? entry) =>
+  _i4.Future<_i2.JournalEntry> updateEntry(_i2.JournalEntry? entry) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateEntry,
           [entry],
         ),
-        returnValue: _i6.Future<_i2.JournalEntry>.value(_FakeJournalEntry_0(
+        returnValue: _i4.Future<_i2.JournalEntry>.value(_FakeJournalEntry_0(
           this,
           Invocation.method(
             #updateEntry,
             [entry],
           ),
         )),
-      ) as _i6.Future<_i2.JournalEntry>);
+      ) as _i4.Future<_i2.JournalEntry>);
 
   @override
-  _i6.Future<bool> deleteEntry(String? uuid) => (super.noSuchMethod(
+  _i4.Future<bool> deleteEntry(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #deleteEntry,
           [uuid],
         ),
-        returnValue: _i6.Future<bool>.value(false),
-      ) as _i6.Future<bool>);
+        returnValue: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 
   @override
   String? decryptContent(_i2.JournalEntry? entry) =>
@@ -267,7 +203,7 @@ class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
       )) as String?);
 
   @override
-  _i6.Future<Map<_i2.EmotionType, int>> getEmotionStatistics(
+  _i4.Future<Map<_i2.EmotionType, int>> getEmotionStatistics(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -281,54 +217,28 @@ class MockJournalRepository extends _i1.Mock implements _i8.JournalRepository {
             end,
           ],
         ),
-        returnValue: _i6.Future<Map<_i2.EmotionType, int>>.value(
+        returnValue: _i4.Future<Map<_i2.EmotionType, int>>.value(
             <_i2.EmotionType, int>{}),
-      ) as _i6.Future<Map<_i2.EmotionType, int>>);
+      ) as _i4.Future<Map<_i2.EmotionType, int>>);
 
   @override
-  _i6.Future<List<_i2.JournalEntry>> getUnsyncedEntries(String? userUuid) =>
+  _i4.Future<List<_i2.JournalEntry>> getUnsyncedEntries(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUnsyncedEntries,
           [userUuid],
         ),
         returnValue:
-            _i6.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
-      ) as _i6.Future<List<_i2.JournalEntry>>);
+            _i4.Future<List<_i2.JournalEntry>>.value(<_i2.JournalEntry>[]),
+      ) as _i4.Future<List<_i2.JournalEntry>>);
 
   @override
-  _i6.Future<void> markAsSynced(String? uuid) => (super.noSuchMethod(
+  _i4.Future<void> markAsSynced(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #markAsSynced,
           [uuid],
         ),
-        returnValue: _i6.Future<void>.value(),
-        returnValueForMissingStub: _i6.Future<void>.value(),
-      ) as _i6.Future<void>);
-}
-
-/// A class which mocks [AcousticAnalyzer].
-///
-/// See the documentation for Mockito's code generation for more information.
-class MockAcousticAnalyzer extends _i1.Mock implements _i3.AcousticAnalyzer {
-  MockAcousticAnalyzer() {
-    _i1.throwOnMissingStub(this);
-  }
-
-  @override
-  _i6.Future<_i3.AcousticFeatures> extractFeatures(_i7.File? audioFile) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #extractFeatures,
-          [audioFile],
-        ),
-        returnValue:
-            _i6.Future<_i3.AcousticFeatures>.value(_FakeAcousticFeatures_1(
-          this,
-          Invocation.method(
-            #extractFeatures,
-            [audioFile],
-          ),
-        )),
-      ) as _i6.Future<_i3.AcousticFeatures>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

@@ -3,30 +3,27 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i15;
-import 'dart:io' as _i19;
+import 'dart:async' as _i13;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart'
-    as _i22;
+    as _i19;
 import 'package:kokosid/core/models/journal_entry.dart' as _i3;
-import 'package:kokosid/core/models/notification_tone.dart' as _i21;
+import 'package:kokosid/core/models/notification_tone.dart' as _i18;
 import 'package:kokosid/core/models/self_esteem_score.dart' as _i4;
 import 'package:kokosid/core/models/task.dart' as _i2;
 import 'package:kokosid/core/models/user_context.dart' as _i6;
-import 'package:kokosid/core/repositories/journal_repository.dart' as _i11;
+import 'package:kokosid/core/repositories/journal_repository.dart' as _i9;
 import 'package:kokosid/core/repositories/self_esteem_repository.dart' as _i5;
-import 'package:kokosid/core/repositories/task_repository.dart' as _i17;
-import 'package:kokosid/core/services/achievement_streak_system.dart' as _i13;
-import 'package:kokosid/core/services/acoustic_analyzer.dart' as _i8;
-import 'package:kokosid/core/services/ai_service.dart' as _i14;
+import 'package:kokosid/core/repositories/task_repository.dart' as _i15;
+import 'package:kokosid/core/services/achievement_streak_system.dart' as _i11;
+import 'package:kokosid/core/services/ai_service.dart' as _i12;
 import 'package:kokosid/core/services/dialogue_history_service.dart' as _i7;
-import 'package:kokosid/core/services/emotion_analyzer.dart' as _i12;
-import 'package:kokosid/core/services/notification_service.dart' as _i20;
-import 'package:kokosid/core/services/text_emotion_classifier.dart' as _i10;
-import 'package:kokosid/core/services/user_context_service.dart' as _i18;
-import 'package:kokosid/core/services/whisper_service.dart' as _i9;
+import 'package:kokosid/core/services/emotion_analyzer.dart' as _i10;
+import 'package:kokosid/core/services/notification_service.dart' as _i17;
+import 'package:kokosid/core/services/text_emotion_classifier.dart' as _i8;
+import 'package:kokosid/core/services/user_context_service.dart' as _i16;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i16;
+import 'package:mockito/src/dummies.dart' as _i14;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -114,9 +111,9 @@ class _FakePersonalizationContext_6 extends _i1.SmartFake
         );
 }
 
-class _FakeAcousticAnalyzer_7 extends _i1.SmartFake
-    implements _i8.AcousticAnalyzer {
-  _FakeAcousticAnalyzer_7(
+class _FakeTextEmotionClassifier_7 extends _i1.SmartFake
+    implements _i8.TextEmotionClassifier {
+  _FakeTextEmotionClassifier_7(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -125,9 +122,9 @@ class _FakeAcousticAnalyzer_7 extends _i1.SmartFake
         );
 }
 
-class _FakeWhisperService_8 extends _i1.SmartFake
-    implements _i9.WhisperService {
-  _FakeWhisperService_8(
+class _FakeJournalRepository_8 extends _i1.SmartFake
+    implements _i9.JournalRepository {
+  _FakeJournalRepository_8(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -136,9 +133,8 @@ class _FakeWhisperService_8 extends _i1.SmartFake
         );
 }
 
-class _FakeTextEmotionClassifier_9 extends _i1.SmartFake
-    implements _i10.TextEmotionClassifier {
-  _FakeTextEmotionClassifier_9(
+class _FakeEmotionResult_9 extends _i1.SmartFake implements _i10.EmotionResult {
+  _FakeEmotionResult_9(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -147,30 +143,8 @@ class _FakeTextEmotionClassifier_9 extends _i1.SmartFake
         );
 }
 
-class _FakeJournalRepository_10 extends _i1.SmartFake
-    implements _i11.JournalRepository {
-  _FakeJournalRepository_10(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeEmotionResult_11 extends _i1.SmartFake
-    implements _i12.EmotionResult {
-  _FakeEmotionResult_11(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakeStreakStats_12 extends _i1.SmartFake implements _i13.StreakStats {
-  _FakeStreakStats_12(
+class _FakeStreakStats_10 extends _i1.SmartFake implements _i11.StreakStats {
+  _FakeStreakStats_10(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -182,165 +156,165 @@ class _FakeStreakStats_12 extends _i1.SmartFake implements _i13.StreakStats {
 /// A class which mocks [AIService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAIService extends _i1.Mock implements _i14.AIService {
+class MockAIService extends _i1.Mock implements _i12.AIService {
   MockAIService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i15.Future<String> complete(String? prompt) => (super.noSuchMethod(
+  _i13.Future<String> complete(String? prompt) => (super.noSuchMethod(
         Invocation.method(
           #complete,
           [prompt],
         ),
-        returnValue: _i15.Future<String>.value(_i16.dummyValue<String>(
+        returnValue: _i13.Future<String>.value(_i14.dummyValue<String>(
           this,
           Invocation.method(
             #complete,
             [prompt],
           ),
         )),
-      ) as _i15.Future<String>);
+      ) as _i13.Future<String>);
 }
 
 /// A class which mocks [TaskRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockTaskRepository extends _i1.Mock implements _i17.TaskRepository {
+class MockTaskRepository extends _i1.Mock implements _i15.TaskRepository {
   MockTaskRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i15.Future<_i2.Task> createTask(_i2.Task? task) => (super.noSuchMethod(
+  _i13.Future<_i2.Task> createTask(_i2.Task? task) => (super.noSuchMethod(
         Invocation.method(
           #createTask,
           [task],
         ),
-        returnValue: _i15.Future<_i2.Task>.value(_FakeTask_0(
+        returnValue: _i13.Future<_i2.Task>.value(_FakeTask_0(
           this,
           Invocation.method(
             #createTask,
             [task],
           ),
         )),
-      ) as _i15.Future<_i2.Task>);
+      ) as _i13.Future<_i2.Task>);
 
   @override
-  _i15.Future<_i2.Task?> getTaskByUuid(String? uuid) => (super.noSuchMethod(
+  _i13.Future<_i2.Task?> getTaskByUuid(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #getTaskByUuid,
           [uuid],
         ),
-        returnValue: _i15.Future<_i2.Task?>.value(),
-      ) as _i15.Future<_i2.Task?>);
+        returnValue: _i13.Future<_i2.Task?>.value(),
+      ) as _i13.Future<_i2.Task?>);
 
   @override
-  _i15.Future<List<_i2.Task>> getTasksByUser(String? userUuid) =>
+  _i13.Future<List<_i2.Task>> getTasksByUser(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getTasksByUser,
           [userUuid],
         ),
-        returnValue: _i15.Future<List<_i2.Task>>.value(<_i2.Task>[]),
-      ) as _i15.Future<List<_i2.Task>>);
+        returnValue: _i13.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i13.Future<List<_i2.Task>>);
 
   @override
-  _i15.Future<List<_i2.Task>> getPendingTasksByUser(String? userUuid) =>
+  _i13.Future<List<_i2.Task>> getPendingTasksByUser(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getPendingTasksByUser,
           [userUuid],
         ),
-        returnValue: _i15.Future<List<_i2.Task>>.value(<_i2.Task>[]),
-      ) as _i15.Future<List<_i2.Task>>);
+        returnValue: _i13.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i13.Future<List<_i2.Task>>);
 
   @override
-  _i15.Future<List<_i2.Task>> getCompletedTasksByUser(String? userUuid) =>
+  _i13.Future<List<_i2.Task>> getCompletedTasksByUser(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getCompletedTasksByUser,
           [userUuid],
         ),
-        returnValue: _i15.Future<List<_i2.Task>>.value(<_i2.Task>[]),
-      ) as _i15.Future<List<_i2.Task>>);
+        returnValue: _i13.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i13.Future<List<_i2.Task>>);
 
   @override
-  _i15.Future<List<_i2.Task>> getTodayTasks(String? userUuid) =>
+  _i13.Future<List<_i2.Task>> getTodayTasks(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getTodayTasks,
           [userUuid],
         ),
-        returnValue: _i15.Future<List<_i2.Task>>.value(<_i2.Task>[]),
-      ) as _i15.Future<List<_i2.Task>>);
+        returnValue: _i13.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i13.Future<List<_i2.Task>>);
 
   @override
-  _i15.Future<List<_i2.Task>> getMicroTasks(String? originalTaskUuid) =>
+  _i13.Future<List<_i2.Task>> getMicroTasks(String? originalTaskUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getMicroTasks,
           [originalTaskUuid],
         ),
-        returnValue: _i15.Future<List<_i2.Task>>.value(<_i2.Task>[]),
-      ) as _i15.Future<List<_i2.Task>>);
+        returnValue: _i13.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i13.Future<List<_i2.Task>>);
 
   @override
-  _i15.Future<_i2.Task> updateTask(_i2.Task? task) => (super.noSuchMethod(
+  _i13.Future<_i2.Task> updateTask(_i2.Task? task) => (super.noSuchMethod(
         Invocation.method(
           #updateTask,
           [task],
         ),
-        returnValue: _i15.Future<_i2.Task>.value(_FakeTask_0(
+        returnValue: _i13.Future<_i2.Task>.value(_FakeTask_0(
           this,
           Invocation.method(
             #updateTask,
             [task],
           ),
         )),
-      ) as _i15.Future<_i2.Task>);
+      ) as _i13.Future<_i2.Task>);
 
   @override
-  _i15.Future<_i2.Task> completeTask(String? uuid) => (super.noSuchMethod(
+  _i13.Future<_i2.Task> completeTask(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #completeTask,
           [uuid],
         ),
-        returnValue: _i15.Future<_i2.Task>.value(_FakeTask_0(
+        returnValue: _i13.Future<_i2.Task>.value(_FakeTask_0(
           this,
           Invocation.method(
             #completeTask,
             [uuid],
           ),
         )),
-      ) as _i15.Future<_i2.Task>);
+      ) as _i13.Future<_i2.Task>);
 
   @override
-  _i15.Future<_i2.Task> startTask(String? uuid) => (super.noSuchMethod(
+  _i13.Future<_i2.Task> startTask(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #startTask,
           [uuid],
         ),
-        returnValue: _i15.Future<_i2.Task>.value(_FakeTask_0(
+        returnValue: _i13.Future<_i2.Task>.value(_FakeTask_0(
           this,
           Invocation.method(
             #startTask,
             [uuid],
           ),
         )),
-      ) as _i15.Future<_i2.Task>);
+      ) as _i13.Future<_i2.Task>);
 
   @override
-  _i15.Future<bool> deleteTask(String? uuid) => (super.noSuchMethod(
+  _i13.Future<bool> deleteTask(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #deleteTask,
           [uuid],
         ),
-        returnValue: _i15.Future<bool>.value(false),
-      ) as _i15.Future<bool>);
+        returnValue: _i13.Future<bool>.value(false),
+      ) as _i13.Future<bool>);
 
   @override
-  _i15.Future<int> getCompletedTaskCount(
+  _i13.Future<int> getCompletedTaskCount(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -354,11 +328,11 @@ class MockTaskRepository extends _i1.Mock implements _i17.TaskRepository {
             end,
           ],
         ),
-        returnValue: _i15.Future<int>.value(0),
-      ) as _i15.Future<int>);
+        returnValue: _i13.Future<int>.value(0),
+      ) as _i13.Future<int>);
 
   @override
-  _i15.Future<int> getTotalTaskCount(
+  _i13.Future<int> getTotalTaskCount(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -372,11 +346,11 @@ class MockTaskRepository extends _i1.Mock implements _i17.TaskRepository {
             end,
           ],
         ),
-        returnValue: _i15.Future<int>.value(0),
-      ) as _i15.Future<int>);
+        returnValue: _i13.Future<int>.value(0),
+      ) as _i13.Future<int>);
 
   @override
-  _i15.Future<List<_i2.Task>> getTasksByDateRange(
+  _i13.Future<List<_i2.Task>> getTasksByDateRange(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -390,36 +364,36 @@ class MockTaskRepository extends _i1.Mock implements _i17.TaskRepository {
             end,
           ],
         ),
-        returnValue: _i15.Future<List<_i2.Task>>.value(<_i2.Task>[]),
-      ) as _i15.Future<List<_i2.Task>>);
+        returnValue: _i13.Future<List<_i2.Task>>.value(<_i2.Task>[]),
+      ) as _i13.Future<List<_i2.Task>>);
 }
 
 /// A class which mocks [JournalRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
+class MockJournalRepository extends _i1.Mock implements _i9.JournalRepository {
   MockJournalRepository() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i15.Future<_i3.JournalEntry> createEntry(_i3.JournalEntry? entry) =>
+  _i13.Future<_i3.JournalEntry> createEntry(_i3.JournalEntry? entry) =>
       (super.noSuchMethod(
         Invocation.method(
           #createEntry,
           [entry],
         ),
-        returnValue: _i15.Future<_i3.JournalEntry>.value(_FakeJournalEntry_1(
+        returnValue: _i13.Future<_i3.JournalEntry>.value(_FakeJournalEntry_1(
           this,
           Invocation.method(
             #createEntry,
             [entry],
           ),
         )),
-      ) as _i15.Future<_i3.JournalEntry>);
+      ) as _i13.Future<_i3.JournalEntry>);
 
   @override
-  _i15.Future<_i3.JournalEntry> createEncryptedEntry({
+  _i13.Future<_i3.JournalEntry> createEncryptedEntry({
     required String? uuid,
     required String? userUuid,
     required String? content,
@@ -440,7 +414,7 @@ class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
             #emotionConfidence: emotionConfidence,
           },
         ),
-        returnValue: _i15.Future<_i3.JournalEntry>.value(_FakeJournalEntry_1(
+        returnValue: _i13.Future<_i3.JournalEntry>.value(_FakeJournalEntry_1(
           this,
           Invocation.method(
             #createEncryptedEntry,
@@ -455,42 +429,42 @@ class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
             },
           ),
         )),
-      ) as _i15.Future<_i3.JournalEntry>);
+      ) as _i13.Future<_i3.JournalEntry>);
 
   @override
-  _i15.Future<_i3.JournalEntry?> getEntryByUuid(String? uuid) =>
+  _i13.Future<_i3.JournalEntry?> getEntryByUuid(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEntryByUuid,
           [uuid],
         ),
-        returnValue: _i15.Future<_i3.JournalEntry?>.value(),
-      ) as _i15.Future<_i3.JournalEntry?>);
+        returnValue: _i13.Future<_i3.JournalEntry?>.value(),
+      ) as _i13.Future<_i3.JournalEntry?>);
 
   @override
-  _i15.Future<List<_i3.JournalEntry>> getEntriesByUser(String? userUuid) =>
+  _i13.Future<List<_i3.JournalEntry>> getEntriesByUser(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getEntriesByUser,
           [userUuid],
         ),
         returnValue:
-            _i15.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
-      ) as _i15.Future<List<_i3.JournalEntry>>);
+            _i13.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
+      ) as _i13.Future<List<_i3.JournalEntry>>);
 
   @override
-  _i15.Future<List<_i3.JournalEntry>> getTodayEntries(String? userUuid) =>
+  _i13.Future<List<_i3.JournalEntry>> getTodayEntries(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getTodayEntries,
           [userUuid],
         ),
         returnValue:
-            _i15.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
-      ) as _i15.Future<List<_i3.JournalEntry>>);
+            _i13.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
+      ) as _i13.Future<List<_i3.JournalEntry>>);
 
   @override
-  _i15.Future<List<_i3.JournalEntry>> getEntriesByDateRange(
+  _i13.Future<List<_i3.JournalEntry>> getEntriesByDateRange(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -505,11 +479,11 @@ class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
           ],
         ),
         returnValue:
-            _i15.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
-      ) as _i15.Future<List<_i3.JournalEntry>>);
+            _i13.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
+      ) as _i13.Future<List<_i3.JournalEntry>>);
 
   @override
-  _i15.Future<List<_i3.JournalEntry>> getEntriesByEmotion(
+  _i13.Future<List<_i3.JournalEntry>> getEntriesByEmotion(
     String? userUuid,
     _i3.EmotionType? emotion,
   ) =>
@@ -522,33 +496,33 @@ class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
           ],
         ),
         returnValue:
-            _i15.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
-      ) as _i15.Future<List<_i3.JournalEntry>>);
+            _i13.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
+      ) as _i13.Future<List<_i3.JournalEntry>>);
 
   @override
-  _i15.Future<_i3.JournalEntry> updateEntry(_i3.JournalEntry? entry) =>
+  _i13.Future<_i3.JournalEntry> updateEntry(_i3.JournalEntry? entry) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateEntry,
           [entry],
         ),
-        returnValue: _i15.Future<_i3.JournalEntry>.value(_FakeJournalEntry_1(
+        returnValue: _i13.Future<_i3.JournalEntry>.value(_FakeJournalEntry_1(
           this,
           Invocation.method(
             #updateEntry,
             [entry],
           ),
         )),
-      ) as _i15.Future<_i3.JournalEntry>);
+      ) as _i13.Future<_i3.JournalEntry>);
 
   @override
-  _i15.Future<bool> deleteEntry(String? uuid) => (super.noSuchMethod(
+  _i13.Future<bool> deleteEntry(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #deleteEntry,
           [uuid],
         ),
-        returnValue: _i15.Future<bool>.value(false),
-      ) as _i15.Future<bool>);
+        returnValue: _i13.Future<bool>.value(false),
+      ) as _i13.Future<bool>);
 
   @override
   String? decryptContent(_i3.JournalEntry? entry) =>
@@ -565,7 +539,7 @@ class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
       )) as String?);
 
   @override
-  _i15.Future<Map<_i3.EmotionType, int>> getEmotionStatistics(
+  _i13.Future<Map<_i3.EmotionType, int>> getEmotionStatistics(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -579,30 +553,30 @@ class MockJournalRepository extends _i1.Mock implements _i11.JournalRepository {
             end,
           ],
         ),
-        returnValue: _i15.Future<Map<_i3.EmotionType, int>>.value(
+        returnValue: _i13.Future<Map<_i3.EmotionType, int>>.value(
             <_i3.EmotionType, int>{}),
-      ) as _i15.Future<Map<_i3.EmotionType, int>>);
+      ) as _i13.Future<Map<_i3.EmotionType, int>>);
 
   @override
-  _i15.Future<List<_i3.JournalEntry>> getUnsyncedEntries(String? userUuid) =>
+  _i13.Future<List<_i3.JournalEntry>> getUnsyncedEntries(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUnsyncedEntries,
           [userUuid],
         ),
         returnValue:
-            _i15.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
-      ) as _i15.Future<List<_i3.JournalEntry>>);
+            _i13.Future<List<_i3.JournalEntry>>.value(<_i3.JournalEntry>[]),
+      ) as _i13.Future<List<_i3.JournalEntry>>);
 
   @override
-  _i15.Future<void> markAsSynced(String? uuid) => (super.noSuchMethod(
+  _i13.Future<void> markAsSynced(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #markAsSynced,
           [uuid],
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 }
 
 /// A class which mocks [SelfEsteemRepository].
@@ -615,65 +589,65 @@ class MockSelfEsteemRepository extends _i1.Mock
   }
 
   @override
-  _i15.Future<_i4.SelfEsteemScore> createScore(_i4.SelfEsteemScore? score) =>
+  _i13.Future<_i4.SelfEsteemScore> createScore(_i4.SelfEsteemScore? score) =>
       (super.noSuchMethod(
         Invocation.method(
           #createScore,
           [score],
         ),
         returnValue:
-            _i15.Future<_i4.SelfEsteemScore>.value(_FakeSelfEsteemScore_2(
+            _i13.Future<_i4.SelfEsteemScore>.value(_FakeSelfEsteemScore_2(
           this,
           Invocation.method(
             #createScore,
             [score],
           ),
         )),
-      ) as _i15.Future<_i4.SelfEsteemScore>);
+      ) as _i13.Future<_i4.SelfEsteemScore>);
 
   @override
-  _i15.Future<_i4.SelfEsteemScore?> getScoreByUuid(String? uuid) =>
+  _i13.Future<_i4.SelfEsteemScore?> getScoreByUuid(String? uuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getScoreByUuid,
           [uuid],
         ),
-        returnValue: _i15.Future<_i4.SelfEsteemScore?>.value(),
-      ) as _i15.Future<_i4.SelfEsteemScore?>);
+        returnValue: _i13.Future<_i4.SelfEsteemScore?>.value(),
+      ) as _i13.Future<_i4.SelfEsteemScore?>);
 
   @override
-  _i15.Future<List<_i4.SelfEsteemScore>> getScoresByUser(String? userUuid) =>
+  _i13.Future<List<_i4.SelfEsteemScore>> getScoresByUser(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getScoresByUser,
           [userUuid],
         ),
-        returnValue: _i15.Future<List<_i4.SelfEsteemScore>>.value(
+        returnValue: _i13.Future<List<_i4.SelfEsteemScore>>.value(
             <_i4.SelfEsteemScore>[]),
-      ) as _i15.Future<List<_i4.SelfEsteemScore>>);
+      ) as _i13.Future<List<_i4.SelfEsteemScore>>);
 
   @override
-  _i15.Future<_i4.SelfEsteemScore?> getLatestScore(String? userUuid) =>
+  _i13.Future<_i4.SelfEsteemScore?> getLatestScore(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getLatestScore,
           [userUuid],
         ),
-        returnValue: _i15.Future<_i4.SelfEsteemScore?>.value(),
-      ) as _i15.Future<_i4.SelfEsteemScore?>);
+        returnValue: _i13.Future<_i4.SelfEsteemScore?>.value(),
+      ) as _i13.Future<_i4.SelfEsteemScore?>);
 
   @override
-  _i15.Future<_i4.SelfEsteemScore?> getTodayScore(String? userUuid) =>
+  _i13.Future<_i4.SelfEsteemScore?> getTodayScore(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getTodayScore,
           [userUuid],
         ),
-        returnValue: _i15.Future<_i4.SelfEsteemScore?>.value(),
-      ) as _i15.Future<_i4.SelfEsteemScore?>);
+        returnValue: _i13.Future<_i4.SelfEsteemScore?>.value(),
+      ) as _i13.Future<_i4.SelfEsteemScore?>);
 
   @override
-  _i15.Future<List<_i4.SelfEsteemScore>> getScoresByDateRange(
+  _i13.Future<List<_i4.SelfEsteemScore>> getScoresByDateRange(
     String? userUuid,
     DateTime? start,
     DateTime? end,
@@ -687,12 +661,12 @@ class MockSelfEsteemRepository extends _i1.Mock
             end,
           ],
         ),
-        returnValue: _i15.Future<List<_i4.SelfEsteemScore>>.value(
+        returnValue: _i13.Future<List<_i4.SelfEsteemScore>>.value(
             <_i4.SelfEsteemScore>[]),
-      ) as _i15.Future<List<_i4.SelfEsteemScore>>);
+      ) as _i13.Future<List<_i4.SelfEsteemScore>>);
 
   @override
-  _i15.Future<List<_i4.SelfEsteemScore>> getRecentScores(
+  _i13.Future<List<_i4.SelfEsteemScore>> getRecentScores(
     String? userUuid,
     int? days,
   ) =>
@@ -704,38 +678,38 @@ class MockSelfEsteemRepository extends _i1.Mock
             days,
           ],
         ),
-        returnValue: _i15.Future<List<_i4.SelfEsteemScore>>.value(
+        returnValue: _i13.Future<List<_i4.SelfEsteemScore>>.value(
             <_i4.SelfEsteemScore>[]),
-      ) as _i15.Future<List<_i4.SelfEsteemScore>>);
+      ) as _i13.Future<List<_i4.SelfEsteemScore>>);
 
   @override
-  _i15.Future<_i4.SelfEsteemScore> updateScore(_i4.SelfEsteemScore? score) =>
+  _i13.Future<_i4.SelfEsteemScore> updateScore(_i4.SelfEsteemScore? score) =>
       (super.noSuchMethod(
         Invocation.method(
           #updateScore,
           [score],
         ),
         returnValue:
-            _i15.Future<_i4.SelfEsteemScore>.value(_FakeSelfEsteemScore_2(
+            _i13.Future<_i4.SelfEsteemScore>.value(_FakeSelfEsteemScore_2(
           this,
           Invocation.method(
             #updateScore,
             [score],
           ),
         )),
-      ) as _i15.Future<_i4.SelfEsteemScore>);
+      ) as _i13.Future<_i4.SelfEsteemScore>);
 
   @override
-  _i15.Future<bool> deleteScore(String? uuid) => (super.noSuchMethod(
+  _i13.Future<bool> deleteScore(String? uuid) => (super.noSuchMethod(
         Invocation.method(
           #deleteScore,
           [uuid],
         ),
-        returnValue: _i15.Future<bool>.value(false),
-      ) as _i15.Future<bool>);
+        returnValue: _i13.Future<bool>.value(false),
+      ) as _i13.Future<bool>);
 
   @override
-  _i15.Future<double?> getAverageScore(
+  _i13.Future<double?> getAverageScore(
     String? userUuid,
     int? days,
   ) =>
@@ -747,11 +721,11 @@ class MockSelfEsteemRepository extends _i1.Mock
             days,
           ],
         ),
-        returnValue: _i15.Future<double?>.value(),
-      ) as _i15.Future<double?>);
+        returnValue: _i13.Future<double?>.value(),
+      ) as _i13.Future<double?>);
 
   @override
-  _i15.Future<_i5.ScoreTrend> getScoreTrend(
+  _i13.Future<_i5.ScoreTrend> getScoreTrend(
     String? userUuid,
     int? days,
   ) =>
@@ -764,11 +738,11 @@ class MockSelfEsteemRepository extends _i1.Mock
           ],
         ),
         returnValue:
-            _i15.Future<_i5.ScoreTrend>.value(_i5.ScoreTrend.improving),
-      ) as _i15.Future<_i5.ScoreTrend>);
+            _i13.Future<_i5.ScoreTrend>.value(_i5.ScoreTrend.improving),
+      ) as _i13.Future<_i5.ScoreTrend>);
 
   @override
-  _i15.Future<_i5.MonthlyScoreStats> getMonthlyStats(
+  _i13.Future<_i5.MonthlyScoreStats> getMonthlyStats(
     String? userUuid,
     DateTime? month,
   ) =>
@@ -781,7 +755,7 @@ class MockSelfEsteemRepository extends _i1.Mock
           ],
         ),
         returnValue:
-            _i15.Future<_i5.MonthlyScoreStats>.value(_FakeMonthlyScoreStats_3(
+            _i13.Future<_i5.MonthlyScoreStats>.value(_FakeMonthlyScoreStats_3(
           this,
           Invocation.method(
             #getMonthlyStats,
@@ -791,33 +765,33 @@ class MockSelfEsteemRepository extends _i1.Mock
             ],
           ),
         )),
-      ) as _i15.Future<_i5.MonthlyScoreStats>);
+      ) as _i13.Future<_i5.MonthlyScoreStats>);
 }
 
 /// A class which mocks [UserContextService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUserContextService extends _i1.Mock
-    implements _i18.UserContextService {
+    implements _i16.UserContextService {
   MockUserContextService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i15.Future<_i6.UserContext> getUserContext(String? userUuid) =>
+  _i13.Future<_i6.UserContext> getUserContext(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getUserContext,
           [userUuid],
         ),
-        returnValue: _i15.Future<_i6.UserContext>.value(_FakeUserContext_4(
+        returnValue: _i13.Future<_i6.UserContext>.value(_FakeUserContext_4(
           this,
           Invocation.method(
             #getUserContext,
             [userUuid],
           ),
         )),
-      ) as _i15.Future<_i6.UserContext>);
+      ) as _i13.Future<_i6.UserContext>);
 }
 
 /// A class which mocks [DialogueHistoryService].
@@ -830,7 +804,7 @@ class MockDialogueHistoryService extends _i1.Mock
   }
 
   @override
-  _i15.Future<_i7.DialogueEntry> saveDialogue({
+  _i13.Future<_i7.DialogueEntry> saveDialogue({
     required String? uuid,
     required String? userUuid,
     required String? userInput,
@@ -853,7 +827,7 @@ class MockDialogueHistoryService extends _i1.Mock
             #emotionConfidence: emotionConfidence,
           },
         ),
-        returnValue: _i15.Future<_i7.DialogueEntry>.value(_FakeDialogueEntry_5(
+        returnValue: _i13.Future<_i7.DialogueEntry>.value(_FakeDialogueEntry_5(
           this,
           Invocation.method(
             #saveDialogue,
@@ -869,10 +843,10 @@ class MockDialogueHistoryService extends _i1.Mock
             },
           ),
         )),
-      ) as _i15.Future<_i7.DialogueEntry>);
+      ) as _i13.Future<_i7.DialogueEntry>);
 
   @override
-  _i15.Future<List<_i7.DialogueEntry>> getDialogueHistory(
+  _i13.Future<List<_i7.DialogueEntry>> getDialogueHistory(
     String? userUuid, {
     int? limit = 50,
   }) =>
@@ -883,11 +857,11 @@ class MockDialogueHistoryService extends _i1.Mock
           {#limit: limit},
         ),
         returnValue:
-            _i15.Future<List<_i7.DialogueEntry>>.value(<_i7.DialogueEntry>[]),
-      ) as _i15.Future<List<_i7.DialogueEntry>>);
+            _i13.Future<List<_i7.DialogueEntry>>.value(<_i7.DialogueEntry>[]),
+      ) as _i13.Future<List<_i7.DialogueEntry>>);
 
   @override
-  _i15.Future<List<_i7.DialogueEntry>> getRecentDialogues(
+  _i13.Future<List<_i7.DialogueEntry>> getRecentDialogues(
     String? userUuid, {
     int? days = 7,
     int? limit = 10,
@@ -902,11 +876,11 @@ class MockDialogueHistoryService extends _i1.Mock
           },
         ),
         returnValue:
-            _i15.Future<List<_i7.DialogueEntry>>.value(<_i7.DialogueEntry>[]),
-      ) as _i15.Future<List<_i7.DialogueEntry>>);
+            _i13.Future<List<_i7.DialogueEntry>>.value(<_i7.DialogueEntry>[]),
+      ) as _i13.Future<List<_i7.DialogueEntry>>);
 
   @override
-  _i15.Future<List<_i7.DialogueEntry>> getDialoguesByEmotion(
+  _i13.Future<List<_i7.DialogueEntry>> getDialoguesByEmotion(
     String? userUuid,
     String? emotionType,
   ) =>
@@ -919,18 +893,18 @@ class MockDialogueHistoryService extends _i1.Mock
           ],
         ),
         returnValue:
-            _i15.Future<List<_i7.DialogueEntry>>.value(<_i7.DialogueEntry>[]),
-      ) as _i15.Future<List<_i7.DialogueEntry>>);
+            _i13.Future<List<_i7.DialogueEntry>>.value(<_i7.DialogueEntry>[]),
+      ) as _i13.Future<List<_i7.DialogueEntry>>);
 
   @override
-  _i15.Future<_i7.PersonalizationContext> buildPersonalizationContext(
+  _i13.Future<_i7.PersonalizationContext> buildPersonalizationContext(
           String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #buildPersonalizationContext,
           [userUuid],
         ),
-        returnValue: _i15.Future<_i7.PersonalizationContext>.value(
+        returnValue: _i13.Future<_i7.PersonalizationContext>.value(
             _FakePersonalizationContext_6(
           this,
           Invocation.method(
@@ -938,81 +912,37 @@ class MockDialogueHistoryService extends _i1.Mock
             [userUuid],
           ),
         )),
-      ) as _i15.Future<_i7.PersonalizationContext>);
+      ) as _i13.Future<_i7.PersonalizationContext>);
 }
 
 /// A class which mocks [EmotionAnalyzer].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockEmotionAnalyzer extends _i1.Mock implements _i12.EmotionAnalyzer {
+class MockEmotionAnalyzer extends _i1.Mock implements _i10.EmotionAnalyzer {
   MockEmotionAnalyzer() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i8.AcousticAnalyzer get acousticAnalyzer => (super.noSuchMethod(
-        Invocation.getter(#acousticAnalyzer),
-        returnValue: _FakeAcousticAnalyzer_7(
-          this,
-          Invocation.getter(#acousticAnalyzer),
-        ),
-      ) as _i8.AcousticAnalyzer);
-
-  @override
-  _i9.WhisperService get whisperService => (super.noSuchMethod(
-        Invocation.getter(#whisperService),
-        returnValue: _FakeWhisperService_8(
-          this,
-          Invocation.getter(#whisperService),
-        ),
-      ) as _i9.WhisperService);
-
-  @override
-  _i10.TextEmotionClassifier get textClassifier => (super.noSuchMethod(
+  _i8.TextEmotionClassifier get textClassifier => (super.noSuchMethod(
         Invocation.getter(#textClassifier),
-        returnValue: _FakeTextEmotionClassifier_9(
+        returnValue: _FakeTextEmotionClassifier_7(
           this,
           Invocation.getter(#textClassifier),
         ),
-      ) as _i10.TextEmotionClassifier);
+      ) as _i8.TextEmotionClassifier);
 
   @override
-  _i11.JournalRepository get journalRepository => (super.noSuchMethod(
+  _i9.JournalRepository get journalRepository => (super.noSuchMethod(
         Invocation.getter(#journalRepository),
-        returnValue: _FakeJournalRepository_10(
+        returnValue: _FakeJournalRepository_8(
           this,
           Invocation.getter(#journalRepository),
         ),
-      ) as _i11.JournalRepository);
+      ) as _i9.JournalRepository);
 
   @override
-  _i15.Future<_i12.EmotionResult> analyzeAudio(
-    _i19.File? audioFile,
-    String? userUuid,
-  ) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #analyzeAudio,
-          [
-            audioFile,
-            userUuid,
-          ],
-        ),
-        returnValue:
-            _i15.Future<_i12.EmotionResult>.value(_FakeEmotionResult_11(
-          this,
-          Invocation.method(
-            #analyzeAudio,
-            [
-              audioFile,
-              userUuid,
-            ],
-          ),
-        )),
-      ) as _i15.Future<_i12.EmotionResult>);
-
-  @override
-  _i15.Future<_i12.EmotionResult> analyzeText(
+  _i13.Future<_i10.EmotionResult> analyzeText(
     String? text,
     String? userUuid,
   ) =>
@@ -1024,8 +954,7 @@ class MockEmotionAnalyzer extends _i1.Mock implements _i12.EmotionAnalyzer {
             userUuid,
           ],
         ),
-        returnValue:
-            _i15.Future<_i12.EmotionResult>.value(_FakeEmotionResult_11(
+        returnValue: _i13.Future<_i10.EmotionResult>.value(_FakeEmotionResult_9(
           this,
           Invocation.method(
             #analyzeText,
@@ -1035,40 +964,40 @@ class MockEmotionAnalyzer extends _i1.Mock implements _i12.EmotionAnalyzer {
             ],
           ),
         )),
-      ) as _i15.Future<_i12.EmotionResult>);
+      ) as _i13.Future<_i10.EmotionResult>);
 }
 
 /// A class which mocks [AchievementStreakSystem].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockAchievementStreakSystem extends _i1.Mock
-    implements _i13.AchievementStreakSystem {
+    implements _i11.AchievementStreakSystem {
   MockAchievementStreakSystem() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i15.Future<void> checkAndCelebrateStreak(String? userUuid) =>
+  _i13.Future<void> checkAndCelebrateStreak(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #checkAndCelebrateStreak,
           [userUuid],
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 
   @override
-  _i15.Future<int> getCurrentStreak(String? userUuid) => (super.noSuchMethod(
+  _i13.Future<int> getCurrentStreak(String? userUuid) => (super.noSuchMethod(
         Invocation.method(
           #getCurrentStreak,
           [userUuid],
         ),
-        returnValue: _i15.Future<int>.value(0),
-      ) as _i15.Future<int>);
+        returnValue: _i13.Future<int>.value(0),
+      ) as _i13.Future<int>);
 
   @override
-  _i15.Future<List<_i13.StreakRecord>> getTodayStreakRecords(
+  _i13.Future<List<_i11.StreakRecord>> getTodayStreakRecords(
           String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1076,50 +1005,50 @@ class MockAchievementStreakSystem extends _i1.Mock
           [userUuid],
         ),
         returnValue:
-            _i15.Future<List<_i13.StreakRecord>>.value(<_i13.StreakRecord>[]),
-      ) as _i15.Future<List<_i13.StreakRecord>>);
+            _i13.Future<List<_i11.StreakRecord>>.value(<_i11.StreakRecord>[]),
+      ) as _i13.Future<List<_i11.StreakRecord>>);
 
   @override
-  _i15.Future<_i13.StreakStats> getWeeklyStreakStats(String? userUuid) =>
+  _i13.Future<_i11.StreakStats> getWeeklyStreakStats(String? userUuid) =>
       (super.noSuchMethod(
         Invocation.method(
           #getWeeklyStreakStats,
           [userUuid],
         ),
-        returnValue: _i15.Future<_i13.StreakStats>.value(_FakeStreakStats_12(
+        returnValue: _i13.Future<_i11.StreakStats>.value(_FakeStreakStats_10(
           this,
           Invocation.method(
             #getWeeklyStreakStats,
             [userUuid],
           ),
         )),
-      ) as _i15.Future<_i13.StreakStats>);
+      ) as _i13.Future<_i11.StreakStats>);
 }
 
 /// A class which mocks [NotificationService].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockNotificationService extends _i1.Mock
-    implements _i20.NotificationService {
+    implements _i17.NotificationService {
   MockNotificationService() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i15.Future<void> initialize() => (super.noSuchMethod(
+  _i13.Future<void> initialize() => (super.noSuchMethod(
         Invocation.method(
           #initialize,
           [],
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 
   @override
-  _i15.Future<void> schedule({
-    required _i21.NotificationMessage? message,
+  _i13.Future<void> schedule({
+    required _i18.NotificationMessage? message,
     required DateTime? scheduledTime,
-    required _i21.RetryStrategy? retryStrategy,
+    required _i18.RetryStrategy? retryStrategy,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -1131,50 +1060,50 @@ class MockNotificationService extends _i1.Mock
             #retryStrategy: retryStrategy,
           },
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 
   @override
-  _i15.Future<void> sendImmediate(_i21.NotificationMessage? message) =>
+  _i13.Future<void> sendImmediate(_i18.NotificationMessage? message) =>
       (super.noSuchMethod(
         Invocation.method(
           #sendImmediate,
           [message],
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 
   @override
-  _i15.Future<void> cancel(String? taskUuid) => (super.noSuchMethod(
+  _i13.Future<void> cancel(String? taskUuid) => (super.noSuchMethod(
         Invocation.method(
           #cancel,
           [taskUuid],
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 
   @override
-  _i15.Future<void> cancelAll() => (super.noSuchMethod(
+  _i13.Future<void> cancelAll() => (super.noSuchMethod(
         Invocation.method(
           #cancelAll,
           [],
         ),
-        returnValue: _i15.Future<void>.value(),
-        returnValueForMissingStub: _i15.Future<void>.value(),
-      ) as _i15.Future<void>);
+        returnValue: _i13.Future<void>.value(),
+        returnValueForMissingStub: _i13.Future<void>.value(),
+      ) as _i13.Future<void>);
 
   @override
-  _i15.Future<List<_i22.PendingNotificationRequest>>
+  _i13.Future<List<_i19.PendingNotificationRequest>>
       getPendingNotifications() => (super.noSuchMethod(
             Invocation.method(
               #getPendingNotifications,
               [],
             ),
             returnValue:
-                _i15.Future<List<_i22.PendingNotificationRequest>>.value(
-                    <_i22.PendingNotificationRequest>[]),
-          ) as _i15.Future<List<_i22.PendingNotificationRequest>>);
+                _i13.Future<List<_i19.PendingNotificationRequest>>.value(
+                    <_i19.PendingNotificationRequest>[]),
+          ) as _i13.Future<List<_i19.PendingNotificationRequest>>);
 }

@@ -15,7 +15,7 @@ extension GetJournalEntryCollection on Isar {
 
 const JournalEntrySchema = CollectionSchema(
   name: r'JournalEntry',
-  id: 5342179754485350,
+  id: -8443410721192565146,
   properties: {
     r'aiReflection': PropertySchema(
       id: 0,
@@ -91,7 +91,7 @@ const JournalEntrySchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'uuid': IndexSchema(
-      id: 8698316308850860,
+      id: 2134397340427724972,
       name: r'uuid',
       unique: false,
       replace: false,
@@ -104,7 +104,7 @@ const JournalEntrySchema = CollectionSchema(
       ],
     ),
     r'userUuid': IndexSchema(
-      id: 8659171062196520,
+      id: -2441299026227353304,
       name: r'userUuid',
       unique: false,
       replace: false,
@@ -117,7 +117,7 @@ const JournalEntrySchema = CollectionSchema(
       ],
     ),
     r'createdAt': IndexSchema(
-      id: 7214631323756360,
+      id: -3433535483987302584,
       name: r'createdAt',
       unique: false,
       replace: false,

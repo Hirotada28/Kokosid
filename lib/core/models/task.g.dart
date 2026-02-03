@@ -15,7 +15,7 @@ extension GetTaskCollection on Isar {
 
 const TaskSchema = CollectionSchema(
   name: r'Task',
-  id: 7613474184692029,
+  id: 2998003626758701373,
   properties: {
     r'completedAt': PropertySchema(
       id: 0,
@@ -107,7 +107,7 @@ const TaskSchema = CollectionSchema(
   idName: r'id',
   indexes: {
     r'uuid': IndexSchema(
-      id: 8698316308850860,
+      id: 2134397340427724972,
       name: r'uuid',
       unique: false,
       replace: false,
@@ -120,7 +120,7 @@ const TaskSchema = CollectionSchema(
       ],
     ),
     r'userUuid': IndexSchema(
-      id: 8659171062196520,
+      id: -2441299026227353304,
       name: r'userUuid',
       unique: false,
       replace: false,

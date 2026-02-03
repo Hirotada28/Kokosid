@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import '../models/emotion.dart';
 import '../models/journal_entry.dart';
 import '../repositories/journal_repository.dart';
-import 'acoustic_analyzer.dart';
 import 'text_emotion_classifier.dart';
-import 'whisper_service.dart';
 
 /// 感情分析結果
 class EmotionResult {
@@ -13,16 +9,14 @@ class EmotionResult {
     required this.primaryEmotion,
     required this.confidence,
     required this.trend,
-    required this.transcription,
-    this.acousticFeatures,
+    required this.text,
     this.textEmotion,
   });
 
   final Emotion primaryEmotion;
   final double confidence;
   final EmotionTrend trend;
-  final String transcription;
-  final AcousticFeatures? acousticFeatures;
+  final String text;
   final TextEmotion? textEmotion;
 
   @override
@@ -30,55 +24,24 @@ class EmotionResult {
       'EmotionResult{emotion: $primaryEmotion, confidence: $confidence, trend: $trend}';
 }
 
-/// 3層感情分析システム
-/// Layer 1: 音響特徴分析（オンデバイス）
-/// Layer 2: テキスト変換と言語分析
-/// Layer 3: コンテキスト統合分析
+/// テキストベース感情分析システム
+/// Layer 1: テキスト言語分析
+/// Layer 2: コンテキスト統合分析
 class EmotionAnalyzer {
   EmotionAnalyzer({
-    required this.acousticAnalyzer,
-    required this.whisperService,
     required this.textClassifier,
     required this.journalRepository,
   });
 
-  final AcousticAnalyzer acousticAnalyzer;
-  final WhisperService whisperService;
   final TextEmotionClassifier textClassifier;
   final JournalRepository journalRepository;
 
-  /// 音声から多層的な感情分析を実行
-  Future<EmotionResult> analyzeAudio(File audioFile, String userUuid) async {
-    // Layer 1: 音響特徴分析（オンデバイス）
-    final acousticFeatures = await acousticAnalyzer.extractFeatures(audioFile);
-
-    // Layer 2: テキスト変換と言語分析
-    final transcription = await whisperService.transcribe(audioFile);
-    final textEmotion = await textClassifier.classify(transcription);
-
-    // Layer 3: コンテキスト統合分析
-    final history = await _getEmotionHistory(userUuid, days: 7);
-    final trend = _analyzeTrend(history);
-
-    // 総合スコア計算（重み付き平均: 音響50%、テキスト50%）
-    final combinedEmotion = _combineResults(acousticFeatures, textEmotion);
-
-    return EmotionResult(
-      primaryEmotion: combinedEmotion,
-      confidence: _calculateConfidence(acousticFeatures, textEmotion),
-      trend: trend,
-      transcription: transcription,
-      acousticFeatures: acousticFeatures,
-      textEmotion: textEmotion,
-    );
-  }
-
-  /// テキストから感情分析を実行（音声なしの場合）
+  /// テキストから感情分析を実行
   Future<EmotionResult> analyzeText(String text, String userUuid) async {
-    // テキスト分析のみ
+    // Layer 1: テキスト分析
     final textEmotion = await textClassifier.classify(text);
 
-    // コンテキスト統合分析
+    // Layer 2: コンテキスト統合分析
     final history = await _getEmotionHistory(userUuid, days: 7);
     final trend = _analyzeTrend(history);
 
@@ -89,38 +52,9 @@ class EmotionAnalyzer {
       primaryEmotion: emotion,
       confidence: textEmotion.confidence,
       trend: trend,
-      transcription: text,
+      text: text,
       textEmotion: textEmotion,
     );
-  }
-
-  /// 音響特徴とテキスト感情を統合
-  Emotion _combineResults(
-    AcousticFeatures acoustic,
-    TextEmotion text,
-  ) {
-    // 音響50%、テキスト50%の重み付き統合
-    final combinedScores = <EmotionType, double>{};
-
-    for (final emotion in EmotionType.values) {
-      final acousticScore = acoustic.emotionScores[emotion] ?? 0.0;
-      final textScore = text.emotionScores[emotion] ?? 0.0;
-      combinedScores[emotion] = (acousticScore * 0.5) + (textScore * 0.5);
-    }
-
-    return Emotion.fromScores(combinedScores);
-  }
-
-  /// 信頼度を計算
-  double _calculateConfidence(
-    AcousticFeatures acoustic,
-    TextEmotion text,
-  ) {
-    // 音響と テキストの信頼度の平均
-    final acousticConfidence =
-        acoustic.emotionScores.values.reduce((a, b) => a > b ? a : b);
-    final textConfidence = text.confidence;
-    return (acousticConfidence + textConfidence) / 2;
   }
 
   /// 過去の感情履歴を取得

@@ -5,12 +5,12 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 
-import 'package:isar/isar.dart' as _i2;
 import 'package:kokosid/core/models/journal_entry.dart' as _i9;
 import 'package:kokosid/core/models/self_esteem_score.dart' as _i10;
 import 'package:kokosid/core/models/task.dart' as _i8;
 import 'package:kokosid/core/models/user.dart' as _i7;
 import 'package:kokosid/core/services/database_service.dart' as _i3;
+import 'package:kokosid/core/services/local_storage_service.dart' as _i2;
 import 'package:kokosid/core/services/network_service.dart' as _i6;
 import 'package:kokosid/core/services/sync_queue_service.dart' as _i4;
 import 'package:mockito/mockito.dart' as _i1;
@@ -28,8 +28,9 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeIsar_0 extends _i1.SmartFake implements _i2.Isar {
-  _FakeIsar_0(
+class _FakeLocalStorageService_0 extends _i1.SmartFake
+    implements _i2.LocalStorageService {
+  _FakeLocalStorageService_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -67,13 +68,13 @@ class MockDatabaseService extends _i1.Mock implements _i3.DatabaseService {
   }
 
   @override
-  _i2.Isar get isar => (super.noSuchMethod(
-        Invocation.getter(#isar),
-        returnValue: _FakeIsar_0(
+  _i2.LocalStorageService get storage => (super.noSuchMethod(
+        Invocation.getter(#storage),
+        returnValue: _FakeLocalStorageService_0(
           this,
-          Invocation.getter(#isar),
+          Invocation.getter(#storage),
         ),
-      ) as _i2.Isar);
+      ) as _i2.LocalStorageService);
 
   @override
   bool get isInitialized => (super.noSuchMethod(

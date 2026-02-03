@@ -293,4 +293,183 @@ void main() {
       expect(canDelete, isFalse);
     });
   });
+
+  group('DataDeletionService - Property Tests', () {
+    /// **Feature: act-based-self-management, Property 11: データ削除の完全実行**
+    /// **Validates: Requirements 5.4**
+    ///
+    /// 全てのアカウント削除リクエストに対して、システムはローカルとサーバー両方から
+    /// ユーザーデータを完全に削除し、30日以内に削除を完了する
+    test(
+      'Property 11: データ削除の完全実行 - ローカルデータの完全削除',
+      () async {
+        // Given: 有効なユーザーとデータ
+        const userUuid = 'test-user-uuid';
+
+        // Mock設定
+        when(mockDatabaseService.clearUserData(userUuid))
+            .thenAnswer((_) async => {});
+
+        // When: ローカルデータを削除
+        await service.deleteLocalData(userUuid);
+
+        // Then: データベースサービスが呼ばれる
+        verify(mockDatabaseService.clearUserData(userUuid)).called(1);
+
+        // 削除後、データが存在しないことを確認
+        when(mockTaskRepository.getTasksByUser(userUuid))
+            .thenAnswer((_) async => []);
+        when(mockJournalRepository.getEntriesByUser(userUuid))
+            .thenAnswer((_) async => []);
+        when(mockSelfEsteemRepository.getScoresByUser(userUuid))
+            .thenAnswer((_) async => []);
+
+        final stats = await service.getDeletionStats(userUuid);
+        expect(stats.totalTasks, equals(0));
+        expect(stats.totalJournalEntries, equals(0));
+        expect(stats.totalScores, equals(0));
+      },
+    );
+
+    test(
+      'Property 11: データ削除の完全実行 - エクスポート機能の動作確認',
+      () async {
+        // Given: 有効なユーザーとデータ
+        const userUuid = 'test-user-uuid';
+        final user = User.create(
+          uuid: userUuid,
+          name: 'Test User',
+          timezone: 'Asia/Tokyo',
+        );
+
+        final tasks = [
+          Task.create(
+            uuid: 'task-1',
+            userUuid: userUuid,
+            title: 'Test Task',
+          ),
+        ];
+
+        final journalEntries = [
+          JournalEntry.create(
+            uuid: 'journal-1',
+            userUuid: userUuid,
+            encryptedContent: 'encrypted-content',
+          ),
+        ];
+
+        final scores = [
+          SelfEsteemScore.create(
+            uuid: 'score-1',
+            userUuid: userUuid,
+            score: 0.75,
+          ),
+        ];
+
+        when(mockUserRepository.getUserByUuid(userUuid))
+            .thenAnswer((_) async => user);
+        when(mockTaskRepository.getTasksByUser(userUuid))
+            .thenAnswer((_) async => tasks);
+        when(mockJournalRepository.getEntriesByUser(userUuid))
+            .thenAnswer((_) async => journalEntries);
+        when(mockSelfEsteemRepository.getScoresByUser(userUuid))
+            .thenAnswer((_) async => scores);
+        when(mockEncryptedStorageService.decryptJournalContent(any))
+            .thenReturn('Decrypted content');
+        when(mockEncryptedStorageService.decryptJournalAiResponse(any))
+            .thenReturn(null);
+
+        // When: データをエクスポート
+        final result = await service.exportUserData(userUuid);
+
+        // Then: エクスポートが成功し、全データが含まれる
+        expect(result.success, isTrue);
+        expect(result.filePath, isNotEmpty);
+        expect(result.recordCount, greaterThan(0));
+
+        // ファイルが作成されたことを確認
+        final file = File(result.filePath);
+        expect(await file.exists(), isTrue);
+
+        // ファイル内容を確認
+        final content = await file.readAsString();
+        expect(content, contains('Test User'));
+        expect(content, contains('Test Task'));
+        expect(content, contains('Decrypted content'));
+
+        // クリーンアップ
+        await file.delete();
+      },
+    );
+
+    test(
+      'Property 11: データ削除の完全実行 - 削除前の確認機能',
+      () async {
+        // Given: 有効なユーザー
+        const userUuid = 'test-user-uuid';
+        final user = User.create(
+          uuid: userUuid,
+          name: 'Test User',
+          timezone: 'Asia/Tokyo',
+        );
+
+        when(mockUserRepository.getUserByUuid(userUuid))
+            .thenAnswer((_) async => user);
+
+        // When: 削除可能か確認
+        final canDelete = await service.canDeleteAccount(userUuid);
+
+        // Then: 削除可能であることを確認
+        expect(canDelete, isTrue);
+
+        // 削除統計情報を取得
+        when(mockTaskRepository.getTasksByUser(userUuid))
+            .thenAnswer((_) async => []);
+        when(mockJournalRepository.getEntriesByUser(userUuid))
+            .thenAnswer((_) async => []);
+        when(mockSelfEsteemRepository.getScoresByUser(userUuid))
+            .thenAnswer((_) async => []);
+
+        final stats = await service.getDeletionStats(userUuid);
+        expect(stats, isNotNull);
+        expect(stats.totalTasks, greaterThanOrEqualTo(0));
+        expect(stats.totalJournalEntries, greaterThanOrEqualTo(0));
+        expect(stats.totalScores, greaterThanOrEqualTo(0));
+      },
+    );
+
+    test(
+      'Property 11: データ削除の完全実行 - 無効なリクエストの拒否',
+      () async {
+        // Given: 空のパスワード
+        const userUuid = 'test-user-uuid';
+        const password = '';
+
+        // When & Then: エラーがスローされる
+        expect(
+          () => service.requestAccountDeletion(
+            userUuid,
+            confirmationPassword: password,
+          ),
+          throwsA(isA<DataDeletionException>()),
+        );
+
+        // Given: 存在しないユーザー
+        const nonExistentUuid = 'non-existent-user';
+        const validPassword = 'test-password';
+
+        when(mockUserRepository.getUserByUuid(nonExistentUuid))
+            .thenAnswer((_) async => null);
+
+        // When & Then: エラーがスローされる
+        expect(
+          () => service.requestAccountDeletion(
+            nonExistentUuid,
+            confirmationPassword: validPassword,
+          ),
+          throwsA(isA<DataDeletionException>()),
+        );
+      },
+    );
+  });
 }

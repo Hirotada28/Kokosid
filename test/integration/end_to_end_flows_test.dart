@@ -209,7 +209,7 @@ void main() {
             isStable: true,
             averageScore: 0.5,
           ),
-          transcription: userInput,
+          text: userInput,
         );
 
         when(mockEmotionAnalyzer.analyzeText(userInput, userUuid))

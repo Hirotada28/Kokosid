@@ -1,125 +1,100 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kokosid/core/models/journal_entry.dart';
 import 'package:kokosid/core/repositories/journal_repository.dart';
-import 'package:kokosid/core/services/acoustic_analyzer.dart';
 import 'package:kokosid/core/services/emotion_analyzer.dart';
 import 'package:kokosid/core/services/text_emotion_classifier.dart';
-import 'package:kokosid/core/services/whisper_service.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'emotion_analyzer_test.mocks.dart';
 
 @GenerateMocks([
-  WhisperService,
   JournalRepository,
-  AcousticAnalyzer,
 ])
 void main() {
   group('EmotionAnalyzer - Property Tests', () {
     late EmotionAnalyzer emotionAnalyzer;
-    late MockAcousticAnalyzer mockAcousticAnalyzer;
-    late MockWhisperService mockWhisperService;
     late TextEmotionClassifier textClassifier;
     late MockJournalRepository mockJournalRepository;
 
     setUp(() {
-      mockAcousticAnalyzer = MockAcousticAnalyzer();
-      mockWhisperService = MockWhisperService();
       textClassifier = TextEmotionClassifier();
       mockJournalRepository = MockJournalRepository();
 
       emotionAnalyzer = EmotionAnalyzer(
-        acousticAnalyzer: mockAcousticAnalyzer,
-        whisperService: mockWhisperService,
         textClassifier: textClassifier,
         journalRepository: mockJournalRepository,
       );
     });
 
-    /// **Feature: act-based-self-management, Property 4: 3層感情分析の統合処理**
-    /// **Validates: Requirements 3.1, 3.3, 3.5**
+    /// **Feature: act-based-self-management, Property 4: テキストベース感情分析の統合処理**
+    /// **Validates: Requirements 3.3, 3.5**
     ///
-    /// 全ての音声入力に対して、システムは音響特徴分析、テキスト分析、
-    /// コンテキスト分析の3層を実行し、重み付き統合により総合的な感情スコアを算出する
+    /// 全てのテキスト入力に対して、システムはテキスト分析とコンテキスト分析を実行し、
+    /// 総合的な感情スコアを算出する
     test(
-      'Property 4: 3層感情分析の統合処理 - 全ての音声入力で3層分析を実行',
+      'Property 4: テキストベース感情分析の統合処理 - 全てのテキスト入力で分析を実行',
       () async {
         // 最小100回の反復実行
         const iterations = 100;
         final random = Random(42); // 再現性のためのシード
 
         for (var i = 0; i < iterations; i++) {
-          // Given: ランダムな音声ファイルとユーザー
-          final audioFile = _createMockAudioFile(random);
+          // Given: ランダムなテキスト入力
+          final text = _generateRandomText(random);
           final userUuid = 'user-${random.nextInt(1000)}';
 
-          // Mock設定
-          final mockAcousticFeatures = _generateMockAcousticFeatures(random);
-          when(mockAcousticAnalyzer.extractFeatures(any))
-              .thenAnswer((_) async => mockAcousticFeatures);
-          when(mockWhisperService.transcribe(any))
-              .thenAnswer((_) async => _generateRandomText(random));
           when(mockJournalRepository.getEntriesByDateRange(
             any,
             any,
             any,
           )).thenAnswer((_) async => _generateMockHistory(random));
 
-          // When: 音声分析を実行
-          final result = await emotionAnalyzer.analyzeAudio(
-            audioFile,
+          // When: テキスト分析を実行
+          final result = await emotionAnalyzer.analyzeText(
+            text,
             userUuid,
           );
 
-          // Then: 3層全てが実行されていることを検証
+          // Then: テキスト分析とコンテキスト分析が実行されている
 
-          // Layer 1: 音響特徴分析が実行されている
-          expect(result.acousticFeatures, isNotNull,
-              reason: 'Layer 1: 音響特徴分析が実行されていない');
-          expect(result.acousticFeatures!.emotionScores.length, equals(6),
-              reason: '音響分析は6つの感情スコアを返す必要がある');
-
-          // Layer 2: テキスト分析が実行されている
+          // Layer 1: テキスト分析が実行されている
           expect(result.textEmotion, isNotNull,
-              reason: 'Layer 2: テキスト分析が実行されていない');
+              reason: 'Layer 1: テキスト分析が実行されていない');
           expect(result.textEmotion!.emotionScores.length, equals(6),
               reason: 'テキスト分析は6つの感情スコアを返す必要がある');
-          expect(result.transcription, isNotEmpty, reason: 'テキスト変換結果が空');
+          expect(result.text, isNotEmpty, reason: 'テキストが空');
 
-          // Layer 3: コンテキスト分析が実行されている
-          expect(result.trend, isNotNull, reason: 'Layer 3: コンテキスト分析が実行されていない');
+          // Layer 2: コンテキスト分析が実行されている
+          expect(result.trend, isNotNull, reason: 'Layer 2: コンテキスト分析が実行されていない');
 
-          // 重み付き統合の検証
+          // 統合の検証
           expect(result.primaryEmotion, isNotNull, reason: '統合された感情が生成されていない');
           expect(result.confidence, inInclusiveRange(0.0, 1.0),
               reason: '信頼度が0.0-1.0の範囲外');
 
-          // 音響50%、テキスト50%の重み付けを検証
-          final acousticScores = result.acousticFeatures!.emotionScores;
+          // テキストスコアが正しく使用されているか検証
           final textScores = result.textEmotion!.emotionScores;
           final primaryEmotion = result.primaryEmotion.type;
 
-          // 統合スコアが正しく計算されているか検証
-          final expectedScore = (acousticScores[primaryEmotion]! * 0.5) +
-              (textScores[primaryEmotion]! * 0.5);
+          // スコアが正しく計算されているか検証
+          final expectedScore = textScores[primaryEmotion]!;
           final actualScore = result.primaryEmotion.confidence;
 
           // 許容誤差内で一致することを確認
           expect(
             (actualScore - expectedScore).abs(),
             lessThan(0.01),
-            reason: '重み付き統合が正しく計算されていない',
+            reason: 'スコアが正しく計算されていない',
           );
         }
       },
     );
 
     test(
-      'Property 4: 3層感情分析 - テキストのみの入力でも正しく動作',
+      'Property 4: テキストベース感情分析 - 空のテキストでも正しく動作',
       () async {
         const iterations = 50;
         final random = Random(43);
@@ -141,12 +116,9 @@ void main() {
           // Then: テキスト分析とコンテキスト分析が実行されている
           expect(result.textEmotion, isNotNull);
           expect(result.trend, isNotNull);
-          expect(result.transcription, equals(text));
+          expect(result.text, equals(text));
           expect(result.primaryEmotion, isNotNull);
           expect(result.confidence, inInclusiveRange(0.0, 1.0));
-
-          // 音響分析は実行されていない
-          expect(result.acousticFeatures, isNull);
         }
       },
     );
@@ -330,14 +302,6 @@ void main() {
 
 // ヘルパー関数
 
-File _createMockAudioFile(Random random) {
-  // テスト用のモックファイルを作成
-  // 実際のファイルは作成せず、パスのみを返す
-  final timestamp = DateTime.now().millisecondsSinceEpoch;
-  final size = 10000 + random.nextInt(90000); // 10KB-100KB
-  return File('/tmp/test_audio_${timestamp}_$size.m4a');
-}
-
 String _generateRandomText(Random random) {
   final texts = [
     '今日はとても嬉しいことがありました',
@@ -367,33 +331,6 @@ List<JournalEntry> _generateMockHistory(Random random) {
   }
 
   return entries;
-}
-
-AcousticFeatures _generateMockAcousticFeatures(Random random) {
-  // ランダムな音響特徴を生成
-  final emotionScores = <EmotionType, double>{};
-  var total = 0.0;
-
-  // ランダムなスコアを生成
-  for (final emotion in EmotionType.values) {
-    final score = random.nextDouble();
-    emotionScores[emotion] = score;
-    total += score;
-  }
-
-  // 正規化（合計が1.0になるように）
-  for (final emotion in EmotionType.values) {
-    emotionScores[emotion] = emotionScores[emotion]! / total;
-  }
-
-  return AcousticFeatures(
-    averagePitch: 150.0 + random.nextDouble() * 100,
-    pitchVariance: 10.0 + random.nextDouble() * 30,
-    speakingRate: 120.0 + random.nextDouble() * 60,
-    averageVolume: -30.0 + random.nextDouble() * 20,
-    volumeVariance: 2.0 + random.nextDouble() * 8,
-    emotionScores: emotionScores,
-  );
 }
 
 /// 改善パターンの履歴を生成（最近がポジティブ）
