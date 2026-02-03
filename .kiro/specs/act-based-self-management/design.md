@@ -4,7 +4,7 @@
 
 Kokosidは、ACT（受容とコミットメント・セラピー）の心理学的フレームワークを基盤とした次世代自己管理パートナーアプリケーションです。「ココロ（心）」＋「Side（そばに）」の名前の通り、ユーザーの心に寄り添い、実行機能の補完と自己肯定感の向上を同時に実現します。
 
-本設計では、マイクロ・チャンキング、音声感情分析、プレシジョン・ナッジング、エンドツーエンド暗号化を核とした包括的なシステムを構築します。
+本設計では、マイクロ・チャンキング、テキストベース感情分析、プレシジョン・ナッジング、エンドツーエンド暗号化を核とした包括的なシステムを構築します。
 
 ## 関連ドキュメント
 
@@ -73,7 +73,7 @@ graph TB
 | **暗号化ストレージ**   | Flutter Secure Storage      | 生体認証統合、ハードウェアセキュリティモジュール対応                              |
 | **同期・バックアップ** | Supabase                    | PostgreSQL + Realtime、Row Level Security、エンドツーエンド暗号化対応             |
 | **オンデバイスAI**     | TensorFlow Lite + Llama 3.2 | オフライン動作、完全プライバシー保護                                              |
-| **クラウドAI**         | Claude Sonnet 4.5 / GPT-4   | 高度な共感的対話、ACT技法の適用                                                   |
+| **クラウドAI**         | Claude Sonnet 4.5 / GPT-4   | 高度な共感的対話、ACT技法の適用、テキスト感情分析                                 |
 
 ## コンポーネントと インターフェース
 
@@ -152,47 +152,58 @@ class ACTDialogueEngine {
 }
 ```
 
-#### 3. 3層感情分析システム
+#### 3. テキストベース感情分析システム
 
 ```dart
 class EmotionAnalyzer {
-  final AcousticAnalyzer _acousticAnalyzer;
-  final WhisperService _whisperService;
-  final BERTEmotionClassifier _bertClassifier;
+  final TextEmotionClassifier _textClassifier;
+  final EmotionTrendAnalyzer _trendAnalyzer;
 
-  /// 音声から多層的な感情分析を実行
-  Future<EmotionResult> analyzeAudio(File audioFile) async {
-    // Layer 1: 音響特徴分析（オンデバイス）
-    final acousticFeatures = await _acousticAnalyzer.extractFeatures(audioFile);
+  /// テキストから感情分析を実行
+  Future<EmotionResult> analyzeText(String text) async {
+    // Layer 1: テキスト分析（文脈と言葉の選び方）
+    final textEmotion = await _textClassifier.classify(text);
 
-    // Layer 2: テキスト変換と言語分析
-    final transcription = await _whisperService.transcribe(audioFile);
-    final textEmotion = await _bertClassifier.classify(transcription);
+    // Layer 2: 感情強度の評価（弱・中・強）
+    final intensity = _evaluateIntensity(text, textEmotion);
 
-    // Layer 3: コンテキスト統合分析
+    // Layer 3: コンテキスト統合分析（過去7日間のトレンド）
     final history = await _getEmotionHistory(days: 7);
-    final trend = _analyzeTrend(history);
+    final trend = await _trendAnalyzer.analyzeTrend(history);
 
-    // 総合スコア計算（重み付き平均）
+    // 総合結果を返す
     return EmotionResult(
-      primaryEmotion: _combineResults(acousticFeatures, textEmotion),
-      confidence: _calculateConfidence(acousticFeatures, textEmotion),
+      primaryEmotion: textEmotion,
+      intensity: intensity,
+      confidence: textEmotion.confidence,
       trend: trend,
-      transcription: transcription,
+      analyzedText: text,
     );
   }
 
-  Emotion _combineResults(AcousticFeatures acoustic, TextEmotion text) {
-    // 音響50%、テキスト50%の重み付き統合
-    final combinedScores = <EmotionType, double>{};
+  EmotionIntensity _evaluateIntensity(String text, TextEmotion emotion) {
+    // テキストの長さ、感嘆符の数、強調語の使用などから強度を判定
+    final intensityScore = _calculateIntensityScore(text, emotion);
 
-    for (final emotion in EmotionType.values) {
-      combinedScores[emotion] =
-        (acoustic.emotionScores[emotion]! * 0.5) +
-        (text.emotionScores[emotion]! * 0.5);
+    if (intensityScore < 0.33) return EmotionIntensity.weak;
+    if (intensityScore < 0.67) return EmotionIntensity.medium;
+    return EmotionIntensity.strong;
+  }
+
+  double _calculateIntensityScore(String text, TextEmotion emotion) {
+    var score = emotion.confidence;
+
+    // 感嘆符や疑問符の数
+    final punctuationCount = RegExp(r'[!?！？]').allMatches(text).length;
+    score += punctuationCount * 0.05;
+
+    // 強調語の検出（とても、すごく、本当に、など）
+    final emphasisWords = ['とても', 'すごく', '本当に', '非常に', 'めちゃくちゃ'];
+    for (final word in emphasisWords) {
+      if (text.contains(word)) score += 0.1;
     }
 
-    return Emotion.fromScores(combinedScores);
+    return score.clamp(0.0, 1.0);
   }
 }
 ```
