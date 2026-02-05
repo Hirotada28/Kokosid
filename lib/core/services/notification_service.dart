@@ -40,17 +40,13 @@ class NotificationService {
 
     // iOS設定
     final iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
       requestBadgePermission: true,
-      requestSoundPermission: true,
       onDidReceiveLocalNotification: _onDidReceiveLocalNotification,
     );
 
     // macOS設定
-    final macOSSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
+    const macOSSettings = DarwinInitializationSettings(
       requestBadgePermission: true,
-      requestSoundPermission: true,
     );
 
     final initializationSettings = InitializationSettings(
@@ -225,28 +221,24 @@ class NotificationService {
           : Priority.defaultPriority,
       ticker: 'Kokosid',
       category: AndroidNotificationCategory.reminder,
-      autoCancel: true,
     );
   }
 
   /// トーンに基づくiOS通知詳細を取得
   DarwinNotificationDetails _getIOSNotificationDetails(
     NotificationTone tone,
-  ) {
-    return DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-      interruptionLevel: tone == NotificationTone.gentle
-          ? InterruptionLevel.passive
-          : InterruptionLevel.active,
-    );
-  }
+  ) =>
+      DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+        interruptionLevel: tone == NotificationTone.gentle
+            ? InterruptionLevel.passive
+            : InterruptionLevel.active,
+      );
 
   /// 通知IDを生成
-  int _generateNotificationId() {
-    return _notificationIdCounter++;
-  }
+  int _generateNotificationId() => _notificationIdCounter++;
 
   /// 初期化を確認
   Future<void> _ensureInitialized() async {

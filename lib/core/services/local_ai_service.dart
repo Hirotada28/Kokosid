@@ -60,8 +60,7 @@ class LocalAIService {
   }
 
   /// マイクロ・チャンキングのフォールバック応答
-  String generateMicroChunkingFallback(String taskTitle) {
-    return '''
+  String generateMicroChunkingFallback(String taskTitle) => '''
 「$taskTitle」を小さなステップに分解します：
 
 1. タスクの最初の具体的な行動を決める（2分）
@@ -70,7 +69,6 @@ class LocalAIService {
 
 オンライン接続が復旧したら、より詳細な分解を提供できます。
 ''';
-  }
 
   /// ACT対話のフォールバック応答
   String generateACTFallback(String emotionType) {

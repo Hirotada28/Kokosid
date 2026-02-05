@@ -38,18 +38,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder: (context) {
-              return Scaffold(
-                body: Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await recovery.handleKeyLoss(context);
-                    },
-                    child: const Text('Test'),
-                  ),
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await recovery.handleKeyLoss(context);
+                  },
+                  child: const Text('Test'),
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       );
@@ -69,18 +67,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder: (context) {
-              return Scaffold(
-                body: Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await recovery.handleKeyLoss(context);
-                    },
-                    child: const Text('Test'),
-                  ),
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await recovery.handleKeyLoss(context);
+                  },
+                  child: const Text('Test'),
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       );
@@ -100,18 +96,16 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Builder(
-            builder: (context) {
-              return Scaffold(
-                body: Center(
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await recovery.handleKeyLoss(context);
-                    },
-                    child: const Text('Test'),
-                  ),
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await recovery.handleKeyLoss(context);
+                  },
+                  child: const Text('Test'),
                 ),
-              );
-            },
+              ),
+            ),
           ),
         ),
       );

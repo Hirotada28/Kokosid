@@ -154,21 +154,18 @@ class AIServiceWithFallback implements AIService {
   }
 
   /// APIクォータ超過を検出
-  bool _isQuotaExceeded(String message) {
-    return message.toLowerCase().contains('quota') ||
-        message.toLowerCase().contains('limit exceeded') ||
-        message.contains('429');
-  }
+  bool _isQuotaExceeded(String message) =>
+      message.toLowerCase().contains('quota') ||
+      message.toLowerCase().contains('limit exceeded') ||
+      message.contains('429');
 
   /// レート制限を検出
-  bool _isRateLimited(String message) {
-    return message.toLowerCase().contains('rate limit') ||
-        message.toLowerCase().contains('too many requests') ||
-        message.contains('429');
-  }
+  bool _isRateLimited(String message) =>
+      message.toLowerCase().contains('rate limit') ||
+      message.toLowerCase().contains('too many requests') ||
+      message.contains('429');
 
-  String _buildMicroChunkingPrompt(String taskTitle) {
-    return '''
+  String _buildMicroChunkingPrompt(String taskTitle) => '''
 あなたはADHD特性を持つ人のタスク分解専門家です。
 
 【入力タスク】
@@ -183,10 +180,8 @@ class AIServiceWithFallback implements AIService {
 
 JSON形式で出力してください。
 ''';
-  }
 
-  String _buildACTDialoguePrompt(String userInput, String emotionType) {
-    return '''
+  String _buildACTDialoguePrompt(String userInput, String emotionType) => '''
 あなたはACT（受容とコミットメント・セラピー）の専門家です。
 
 【ユーザー入力】
@@ -198,7 +193,6 @@ $emotionType
 【対応方針】
 ACTの6つのコアプロセスに基づいて、共感的で支援的な応答を生成してください。
 ''';
-  }
 }
 
 /// ネットワーク例外

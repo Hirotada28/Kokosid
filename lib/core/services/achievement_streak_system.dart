@@ -48,7 +48,7 @@ class AchievementStreakSystem {
     }
 
     // 最新の完了タスクから遡って連続数をカウント
-    int streakCount = 0;
+    var streakCount = 0;
     DateTime? lastCompletedAt;
 
     for (final task in completedToday) {
@@ -100,7 +100,7 @@ class AchievementStreakSystem {
       ..sort((a, b) => a.completedAt!.compareTo(b.completedAt!));
 
     final records = <StreakRecord>[];
-    int currentStreak = 0;
+    var currentStreak = 0;
     DateTime? streakStartTime;
     DateTime? lastCompletedAt;
 
@@ -165,10 +165,10 @@ class AchievementStreakSystem {
         .toList();
 
     // 日別の連続達成をカウント
-    int totalStreaks = 0;
-    int maxStreak = 0;
+    var totalStreaks = 0;
+    var maxStreak = 0;
 
-    for (int i = 0; i < 7; i++) {
+    for (var i = 0; i < 7; i++) {
       final day = now.subtract(Duration(days: i));
       final dayStart = DateTime(day.year, day.month, day.day);
       final dayEnd = dayStart.add(const Duration(days: 1));
@@ -180,7 +180,7 @@ class AchievementStreakSystem {
           .toList()
         ..sort((a, b) => a.completedAt!.compareTo(b.completedAt!));
 
-      int dayStreak = 0;
+      var dayStreak = 0;
       DateTime? lastCompleted;
 
       for (final task in dayTasks) {

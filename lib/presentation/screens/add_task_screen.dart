@@ -123,94 +123,88 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
     );
   }
 
-  Widget _buildEstimatedTimeField(ThemeData theme) {
-    return InkWell(
-      onTap: _selectEstimatedTime,
-      borderRadius: BorderRadius.circular(8),
-      child: InputDecorator(
-        decoration: const InputDecoration(
-          labelText: '推定時間（任意）',
-          prefixIcon: Icon(Icons.timer),
-          suffixIcon: Icon(Icons.arrow_drop_down),
-        ),
-        child: Text(
-          _estimatedMinutes != null ? '$_estimatedMinutes分' : '選択してください',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: _estimatedMinutes != null
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+  Widget _buildEstimatedTimeField(ThemeData theme) => InkWell(
+        onTap: _selectEstimatedTime,
+        borderRadius: BorderRadius.circular(8),
+        child: InputDecorator(
+          decoration: const InputDecoration(
+            labelText: '推定時間（任意）',
+            prefixIcon: Icon(Icons.timer),
+            suffixIcon: Icon(Icons.arrow_drop_down),
+          ),
+          child: Text(
+            _estimatedMinutes != null ? '$_estimatedMinutes分' : '選択してください',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: _estimatedMinutes != null
+                  ? theme.colorScheme.onSurface
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildDueDateField(ThemeData theme) {
-    return InkWell(
-      onTap: _selectDueDate,
-      borderRadius: BorderRadius.circular(8),
-      child: InputDecorator(
-        decoration: const InputDecoration(
-          labelText: '期限（任意）',
-          prefixIcon: Icon(Icons.calendar_today),
-          suffixIcon: Icon(Icons.arrow_drop_down),
-        ),
-        child: Text(
-          _dueDate != null
-              ? '${_dueDate!.year}/${_dueDate!.month}/${_dueDate!.day}'
-              : '選択してください',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: _dueDate != null
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+  Widget _buildDueDateField(ThemeData theme) => InkWell(
+        onTap: _selectDueDate,
+        borderRadius: BorderRadius.circular(8),
+        child: InputDecorator(
+          decoration: const InputDecoration(
+            labelText: '期限（任意）',
+            prefixIcon: Icon(Icons.calendar_today),
+            suffixIcon: Icon(Icons.arrow_drop_down),
+          ),
+          child: Text(
+            _dueDate != null
+                ? '${_dueDate!.year}/${_dueDate!.month}/${_dueDate!.day}'
+                : '選択してください',
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: _dueDate != null
+                  ? theme.colorScheme.onSurface
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
           ),
         ),
-      ),
-    );
-  }
+      );
 
-  Widget _buildPriorityField(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '優先度',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+  Widget _buildPriorityField(ThemeData theme) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '優先度',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        SegmentedButton<TaskPriority>(
-          segments: const [
-            ButtonSegment(
-              value: TaskPriority.low,
-              label: Text('低'),
-              icon: Icon(Icons.arrow_downward),
-            ),
-            ButtonSegment(
-              value: TaskPriority.medium,
-              label: Text('中'),
-              icon: Icon(Icons.remove),
-            ),
-            ButtonSegment(
-              value: TaskPriority.high,
-              label: Text('高'),
-              icon: Icon(Icons.arrow_upward),
-            ),
-            ButtonSegment(
-              value: TaskPriority.urgent,
-              label: Text('緊急'),
-              icon: Icon(Icons.priority_high),
-            ),
-          ],
-          selected: {_priority},
-          onSelectionChanged: (Set<TaskPriority> selected) {
-            setState(() => _priority = selected.first);
-          },
-        ),
-      ],
-    );
-  }
+          const SizedBox(height: 8),
+          SegmentedButton<TaskPriority>(
+            segments: const [
+              ButtonSegment(
+                value: TaskPriority.low,
+                label: Text('低'),
+                icon: Icon(Icons.arrow_downward),
+              ),
+              ButtonSegment(
+                value: TaskPriority.medium,
+                label: Text('中'),
+                icon: Icon(Icons.remove),
+              ),
+              ButtonSegment(
+                value: TaskPriority.high,
+                label: Text('高'),
+                icon: Icon(Icons.arrow_upward),
+              ),
+              ButtonSegment(
+                value: TaskPriority.urgent,
+                label: Text('緊急'),
+                icon: Icon(Icons.priority_high),
+              ),
+            ],
+            selected: {_priority},
+            onSelectionChanged: (Set<TaskPriority> selected) {
+              setState(() => _priority = selected.first);
+            },
+          ),
+        ],
+      );
 
   Future<void> _selectEstimatedTime() async {
     final result = await showDialog<int>(

@@ -42,29 +42,24 @@ class JournalRepository {
   }
 
   /// UUIDで日記エントリを取得
-  Future<JournalEntry?> getEntryByUuid(String uuid) async {
-    return _storage.getJournalEntryByUuid(uuid);
-  }
+  Future<JournalEntry?> getEntryByUuid(String uuid) async =>
+      _storage.getJournalEntryByUuid(uuid);
 
   /// ユーザーの全日記エントリを取得
-  Future<List<JournalEntry>> getEntriesByUser(String userUuid) async {
-    return _storage.getJournalEntriesByUserUuid(userUuid);
-  }
+  Future<List<JournalEntry>> getEntriesByUser(String userUuid) async =>
+      _storage.getJournalEntriesByUserUuid(userUuid);
 
   /// 今日の日記エントリを取得
-  Future<List<JournalEntry>> getTodayEntries(String userUuid) async {
-    return _storage.getTodayJournalEntriesByUserUuid(userUuid);
-  }
+  Future<List<JournalEntry>> getTodayEntries(String userUuid) async =>
+      _storage.getTodayJournalEntriesByUserUuid(userUuid);
 
   /// 期間内の日記エントリを取得
   Future<List<JournalEntry>> getEntriesByDateRange(
     String userUuid,
     DateTime start,
     DateTime end,
-  ) async {
-    return _storage.getJournalEntriesByUserUuidAndDateRange(
-        userUuid, start, end);
-  }
+  ) async =>
+      _storage.getJournalEntriesByUserUuidAndDateRange(userUuid, start, end);
 
   /// 感情別の日記エントリを取得
   Future<List<JournalEntry>> getEntriesByEmotion(
@@ -82,9 +77,8 @@ class JournalRepository {
   }
 
   /// 日記エントリを削除
-  Future<bool> deleteEntry(String uuid) async {
-    return _storage.deleteJournalEntryByUuid(uuid);
-  }
+  Future<bool> deleteEntry(String uuid) async =>
+      _storage.deleteJournalEntryByUuid(uuid);
 
   /// 暗号化されたコンテンツを復号化
   String? decryptContent(JournalEntry entry) {

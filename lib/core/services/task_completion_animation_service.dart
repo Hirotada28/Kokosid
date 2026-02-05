@@ -46,15 +46,15 @@ class TaskCompletionAnimationService {
         estimatedMinutes > 0 &&
         estimatedMinutes <= 5) {
       // 5分以内のタスク: キラキラ星アニメーション（1秒）
-      return CompletionAnimationConfig(
+      return const CompletionAnimationConfig(
         type: CompletionAnimationType.sparkle,
-        duration: const Duration(seconds: 1),
+        duration: Duration(seconds: 1),
       );
     } else {
       // 15分タスクまたは推定時間なし: 紙吹雪アニメーション（1.5秒）
-      return CompletionAnimationConfig(
+      return const CompletionAnimationConfig(
         type: CompletionAnimationType.confetti,
-        duration: const Duration(milliseconds: 1500),
+        duration: Duration(milliseconds: 1500),
       );
     }
   }

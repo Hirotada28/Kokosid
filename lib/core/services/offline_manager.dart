@@ -141,34 +141,29 @@ class OfflineManager {
   // ==================== Offline Read Operations ====================
 
   /// ユーザーデータを取得（ローカルから）
-  Future<models.User?> getUser(String uuid) async {
-    return await _storage.getUserByUuid(uuid);
-  }
+  Future<models.User?> getUser(String uuid) async =>
+      await _storage.getUserByUuid(uuid);
 
   /// タスクを取得（ローカルから）
-  Future<Task?> getTask(String uuid) async {
-    return await _storage.getTaskByUuid(uuid);
-  }
+  Future<Task?> getTask(String uuid) async =>
+      await _storage.getTaskByUuid(uuid);
 
   /// ユーザーの全タスクを取得（ローカルから）
-  Future<List<Task>> getUserTasks(String userUuid) async {
-    return await _storage.getTasksByUserUuid(userUuid);
-  }
+  Future<List<Task>> getUserTasks(String userUuid) async =>
+      await _storage.getTasksByUserUuid(userUuid);
 
   /// 日記エントリを取得（ローカルから）
-  Future<JournalEntry?> getJournalEntry(String uuid) async {
-    return await _storage.getJournalEntryByUuid(uuid);
-  }
+  Future<JournalEntry?> getJournalEntry(String uuid) async =>
+      await _storage.getJournalEntryByUuid(uuid);
 
   /// ユーザーの全日記エントリを取得（ローカルから）
-  Future<List<JournalEntry>> getUserJournalEntries(String userUuid) async {
-    return await _storage.getJournalEntriesByUserUuid(userUuid);
-  }
+  Future<List<JournalEntry>> getUserJournalEntries(String userUuid) async =>
+      await _storage.getJournalEntriesByUserUuid(userUuid);
 
   /// 自己肯定感スコアを取得（ローカルから）
-  Future<List<SelfEsteemScore>> getUserSelfEsteemScores(String userUuid) async {
-    return await _storage.getSelfEsteemScoresByUserUuid(userUuid);
-  }
+  Future<List<SelfEsteemScore>> getUserSelfEsteemScores(
+          String userUuid) async =>
+      await _storage.getSelfEsteemScoresByUserUuid(userUuid);
 
   // ==================== Sync Management ====================
 
@@ -183,7 +178,7 @@ class OfflineManager {
       );
     }
 
-    return await _syncQueue.sync();
+    return _syncQueue.sync();
   }
 
   /// 同期待ちデータの数を取得
@@ -195,15 +190,13 @@ class OfflineManager {
   // ==================== Offline Status ====================
 
   /// オフライン機能の状態を取得
-  OfflineStatus getStatus() {
-    return OfflineStatus(
-      mode: _currentMode,
-      isOnline: _networkService.isOnline,
-      pendingSyncCount: _syncQueue.queueSize,
-      isSyncing: _syncQueue.isSyncing,
-      lastSyncAttempt: _syncQueue.getOldestOperationTimestamp(),
-    );
-  }
+  OfflineStatus getStatus() => OfflineStatus(
+        mode: _currentMode,
+        isOnline: _networkService.isOnline,
+        pendingSyncCount: _syncQueue.queueSize,
+        isSyncing: _syncQueue.isSyncing,
+        lastSyncAttempt: _syncQueue.getOldestOperationTimestamp(),
+      );
 
   /// オフライン機能が正常に動作しているかチェック
   Future<bool> performHealthCheck() async {

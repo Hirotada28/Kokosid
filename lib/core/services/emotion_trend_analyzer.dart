@@ -158,7 +158,7 @@ class EmotionTrendAnalyzer {
 
     final distribution = _calculateEmotionDistribution(entries);
 
-    EmotionType dominant = EmotionType.neutral;
+    var dominant = EmotionType.neutral;
     var maxCount = 0;
 
     for (final entry in distribution.entries) {
@@ -256,33 +256,30 @@ class EmotionTrendAnalyzer {
   }
 
   /// 日付キーを生成
-  String _getDateKey(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
+  String _getDateKey(DateTime date) =>
+      '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
 
   /// デフォルトのトレンドを返す
-  DetailedEmotionTrend _getDefaultTrend() {
-    return DetailedEmotionTrend(
-      trend: EmotionTrend(
-        isImproving: false,
-        isDecreasing: false,
-        isStable: true,
-        averageScore: 0.5,
-      ),
-      recentAverageScore: 0.5,
-      previousAverageScore: 0.5,
-      changePercentage: 0.0,
-      dominantEmotion: EmotionType.neutral,
-      emotionDistribution: {
-        EmotionType.happy: 0,
-        EmotionType.sad: 0,
-        EmotionType.angry: 0,
-        EmotionType.anxious: 0,
-        EmotionType.tired: 0,
-        EmotionType.neutral: 0,
-      },
-      consecutivePositiveDays: 0,
-      consecutiveNegativeDays: 0,
-    );
-  }
+  DetailedEmotionTrend _getDefaultTrend() => DetailedEmotionTrend(
+        trend: EmotionTrend(
+          isImproving: false,
+          isDecreasing: false,
+          isStable: true,
+          averageScore: 0.5,
+        ),
+        recentAverageScore: 0.5,
+        previousAverageScore: 0.5,
+        changePercentage: 0.0,
+        dominantEmotion: EmotionType.neutral,
+        emotionDistribution: {
+          EmotionType.happy: 0,
+          EmotionType.sad: 0,
+          EmotionType.angry: 0,
+          EmotionType.anxious: 0,
+          EmotionType.tired: 0,
+          EmotionType.neutral: 0,
+        },
+        consecutivePositiveDays: 0,
+        consecutiveNegativeDays: 0,
+      );
 }

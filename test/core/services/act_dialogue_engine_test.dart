@@ -383,7 +383,7 @@ void main() {
     test('プロパティ2: 全てのユーザー入力に対して適切なACTプロセスが選択される（100回反復）', () async {
       final random = Random(42);
       const iterations = 100;
-      int successCount = 0;
+      var successCount = 0;
 
       for (var i = 0; i < iterations; i++) {
         // Given: ランダムなテストケース
@@ -992,7 +992,7 @@ void main() {
           recurringThemes: [],
         );
 
-        final mockResponse = 'その気持ち、よくわかります。';
+        const mockResponse = 'その気持ち、よくわかります。';
 
         when(mockUserContextService.getUserContext(userId))
             .thenAnswer((_) async => context);
@@ -1092,7 +1092,7 @@ void main() {
           mostFrequentProcess: mostFrequentProcess,
         );
 
-        final mockResponse = 'テスト応答';
+        const mockResponse = 'テスト応答';
 
         when(mockUserContextService.getUserContext(userId))
             .thenAnswer((_) async => context);

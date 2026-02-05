@@ -107,9 +107,8 @@ void main() {
         final aiResponse = '[\n$steps\n]';
 
         when(mockAIService.complete(any)).thenAnswer((_) async => aiResponse);
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          return invocation.positionalArguments[0] as Task;
-        });
+        when(mockTaskRepository.createTask(any)).thenAnswer(
+            (invocation) async => invocation.positionalArguments[0] as Task);
 
         // When: タスクを分解
         final microTasks = await engine.decomposeTask(task);
@@ -147,9 +146,8 @@ void main() {
 ''';
 
         when(mockAIService.complete(any)).thenAnswer((_) async => aiResponse);
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          return invocation.positionalArguments[0] as Task;
-        });
+        when(mockTaskRepository.createTask(any)).thenAnswer(
+            (invocation) async => invocation.positionalArguments[0] as Task);
 
         // When: タスクを分解
         final microTasks = await engine.decomposeTask(task);
@@ -320,16 +318,16 @@ void main() {
       ];
 
       final steps = <Map<String, dynamic>>[];
-      for (int i = 0; i < stepCount; i++) {
+      for (var i = 0; i < stepCount; i++) {
         final estimatedMinutes = 1 + random.nextInt(5); // 1-5分
         final verb = actionVerbs[random.nextInt(actionVerbs.length)];
         final object = objects[random.nextInt(objects.length)];
-        final action = '${object}を$verb';
+        final action = '$objectを$verb';
 
         steps.add({
           'action': action,
           'estimatedMinutes': estimatedMinutes,
-          'successCriteria': '${object}が完了している',
+          'successCriteria': '$objectが完了している',
         });
       }
 
@@ -386,21 +384,18 @@ ${steps.map((s) => '''  {
     }
 
     /// 成功条件が明確かチェック
-    bool hasSuccessCriteria(String criteria) {
-      return criteria.isNotEmpty && criteria.length > 3;
-    }
+    bool hasSuccessCriteria(String criteria) =>
+        criteria.isNotEmpty && criteria.length > 3;
 
     /// 最初のステップが実行系かチェック（「準備」で始まらない）
-    bool isExecutionAction(String action) {
-      return !action.startsWith('準備');
-    }
+    bool isExecutionAction(String action) => !action.startsWith('準備');
 
     test('プロパティ1: 全てのタスクが適切に分解される（100回反復）', () async {
       final random = Random(42); // シード固定で再現性を確保
       const iterations = 100;
-      int successCount = 0;
+      var successCount = 0;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: ランダムなタスク
         final task = generateRandomTask(random);
         final stepCount = 3 + random.nextInt(5); // 3-7ステップ
@@ -484,12 +479,12 @@ ${steps.map((s) => '''  {
       final random = Random(123);
       const iterations = 50;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: 5分を超えるステップを含むレスポンス
         final task = generateRandomTask(random);
 
         final steps = <Map<String, dynamic>>[];
-        for (int j = 0; j < 5; j++) {
+        for (var j = 0; j < 5; j++) {
           // ランダムに5分以内と5分超のステップを混在させる
           final estimatedMinutes = random.nextBool()
               ? 1 + random.nextInt(5) // 1-5分
@@ -532,7 +527,7 @@ ${steps.map((s) => '''  {
       final random = Random(456);
       const iterations = 50;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: 7ステップを超えるレスポンス
         final task = generateRandomTask(random);
         final stepCount = 8 + random.nextInt(5); // 8-12ステップ
@@ -558,7 +553,7 @@ ${steps.map((s) => '''  {
       final random = Random(789);
       const iterations = 30;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: 様々な特性を持つタスク
         final task = Task.create(
           uuid: 'task-$i',

@@ -753,7 +753,7 @@ void main() {
         }
         // 感情検索
         else {
-          final emotion = 'anxious';
+          const emotion = 'anxious';
           final experiences = [
             generateRandomSuccessExperience(random, userUuid),
           ];

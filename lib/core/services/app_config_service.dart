@@ -4,10 +4,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// アプリケーション設定サービス
 /// API キーや環境変数を安全に管理
 class AppConfigService {
+  factory AppConfigService() => _instance;
   // シングルトンパターン
   AppConfigService._internal();
   static final AppConfigService _instance = AppConfigService._internal();
-  factory AppConfigService() => _instance;
 
   bool _initialized = false;
 
@@ -22,7 +22,7 @@ class AppConfigService {
         await dotenv.load(fileName: '.env.local');
       } else {
         // .env.local がない場合は .env を読み込む
-        await dotenv.load(fileName: '.env');
+        await dotenv.load();
       }
       _initialized = true;
     } catch (e) {

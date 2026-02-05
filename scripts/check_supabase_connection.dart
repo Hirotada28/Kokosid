@@ -1,6 +1,6 @@
 import 'dart:io';
+
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 /// Supabase接続確認スクリプト
 ///

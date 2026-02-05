@@ -147,24 +147,16 @@ class _SelfEsteemChartState extends State<SelfEsteemChart> {
 
     return LineChartData(
       gridData: FlGridData(
-        show: true,
         drawVerticalLine: false,
         horizontalInterval: 0.2,
-        getDrawingHorizontalLine: (value) {
-          return FlLine(
-            color: theme.colorScheme.outline.withValues(alpha: 0.1),
-            strokeWidth: 1,
-          );
-        },
+        getDrawingHorizontalLine: (value) => FlLine(
+          color: theme.colorScheme.outline.withValues(alpha: 0.1),
+          strokeWidth: 1,
+        ),
       ),
       titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
+        rightTitles: const AxisTitles(),
+        topTitles: const AxisTitles(),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
@@ -196,15 +188,13 @@ class _SelfEsteemChartState extends State<SelfEsteemChart> {
             showTitles: true,
             interval: 0.2,
             reservedSize: 40,
-            getTitlesWidget: (value, meta) {
-              return Text(
-                value.toStringAsFixed(1),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  fontSize: 10,
-                ),
-              );
-            },
+            getTitlesWidget: (value, meta) => Text(
+              value.toStringAsFixed(1),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                fontSize: 10,
+              ),
+            ),
           ),
         ),
       ),
@@ -231,15 +221,13 @@ class _SelfEsteemChartState extends State<SelfEsteemChart> {
           barWidth: 3,
           isStrokeCapRound: true,
           dotData: FlDotData(
-            show: true,
-            getDotPainter: (spot, percent, barData, index) {
-              return FlDotCirclePainter(
-                radius: 4,
-                color: theme.colorScheme.primary,
-                strokeWidth: 2,
-                strokeColor: theme.colorScheme.surface,
-              );
-            },
+            getDotPainter: (spot, percent, barData, index) =>
+                FlDotCirclePainter(
+              radius: 4,
+              color: theme.colorScheme.primary,
+              strokeWidth: 2,
+              strokeColor: theme.colorScheme.surface,
+            ),
           ),
           belowBarData: BarAreaData(
             show: true,
@@ -248,22 +236,19 @@ class _SelfEsteemChartState extends State<SelfEsteemChart> {
         ),
       ],
       lineTouchData: LineTouchData(
-        enabled: true,
         touchTooltipData: LineTouchTooltipData(
-          getTooltipItems: (touchedSpots) {
-            return touchedSpots.map((spot) {
-              final score = _scores[spot.x.toInt()];
-              final date = score.measuredAt;
-              return LineTooltipItem(
-                '${date.month}/${date.day}\n${spot.y.toStringAsFixed(2)}',
-                TextStyle(
-                  color: theme.colorScheme.onPrimary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              );
-            }).toList();
-          },
+          getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
+            final score = _scores[spot.x.toInt()];
+            final date = score.measuredAt;
+            return LineTooltipItem(
+              '${date.month}/${date.day}\n${spot.y.toStringAsFixed(2)}',
+              TextStyle(
+                color: theme.colorScheme.onPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            );
+          }).toList(),
         ),
       ),
     );

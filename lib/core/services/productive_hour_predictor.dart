@@ -97,8 +97,8 @@ class ProductiveHourPredictor {
       return 10; // デフォルト: 午前10時
     }
 
-    int optimalHour = 10;
-    double maxRate = 0.0;
+    var optimalHour = 10;
+    var maxRate = 0.0;
 
     for (final entry in hourlyRates.entries) {
       if (entry.value > maxRate) {
@@ -118,7 +118,6 @@ class ProductiveHourPredictor {
       now.month,
       now.day,
       hour,
-      0,
     );
 
     // 既に過ぎている場合は翌日にする

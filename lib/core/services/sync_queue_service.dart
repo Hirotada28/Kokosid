@@ -157,14 +157,11 @@ class SyncQueueService {
   }
 
   /// キューの内容を取得（デバッグ用）
-  List<SyncOperation> getQueueContents() {
-    return List.from(_queue);
-  }
+  List<SyncOperation> getQueueContents() => List.from(_queue);
 
   /// 特定タイプの操作数を取得
-  int getOperationCount(SyncOperationType type) {
-    return _queue.where((op) => op.type == type).length;
-  }
+  int getOperationCount(SyncOperationType type) =>
+      _queue.where((op) => op.type == type).length;
 
   /// 最も古い操作のタイムスタンプを取得
   DateTime? getOldestOperationTimestamp() {

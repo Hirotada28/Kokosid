@@ -155,8 +155,8 @@ $successContext
   String _buildReminderMessage(
     SuccessExperience experience,
     Emotion currentEmotion,
-  ) {
-    return '''
+  ) =>
+      '''
 今は少し${_emotionTypeToString(currentEmotion.type)}を感じているかもしれませんね。
 
 でも、あなたは以前こんな素晴らしい経験をしています：
@@ -168,7 +168,6 @@ ${experience.lessonsLearned != null ? '\nそのとき学んだこと：\n${exper
 
 あなたには乗り越える力があります。一歩ずつ進んでいきましょう。
 ''';
-  }
 
   /// 感情タイプを日本語に変換
   String _emotionTypeToString(EmotionType type) {

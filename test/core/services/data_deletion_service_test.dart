@@ -31,8 +31,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   // path_providerのモック設定
-  const MethodChannel pathProviderChannel =
-      MethodChannel('plugins.flutter.io/path_provider');
+  const pathProviderChannel = MethodChannel('plugins.flutter.io/path_provider');
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(pathProviderChannel,
           (MethodCall methodCall) async {
@@ -43,7 +42,7 @@ void main() {
   });
 
   // flutter_secure_storageのモック設定
-  const MethodChannel secureStorageChannel =
+  const secureStorageChannel =
       MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(secureStorageChannel,
@@ -88,7 +87,6 @@ void main() {
       final user = User.create(
         uuid: userUuid,
         name: 'Test User',
-        timezone: 'Asia/Tokyo',
       );
 
       final tasks = [
@@ -266,7 +264,6 @@ void main() {
       final user = User.create(
         uuid: userUuid,
         name: 'Test User',
-        timezone: 'Asia/Tokyo',
       );
 
       when(mockUserRepository.getUserByUuid(userUuid))

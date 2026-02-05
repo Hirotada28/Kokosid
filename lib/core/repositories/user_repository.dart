@@ -17,14 +17,11 @@ class UserRepository {
   }
 
   /// UUIDでユーザーを取得
-  Future<User?> getUserByUuid(String uuid) async {
-    return _storage.getUserByUuid(uuid);
-  }
+  Future<User?> getUserByUuid(String uuid) async =>
+      _storage.getUserByUuid(uuid);
 
   /// 全ユーザーを取得
-  Future<List<User>> getAllUsers() async {
-    return _storage.getAllUsers();
-  }
+  Future<List<User>> getAllUsers() async => _storage.getAllUsers();
 
   /// ユーザーを更新
   Future<User> updateUser(User user) async {
@@ -33,9 +30,7 @@ class UserRepository {
   }
 
   /// ユーザーを削除
-  Future<bool> deleteUser(String uuid) async {
-    return _storage.deleteUserByUuid(uuid);
-  }
+  Future<bool> deleteUser(String uuid) async => _storage.deleteUserByUuid(uuid);
 
   /// 最初のユーザーを取得（シングルユーザーアプリの場合）
   Future<User?> getFirstUser() async {

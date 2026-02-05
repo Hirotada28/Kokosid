@@ -279,7 +279,7 @@ void main() {
 
     /// ランダムな感情タイプを生成
     EmotionType generateRandomEmotion(Random random) {
-      final emotions = EmotionType.values;
+      const emotions = EmotionType.values;
       return emotions[random.nextInt(emotions.length)];
     }
 
@@ -288,22 +288,20 @@ void main() {
       Random random,
       String userUuid,
       EmotionType emotion,
-    ) {
-      return JournalEntry.create(
-        uuid: 'entry-${random.nextInt(10000)}',
-        userUuid: userUuid,
-        emotionDetected: emotion,
-        emotionConfidence: 0.5 + random.nextDouble() * 0.5,
-      );
-    }
+    ) =>
+        JournalEntry.create(
+          uuid: 'entry-${random.nextInt(10000)}',
+          userUuid: userUuid,
+          emotionDetected: emotion,
+          emotionConfidence: 0.5 + random.nextDouble() * 0.5,
+        );
 
     /// 感情がネガティブかどうか判定
-    bool isNegativeEmotion(EmotionType type) {
-      return type == EmotionType.sad ||
-          type == EmotionType.angry ||
-          type == EmotionType.anxious ||
-          type == EmotionType.tired;
-    }
+    bool isNegativeEmotion(EmotionType type) =>
+        type == EmotionType.sad ||
+        type == EmotionType.angry ||
+        type == EmotionType.anxious ||
+        type == EmotionType.tired;
 
     /// 期待されるトーンを取得
     NotificationTone getExpectedTone(EmotionType? emotion) {
@@ -335,9 +333,9 @@ void main() {
     test('プロパティ7: 全ての心理状態に対して適切なトーンが選択される（100回反復）', () async {
       final random = Random(42);
       const iterations = 100;
-      int successCount = 0;
+      var successCount = 0;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: ランダムな心理状態のユーザー
         final userUuid = 'user-$i';
         final task = generateRandomTask(random, userUuid);
@@ -430,7 +428,7 @@ void main() {
       final random = Random(123);
       const iterations = 50;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: 不安または疲労状態のユーザー
         final userUuid = 'user-$i';
         final task = generateRandomTask(random, userUuid);
@@ -504,11 +502,11 @@ void main() {
       final random = Random(456);
       const iterations = 50;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: ポジティブ状態のユーザー
         final userUuid = 'user-$i';
         final task = generateRandomTask(random, userUuid);
-        final emotion = EmotionType.happy;
+        const emotion = EmotionType.happy;
         final entry = generateRandomJournalEntry(random, userUuid, emotion);
 
         final context = UserContext(
@@ -577,7 +575,7 @@ void main() {
       final random = Random(789);
       const iterations = 30;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: 感情データがないユーザー
         final userUuid = 'user-$i';
         final task = generateRandomTask(random, userUuid);
@@ -648,7 +646,7 @@ void main() {
       final random = Random(101);
       const iterations = 30;
 
-      for (int i = 0; i < iterations; i++) {
+      for (var i = 0; i < iterations; i++) {
         // Given: ランダムなタスクとユーザー状態
         final userUuid = 'user-$i';
         final task = generateRandomTask(random, userUuid);

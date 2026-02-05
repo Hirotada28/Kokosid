@@ -13,7 +13,7 @@ class Emotion {
   factory Emotion.fromScores(Map<EmotionType, double> scores) {
     // 最も高いスコアの感情を選択
     EmotionType? maxType;
-    double maxScore = 0.0;
+    var maxScore = 0.0;
 
     for (final entry in scores.entries) {
       if (entry.value > maxScore) {
@@ -38,12 +38,11 @@ class Emotion {
   final Map<EmotionType, double> scores;
   final bool isNegative;
 
-  static bool _isNegativeEmotion(EmotionType type) {
-    return type == EmotionType.sad ||
-        type == EmotionType.angry ||
-        type == EmotionType.anxious ||
-        type == EmotionType.tired;
-  }
+  static bool _isNegativeEmotion(EmotionType type) =>
+      type == EmotionType.sad ||
+      type == EmotionType.angry ||
+      type == EmotionType.anxious ||
+      type == EmotionType.tired;
 
   @override
   String toString() =>

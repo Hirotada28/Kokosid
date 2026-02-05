@@ -17,19 +17,16 @@ class SelfEsteemRepository {
   }
 
   /// UUIDでスコアを取得
-  Future<SelfEsteemScore?> getScoreByUuid(String uuid) async {
-    return _storage.getSelfEsteemScoreByUuid(uuid);
-  }
+  Future<SelfEsteemScore?> getScoreByUuid(String uuid) async =>
+      _storage.getSelfEsteemScoreByUuid(uuid);
 
   /// ユーザーの全スコアを取得
-  Future<List<SelfEsteemScore>> getScoresByUser(String userUuid) async {
-    return _storage.getSelfEsteemScoresByUserUuid(userUuid);
-  }
+  Future<List<SelfEsteemScore>> getScoresByUser(String userUuid) async =>
+      _storage.getSelfEsteemScoresByUserUuid(userUuid);
 
   /// ユーザーの最新スコアを取得
-  Future<SelfEsteemScore?> getLatestScore(String userUuid) async {
-    return _storage.getLatestSelfEsteemScoreByUserUuid(userUuid);
-  }
+  Future<SelfEsteemScore?> getLatestScore(String userUuid) async =>
+      _storage.getLatestSelfEsteemScoreByUserUuid(userUuid);
 
   /// 今日のスコアを取得
   Future<SelfEsteemScore?> getTodayScore(String userUuid) async {
@@ -47,10 +44,8 @@ class SelfEsteemRepository {
     String userUuid,
     DateTime start,
     DateTime end,
-  ) async {
-    return _storage.getSelfEsteemScoresByUserUuidAndDateRange(
-        userUuid, start, end);
-  }
+  ) async =>
+      _storage.getSelfEsteemScoresByUserUuidAndDateRange(userUuid, start, end);
 
   /// 過去N日間のスコアを取得
   Future<List<SelfEsteemScore>> getRecentScores(
@@ -68,9 +63,8 @@ class SelfEsteemRepository {
   }
 
   /// スコアを削除
-  Future<bool> deleteScore(String uuid) async {
-    return _storage.deleteSelfEsteemScoreByUuid(uuid);
-  }
+  Future<bool> deleteScore(String uuid) async =>
+      _storage.deleteSelfEsteemScoreByUuid(uuid);
 
   /// 平均スコアを計算
   Future<double?> getAverageScore(String userUuid, int days) async {

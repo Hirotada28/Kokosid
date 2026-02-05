@@ -222,19 +222,17 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('アカウント削除'),
-        backgroundColor: Colors.red.shade700,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _scheduledDeletionDate != null
-              ? _buildScheduledDeletionView()
-              : _buildDeletionRequestView(),
-    );
-  }
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('アカウント削除'),
+          backgroundColor: Colors.red.shade700,
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _scheduledDeletionDate != null
+                ? _buildScheduledDeletionView()
+                : _buildDeletionRequestView(),
+      );
 
   Widget _buildScheduledDeletionView() {
     final daysRemaining =
@@ -306,162 +304,160 @@ class _AccountDeletionScreenState extends State<AccountDeletionScreen> {
     );
   }
 
-  Widget _buildDeletionRequestView() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Card(
-            color: Colors.red.shade50,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    size: 64,
-                    color: Colors.red.shade700,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    '重要な警告',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.red.shade900,
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'この操作は取り消せません。\n'
-                    'すべてのデータが完全に削除されます。',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16),
-                  ),
-                ],
+  Widget _buildDeletionRequestView() => SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Card(
+              color: Colors.red.shade50,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 64,
+                      color: Colors.red.shade700,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '重要な警告',
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: Colors.red.shade900,
+                                fontWeight: FontWeight.bold,
+                              ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'この操作は取り消せません。\n'
+                      'すべてのデータが完全に削除されます。',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 24),
-          if (_stats != null) ...[
+            const SizedBox(height: 24),
+            if (_stats != null) ...[
+              Text(
+                '削除されるデータ',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 16),
+              _buildStatItem('タスク', _stats!.totalTasks),
+              _buildStatItem('日記エントリ', _stats!.totalJournalEntries),
+              _buildStatItem('自己肯定感スコア', _stats!.totalScores),
+              _buildStatItem(
+                '推定データサイズ',
+                _stats!.estimatedDataSize,
+                unit: 'KB',
+              ),
+              const SizedBox(height: 24),
+            ],
+            const Divider(),
+            const SizedBox(height: 16),
             Text(
-              '削除されるデータ',
+              'データエクスポート（GDPR準拠）',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '削除前にデータをエクスポートすることをお勧めします。\n'
+              'エクスポートされたデータは人間が読める形式で保存されます。',
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _isLoading ? null : _exportData,
+              icon: const Icon(Icons.download),
+              label: Text(_hasExported ? 'データを再エクスポート' : 'データをエクスポート'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+            if (_hasExported)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green.shade700),
+                    const SizedBox(width: 8),
+                    const Text('エクスポート済み'),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 24),
+            const Divider(),
+            const SizedBox(height: 16),
+            Text(
+              'アカウント削除',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 16),
-            _buildStatItem('タスク', _stats!.totalTasks),
-            _buildStatItem('日記エントリ', _stats!.totalJournalEntries),
-            _buildStatItem('自己肯定感スコア', _stats!.totalScores),
-            _buildStatItem(
-              '推定データサイズ',
-              _stats!.estimatedDataSize,
-              unit: 'KB',
+            CheckboxListTile(
+              value: _confirmationChecked,
+              onChanged: (value) {
+                setState(() => _confirmationChecked = value ?? false);
+              },
+              title: const Text(
+                'すべてのデータが完全に削除されることを理解しました',
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                labelText: '確認パスワード',
+                hintText: 'パスワードを入力してください',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
+              ),
+              obscureText: true,
             ),
             const SizedBox(height: 24),
-          ],
-          const Divider(),
-          const SizedBox(height: 16),
-          Text(
-            'データエクスポート（GDPR準拠）',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            '削除前にデータをエクスポートすることをお勧めします。\n'
-            'エクスポートされたデータは人間が読める形式で保存されます。',
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: _isLoading ? null : _exportData,
-            icon: const Icon(Icons.download),
-            label: Text(_hasExported ? 'データを再エクスポート' : 'データをエクスポート'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-          if (_hasExported)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.green.shade700),
-                  const SizedBox(width: 8),
-                  const Text('エクスポート済み'),
-                ],
+            ElevatedButton(
+              onPressed: _isLoading ? null : _requestDeletion,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+              child: const Text(
+                'アカウントを削除',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
-          const SizedBox(height: 24),
-          const Divider(),
-          const SizedBox(height: 16),
-          Text(
-            'アカウント削除',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 16),
-          CheckboxListTile(
-            value: _confirmationChecked,
-            onChanged: (value) {
-              setState(() => _confirmationChecked = value ?? false);
-            },
-            title: const Text(
-              'すべてのデータが完全に削除されることを理解しました',
+            const SizedBox(height: 16),
+            const Text(
+              '※ 削除リクエスト後、30日以内にデータが完全削除されます。\n'
+              '※ 削除予定日までキャンセル可能です。',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
-            controlAffinity: ListTileControlAffinity.leading,
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _passwordController,
-            decoration: const InputDecoration(
-              labelText: '確認パスワード',
-              hintText: 'パスワードを入力してください',
-              border: OutlineInputBorder(),
-              prefixIcon: Icon(Icons.lock),
-            ),
-            obscureText: true,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: _isLoading ? null : _requestDeletion,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            child: const Text(
-              'アカウントを削除',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            '※ 削除リクエスト後、30日以内にデータが完全削除されます。\n'
-            '※ 削除予定日までキャンセル可能です。',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+      );
 
-  Widget _buildStatItem(String label, int value, {String unit = '件'}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(fontSize: 16),
-          ),
-          Text(
-            '$value $unit',
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
+  Widget _buildStatItem(String label, int value, {String unit = '件'}) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontSize: 16),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+            Text(
+              '$value $unit',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
 }

@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../core/repositories/journal_repository.dart';
 import '../../core/repositories/self_esteem_repository.dart';
 import '../../core/repositories/task_repository.dart';
-import '../../core/repositories/journal_repository.dart';
 import '../../core/services/database_service.dart';
 import '../../core/services/encryption_service.dart';
 import '../../core/services/self_esteem_calculator.dart';

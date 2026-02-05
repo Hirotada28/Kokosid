@@ -144,12 +144,11 @@ class PrecisionNudgingSystem {
   }
 
   /// 感情がネガティブかどうか判定
-  bool _isNegativeEmotion(EmotionType type) {
-    return type == EmotionType.sad ||
-        type == EmotionType.angry ||
-        type == EmotionType.anxious ||
-        type == EmotionType.tired;
-  }
+  bool _isNegativeEmotion(EmotionType type) =>
+      type == EmotionType.sad ||
+      type == EmotionType.angry ||
+      type == EmotionType.anxious ||
+      type == EmotionType.tired;
 }
 
 /// ユーザー状態（内部用）

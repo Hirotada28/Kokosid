@@ -332,19 +332,18 @@ class SupabaseService {
   }
 
   /// 自己肯定感スコアを復号化
-  SelfEsteemScore decryptSelfEsteemScore(Map<String, dynamic> data) {
-    return SelfEsteemScore.create(
-      uuid: data['uuid'] as String,
-      userUuid: data['user_uuid'] as String,
-      score: (data['score'] as num).toDouble(),
-      calculationBasisJson: data['calculation_basis_json'] as String?,
-      completionRate: (data['completion_rate'] as num?)?.toDouble(),
-      positiveEmotionRatio:
-          (data['positive_emotion_ratio'] as num?)?.toDouble(),
-      streakScore: (data['streak_score'] as num?)?.toDouble(),
-      engagementScore: (data['engagement_score'] as num?)?.toDouble(),
-    );
-  }
+  SelfEsteemScore decryptSelfEsteemScore(Map<String, dynamic> data) =>
+      SelfEsteemScore.create(
+        uuid: data['uuid'] as String,
+        userUuid: data['user_uuid'] as String,
+        score: (data['score'] as num).toDouble(),
+        calculationBasisJson: data['calculation_basis_json'] as String?,
+        completionRate: (data['completion_rate'] as num?)?.toDouble(),
+        positiveEmotionRatio:
+            (data['positive_emotion_ratio'] as num?)?.toDouble(),
+        streakScore: (data['streak_score'] as num?)?.toDouble(),
+        engagementScore: (data['engagement_score'] as num?)?.toDouble(),
+      );
 
   // ==================== CRDT Conflict Resolution ====================
 

@@ -1,11 +1,10 @@
-import 'ai_service.dart';
-import 'dialogue_history_service.dart';
-import 'user_context_service.dart';
-
 import '../models/act_process.dart';
 import '../models/emotion.dart';
 import '../models/journal_entry.dart';
 import '../models/user_context.dart';
+import 'ai_service.dart';
+import 'dialogue_history_service.dart';
+import 'user_context_service.dart';
 
 /// ACT対話エンジン
 class ACTDialogueEngine {

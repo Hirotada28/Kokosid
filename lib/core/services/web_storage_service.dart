@@ -135,11 +135,9 @@ class WebStorageService implements LocalStorageService {
   }
 
   @override
-  Future<List<User>> getAllUsers() async {
-    return _userBox.values
-        .map((data) => _mapToUser(Map<String, dynamic>.from(data)))
-        .toList();
-  }
+  Future<List<User>> getAllUsers() async => _userBox.values
+      .map((data) => _mapToUser(Map<String, dynamic>.from(data)))
+      .toList();
 
   @override
   Future<User?> getFirstUser() async {
@@ -174,30 +172,27 @@ class WebStorageService implements LocalStorageService {
   }
 
   @override
-  Future<List<Task>> getTasksByUserUuid(String userUuid) async {
-    return _taskBox.values
-        .where((data) => data['userUuid'] == userUuid)
-        .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
-        .toList();
-  }
+  Future<List<Task>> getTasksByUserUuid(String userUuid) async =>
+      _taskBox.values
+          .where((data) => data['userUuid'] == userUuid)
+          .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
+          .toList();
 
   @override
-  Future<List<Task>> getPendingTasksByUserUuid(String userUuid) async {
-    return _taskBox.values
-        .where((data) =>
-            data['userUuid'] == userUuid && data['status'] == 'pending')
-        .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
-        .toList();
-  }
+  Future<List<Task>> getPendingTasksByUserUuid(String userUuid) async =>
+      _taskBox.values
+          .where((data) =>
+              data['userUuid'] == userUuid && data['status'] == 'pending')
+          .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
+          .toList();
 
   @override
-  Future<List<Task>> getCompletedTasksByUserUuid(String userUuid) async {
-    return _taskBox.values
-        .where((data) =>
-            data['userUuid'] == userUuid && data['status'] == 'completed')
-        .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
-        .toList();
-  }
+  Future<List<Task>> getCompletedTasksByUserUuid(String userUuid) async =>
+      _taskBox.values
+          .where((data) =>
+              data['userUuid'] == userUuid && data['status'] == 'completed')
+          .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
+          .toList();
 
   @override
   Future<List<Task>> getTodayTasksByUserUuid(String userUuid) async {
@@ -216,14 +211,13 @@ class WebStorageService implements LocalStorageService {
   }
 
   @override
-  Future<List<Task>> getMicroTasksByOriginalUuid(String originalUuid) async {
-    return _taskBox.values
-        .where((data) =>
-            data['originalTaskUuid'] == originalUuid &&
-            data['isMicroTask'] == true)
-        .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
-        .toList();
-  }
+  Future<List<Task>> getMicroTasksByOriginalUuid(String originalUuid) async =>
+      _taskBox.values
+          .where((data) =>
+              data['originalTaskUuid'] == originalUuid &&
+              data['isMicroTask'] == true)
+          .map((data) => _mapToTask(Map<String, dynamic>.from(data)))
+          .toList();
 
   @override
   Future<bool> deleteTaskByUuid(String uuid) async {
@@ -264,29 +258,27 @@ class WebStorageService implements LocalStorageService {
     String userUuid,
     DateTime start,
     DateTime end,
-  ) async {
-    return _taskBox.values.where((data) {
-      if (data['userUuid'] != userUuid) return false;
-      if (data['status'] != 'completed') return false;
-      final completedAt = data['completedAt'] as String?;
-      if (completedAt == null) return false;
-      final date = DateTime.parse(completedAt);
-      return date.isAfter(start) && date.isBefore(end);
-    }).length;
-  }
+  ) async =>
+      _taskBox.values.where((data) {
+        if (data['userUuid'] != userUuid) return false;
+        if (data['status'] != 'completed') return false;
+        final completedAt = data['completedAt'] as String?;
+        if (completedAt == null) return false;
+        final date = DateTime.parse(completedAt);
+        return date.isAfter(start) && date.isBefore(end);
+      }).length;
 
   @override
   Future<int> getTotalTaskCountByUserUuidAndDateRange(
     String userUuid,
     DateTime start,
     DateTime end,
-  ) async {
-    return _taskBox.values.where((data) {
-      if (data['userUuid'] != userUuid) return false;
-      final createdAt = DateTime.parse(data['createdAt'] as String);
-      return createdAt.isAfter(start) && createdAt.isBefore(end);
-    }).length;
-  }
+  ) async =>
+      _taskBox.values.where((data) {
+        if (data['userUuid'] != userUuid) return false;
+        final createdAt = DateTime.parse(data['createdAt'] as String);
+        return createdAt.isAfter(start) && createdAt.isBefore(end);
+      }).length;
 
   // =====================
   // JournalEntry操作
@@ -436,18 +428,16 @@ class WebStorageService implements LocalStorageService {
   // シリアライゼーション・ヘルパー
   // =====================
 
-  Map<String, dynamic> _userToMap(User user) {
-    return {
-      'uuid': user.uuid,
-      'name': user.name,
-      'timezone': user.timezone,
-      'onboardingCompleted': user.onboardingCompleted,
-      'createdAt': user.createdAt.toIso8601String(),
-      'lastActiveAt': user.lastActiveAt?.toIso8601String(),
-      'notificationsEnabled': user.notificationsEnabled,
-      'preferredLanguage': user.preferredLanguage,
-    };
-  }
+  Map<String, dynamic> _userToMap(User user) => {
+        'uuid': user.uuid,
+        'name': user.name,
+        'timezone': user.timezone,
+        'onboardingCompleted': user.onboardingCompleted,
+        'createdAt': user.createdAt.toIso8601String(),
+        'lastActiveAt': user.lastActiveAt?.toIso8601String(),
+        'notificationsEnabled': user.notificationsEnabled,
+        'preferredLanguage': user.preferredLanguage,
+      };
 
   User _mapToUser(Map<String, dynamic> data) {
     final user = User()
@@ -464,23 +454,21 @@ class WebStorageService implements LocalStorageService {
     return user;
   }
 
-  Map<String, dynamic> _taskToMap(Task task) {
-    return {
-      'uuid': task.uuid,
-      'userUuid': task.userUuid,
-      'title': task.title,
-      'description': task.description,
-      'originalTaskUuid': task.originalTaskUuid,
-      'isMicroTask': task.isMicroTask,
-      'estimatedMinutes': task.estimatedMinutes,
-      'context': task.context,
-      'completedAt': task.completedAt?.toIso8601String(),
-      'createdAt': task.createdAt.toIso8601String(),
-      'dueDate': task.dueDate?.toIso8601String(),
-      'priority': task.priority.name,
-      'status': task.status.name,
-    };
-  }
+  Map<String, dynamic> _taskToMap(Task task) => {
+        'uuid': task.uuid,
+        'userUuid': task.userUuid,
+        'title': task.title,
+        'description': task.description,
+        'originalTaskUuid': task.originalTaskUuid,
+        'isMicroTask': task.isMicroTask,
+        'estimatedMinutes': task.estimatedMinutes,
+        'context': task.context,
+        'completedAt': task.completedAt?.toIso8601String(),
+        'createdAt': task.createdAt.toIso8601String(),
+        'dueDate': task.dueDate?.toIso8601String(),
+        'priority': task.priority.name,
+        'status': task.status.name,
+      };
 
   Task _mapToTask(Map<String, dynamic> data) {
     final task = Task()
@@ -510,22 +498,20 @@ class WebStorageService implements LocalStorageService {
     return task;
   }
 
-  Map<String, dynamic> _journalEntryToMap(JournalEntry entry) {
-    return {
-      'uuid': entry.uuid,
-      'userUuid': entry.userUuid,
-      'encryptedContent': entry.encryptedContent,
-      'audioUrl': entry.audioUrl,
-      'transcription': entry.transcription,
-      'emotionDetected': entry.emotionDetected?.name,
-      'emotionConfidence': entry.emotionConfidence,
-      'aiReflection': entry.aiReflection,
-      'encryptedAiResponse': entry.encryptedAiResponse,
-      'createdAt': entry.createdAt.toIso8601String(),
-      'syncedAt': entry.syncedAt?.toIso8601String(),
-      'isEncrypted': entry.isEncrypted,
-    };
-  }
+  Map<String, dynamic> _journalEntryToMap(JournalEntry entry) => {
+        'uuid': entry.uuid,
+        'userUuid': entry.userUuid,
+        'encryptedContent': entry.encryptedContent,
+        'audioUrl': entry.audioUrl,
+        'transcription': entry.transcription,
+        'emotionDetected': entry.emotionDetected?.name,
+        'emotionConfidence': entry.emotionConfidence,
+        'aiReflection': entry.aiReflection,
+        'encryptedAiResponse': entry.encryptedAiResponse,
+        'createdAt': entry.createdAt.toIso8601String(),
+        'syncedAt': entry.syncedAt?.toIso8601String(),
+        'isEncrypted': entry.isEncrypted,
+      };
 
   JournalEntry _mapToJournalEntry(Map<String, dynamic> data) {
     final entry = JournalEntry()
@@ -551,19 +537,17 @@ class WebStorageService implements LocalStorageService {
     return entry;
   }
 
-  Map<String, dynamic> _selfEsteemScoreToMap(SelfEsteemScore score) {
-    return {
-      'uuid': score.uuid,
-      'userUuid': score.userUuid,
-      'score': score.score,
-      'calculationBasisJson': score.calculationBasisJson,
-      'completionRate': score.completionRate,
-      'positiveEmotionRatio': score.positiveEmotionRatio,
-      'streakScore': score.streakScore,
-      'engagementScore': score.engagementScore,
-      'measuredAt': score.measuredAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> _selfEsteemScoreToMap(SelfEsteemScore score) => {
+        'uuid': score.uuid,
+        'userUuid': score.userUuid,
+        'score': score.score,
+        'calculationBasisJson': score.calculationBasisJson,
+        'completionRate': score.completionRate,
+        'positiveEmotionRatio': score.positiveEmotionRatio,
+        'streakScore': score.streakScore,
+        'engagementScore': score.engagementScore,
+        'measuredAt': score.measuredAt.toIso8601String(),
+      };
 
   SelfEsteemScore _mapToSelfEsteemScore(Map<String, dynamic> data) {
     final score = SelfEsteemScore()
@@ -705,22 +689,21 @@ class WebStorageService implements LocalStorageService {
 
   // SuccessExperience変換ヘルパー
 
-  Map<String, dynamic> _successExperienceToMap(SuccessExperience experience) {
-    return {
-      'uuid': experience.uuid,
-      'userUuid': experience.userUuid,
-      'title': experience.title,
-      'description': experience.description,
-      'taskUuid': experience.taskUuid,
-      'emotionBefore': experience.emotionBefore,
-      'emotionAfter': experience.emotionAfter,
-      'lessonsLearned': experience.lessonsLearned,
-      'tags': experience.tags,
-      'createdAt': experience.createdAt.toIso8601String(),
-      'lastReferencedAt': experience.lastReferencedAt?.toIso8601String(),
-      'referenceCount': experience.referenceCount,
-    };
-  }
+  Map<String, dynamic> _successExperienceToMap(SuccessExperience experience) =>
+      {
+        'uuid': experience.uuid,
+        'userUuid': experience.userUuid,
+        'title': experience.title,
+        'description': experience.description,
+        'taskUuid': experience.taskUuid,
+        'emotionBefore': experience.emotionBefore,
+        'emotionAfter': experience.emotionAfter,
+        'lessonsLearned': experience.lessonsLearned,
+        'tags': experience.tags,
+        'createdAt': experience.createdAt.toIso8601String(),
+        'lastReferencedAt': experience.lastReferencedAt?.toIso8601String(),
+        'referenceCount': experience.referenceCount,
+      };
 
   SuccessExperience _mapToSuccessExperience(Map<String, dynamic> data) {
     final experience = SuccessExperience()

@@ -17,34 +17,28 @@ class TaskRepository {
   }
 
   /// UUIDでタスクを取得
-  Future<Task?> getTaskByUuid(String uuid) async {
-    return _storage.getTaskByUuid(uuid);
-  }
+  Future<Task?> getTaskByUuid(String uuid) async =>
+      _storage.getTaskByUuid(uuid);
 
   /// ユーザーの全タスクを取得
-  Future<List<Task>> getTasksByUser(String userUuid) async {
-    return _storage.getTasksByUserUuid(userUuid);
-  }
+  Future<List<Task>> getTasksByUser(String userUuid) async =>
+      _storage.getTasksByUserUuid(userUuid);
 
   /// ユーザーの未完了タスクを取得
-  Future<List<Task>> getPendingTasksByUser(String userUuid) async {
-    return _storage.getPendingTasksByUserUuid(userUuid);
-  }
+  Future<List<Task>> getPendingTasksByUser(String userUuid) async =>
+      _storage.getPendingTasksByUserUuid(userUuid);
 
   /// ユーザーの完了済みタスクを取得
-  Future<List<Task>> getCompletedTasksByUser(String userUuid) async {
-    return _storage.getCompletedTasksByUserUuid(userUuid);
-  }
+  Future<List<Task>> getCompletedTasksByUser(String userUuid) async =>
+      _storage.getCompletedTasksByUserUuid(userUuid);
 
   /// 今日のタスクを取得
-  Future<List<Task>> getTodayTasks(String userUuid) async {
-    return _storage.getTodayTasksByUserUuid(userUuid);
-  }
+  Future<List<Task>> getTodayTasks(String userUuid) async =>
+      _storage.getTodayTasksByUserUuid(userUuid);
 
   /// マイクロタスクを取得
-  Future<List<Task>> getMicroTasks(String originalTaskUuid) async {
-    return _storage.getMicroTasksByOriginalUuid(originalTaskUuid);
-  }
+  Future<List<Task>> getMicroTasks(String originalTaskUuid) async =>
+      _storage.getMicroTasksByOriginalUuid(originalTaskUuid);
 
   /// タスクを更新
   Future<Task> updateTask(Task task) async {
@@ -75,30 +69,24 @@ class TaskRepository {
   }
 
   /// タスクを削除
-  Future<bool> deleteTask(String uuid) async {
-    return _storage.deleteTaskByUuid(uuid);
-  }
+  Future<bool> deleteTask(String uuid) async => _storage.deleteTaskByUuid(uuid);
 
   /// 期間内の完了タスク数を取得
   Future<int> getCompletedTaskCount(
-      String userUuid, DateTime start, DateTime end) async {
-    return _storage.getCompletedTaskCountByUserUuidAndDateRange(
-        userUuid, start, end);
-  }
+          String userUuid, DateTime start, DateTime end) async =>
+      _storage.getCompletedTaskCountByUserUuidAndDateRange(
+          userUuid, start, end);
 
   /// 期間内の総タスク数を取得
   Future<int> getTotalTaskCount(
-      String userUuid, DateTime start, DateTime end) async {
-    return _storage.getTotalTaskCountByUserUuidAndDateRange(
-        userUuid, start, end);
-  }
+          String userUuid, DateTime start, DateTime end) async =>
+      _storage.getTotalTaskCountByUserUuidAndDateRange(userUuid, start, end);
 
   /// 期間内のタスクを取得
   Future<List<Task>> getTasksByDateRange(
     String userUuid,
     DateTime start,
     DateTime end,
-  ) async {
-    return _storage.getTasksByUserUuidAndDateRange(userUuid, start, end);
-  }
+  ) async =>
+      _storage.getTasksByUserUuidAndDateRange(userUuid, start, end);
 }

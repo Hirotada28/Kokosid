@@ -489,7 +489,7 @@ void main() {
         }
 
         // 大きな間隔（1時間以上）
-        currentTime = currentTime.subtract(Duration(hours: 2));
+        currentTime = currentTime.subtract(const Duration(hours: 2));
 
         // 古い連続グループ（2-4個、1時間以内）
         final oldStreakCount = 2 + random.nextInt(3);

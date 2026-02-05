@@ -49,49 +49,48 @@ class _TaskCompletionAnimationState extends State<TaskCompletionAnimation>
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black54,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: Lottie.asset(
-                _getAssetPath(),
-                controller: _controller,
-                onLoaded: (composition) {
-                  if (!widget.config.isLoop && widget.config.duration != null) {
-                    _controller.duration = widget.config.duration;
-                  } else {
-                    _controller.duration = composition.duration;
-                  }
-                },
+  Widget build(BuildContext context) => Container(
+        color: Colors.black54,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: Lottie.asset(
+                  _getAssetPath(),
+                  controller: _controller,
+                  onLoaded: (composition) {
+                    if (!widget.config.isLoop &&
+                        widget.config.duration != null) {
+                      _controller.duration = widget.config.duration;
+                    } else {
+                      _controller.duration = composition.duration;
+                    }
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              _getDescriptionText(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (widget.config.isLoop) ...[
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: widget.onComplete,
-                child: const Text('閉じる'),
+              Text(
+                _getDescriptionText(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              if (widget.config.isLoop) ...[
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: widget.onComplete,
+                  child: const Text('閉じる'),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 
   String _getAssetPath() {
     switch (widget.config.type) {

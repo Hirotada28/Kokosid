@@ -39,7 +39,7 @@ class _GrowthTrendIndicatorState extends State<GrowthTrendIndicator> {
       final trend = await repository.getScoreTrend(userUuid, 7);
       final scores = await repository.getRecentScores(userUuid, 7);
 
-      double changePercentage = 0.0;
+      var changePercentage = 0.0;
       if (scores.length >= 2) {
         final latest = scores.last.score;
         final oldest = scores.first.score;

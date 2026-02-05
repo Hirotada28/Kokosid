@@ -127,7 +127,7 @@ void main() {
 
           // ランダムな日記エントリデータを生成
           final userUuid = uuid.v4();
-          final emotions = EmotionType.values;
+          const emotions = EmotionType.values;
           final randomEmotion = emotions[random.nextInt(emotions.length)];
 
           final entry = JournalEntry.create(
@@ -175,7 +175,6 @@ void main() {
           final user = User.create(
             uuid: uuid.v4(),
             name: 'テストユーザー $i',
-            timezone: 'Asia/Tokyo',
             onboardingCompleted: random.nextBool(),
             preferredLanguage: random.nextBool() ? 'ja' : 'en',
           );

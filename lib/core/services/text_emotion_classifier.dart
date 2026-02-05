@@ -29,8 +29,8 @@ class TextEmotionClassifier {
     final emotionScores = _analyzeKeywords(text);
 
     // 最も高いスコアの感情を選択
-    EmotionType primaryEmotion = EmotionType.neutral;
-    double maxScore = 0.0;
+    var primaryEmotion = EmotionType.neutral;
+    var maxScore = 0.0;
 
     for (final entry in emotionScores.entries) {
       if (entry.value > maxScore) {

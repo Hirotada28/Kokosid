@@ -6,6 +6,13 @@ import 'package:uuid/uuid.dart';
 
 /// マイクロタスクの詳細情報
 class MicroTaskDetail {
+  factory MicroTaskDetail.fromJson(Map<String, dynamic> json) {
+    return MicroTaskDetail(
+      action: json['action'] as String,
+      estimatedMinutes: json['estimatedMinutes'] as int,
+      successCriteria: json['successCriteria'] as String,
+    );
+  }
   MicroTaskDetail({
     required this.action,
     required this.estimatedMinutes,
@@ -16,21 +23,11 @@ class MicroTaskDetail {
   final int estimatedMinutes;
   final String successCriteria;
 
-  factory MicroTaskDetail.fromJson(Map<String, dynamic> json) {
-    return MicroTaskDetail(
-      action: json['action'] as String,
-      estimatedMinutes: json['estimatedMinutes'] as int,
-      successCriteria: json['successCriteria'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'action': action,
-      'estimatedMinutes': estimatedMinutes,
-      'successCriteria': successCriteria,
-    };
-  }
+  Map<String, dynamic> toJson() => {
+        'action': action,
+        'estimatedMinutes': estimatedMinutes,
+        'successCriteria': successCriteria,
+      };
 }
 
 /// マイクロ・チャンキング・エンジン
@@ -87,8 +84,7 @@ class MicroChunkingEngine {
   }
 
   /// タスク分解用のプロンプトを構築
-  String _buildDecompositionPrompt(Task task) {
-    return '''
+  String _buildDecompositionPrompt(Task task) => '''
 あなたはADHD特性を持つ人のタスク分解専門家です。
 
 【入力タスク】
@@ -138,13 +134,12 @@ class MicroChunkingEngine {
 
 それでは、上記のタスクを分解してください。JSON配列のみを出力してください。
 ''';
-  }
 
   /// AI レスポンスからステップをパース
   List<MicroTaskDetail> _parseStepsFromResponse(String response) {
     try {
       // JSON部分を抽出（マークダウンのコードブロックなどを除去）
-      String jsonString = response.trim();
+      var jsonString = response.trim();
 
       // コードブロックを除去
       if (jsonString.startsWith('```')) {
@@ -158,13 +153,13 @@ class MicroChunkingEngine {
       final endIndex = jsonString.lastIndexOf(']');
 
       if (startIndex == -1 || endIndex == -1) {
-        throw FormatException('JSON array not found in response');
+        throw const FormatException('JSON array not found in response');
       }
 
       jsonString = jsonString.substring(startIndex, endIndex + 1);
 
       // JSONをパース
-      final List<dynamic> jsonList = jsonDecode(jsonString) as List<dynamic>;
+      final jsonList = jsonDecode(jsonString) as List<dynamic>;
 
       // MicroTaskDetailに変換
       final details = jsonList
@@ -184,14 +179,12 @@ class MicroChunkingEngine {
   }
 
   /// 既存のマイクロタスクを取得
-  Future<List<Task>> getMicroTasks(String originalTaskUuid) async {
-    return _taskRepository.getMicroTasks(originalTaskUuid);
-  }
+  Future<List<Task>> getMicroTasks(String originalTaskUuid) async =>
+      _taskRepository.getMicroTasks(originalTaskUuid);
 
   /// マイクロタスクを完了
-  Future<Task> completeMicroTask(String microTaskUuid) async {
-    return _taskRepository.completeTask(microTaskUuid);
-  }
+  Future<Task> completeMicroTask(String microTaskUuid) async =>
+      _taskRepository.completeTask(microTaskUuid);
 
   /// 全てのマイクロタスクが完了したかチェック
   Future<bool> areAllMicroTasksCompleted(String originalTaskUuid) async {

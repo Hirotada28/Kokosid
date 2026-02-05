@@ -269,7 +269,7 @@ void main() {
       () async {
         // Given: 空または非常に短いテキスト
         final edgeCases = ['', ' ', '。', 'あ', '!', '...'];
-        final userUuid = 'user-test';
+        const userUuid = 'user-test';
 
         when(mockJournalRepository.getEntriesByDateRange(
           any,

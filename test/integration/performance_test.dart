@@ -32,7 +32,7 @@ void main() {
         expect(
           averageTime,
           lessThan(targetFrameTime.inMicroseconds),
-          reason: '平均処理時間が16ms（60fps）を超えています: ${averageTime}μs',
+          reason: '平均処理時間が16ms（60fps）を超えています: $averageTimeμs',
         );
       });
 

@@ -74,93 +74,90 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('タスク管理'),
-        actions: [
-          PopupMenuButton<TaskFilter>(
-            icon: const Icon(Icons.filter_list),
-            onSelected: (filter) {
-              setState(() => _currentFilter = filter);
-              _loadTasks();
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: TaskFilter.all,
-                child: Text('すべて'),
-              ),
-              const PopupMenuItem(
-                value: TaskFilter.pending,
-                child: Text('未完了'),
-              ),
-              const PopupMenuItem(
-                value: TaskFilter.completed,
-                child: Text('完了済み'),
-              ),
-              const PopupMenuItem(
-                value: TaskFilter.today,
-                child: Text('今日'),
-              ),
-            ],
-          ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _tasks.isEmpty
-              ? _buildEmptyState(context)
-              : RefreshIndicator(
-                  onRefresh: _loadTasks,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: _tasks.length,
-                    itemBuilder: (context, index) =>
-                        _buildTaskCard(context, _tasks[index]),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: const Text('タスク管理'),
+          actions: [
+            PopupMenuButton<TaskFilter>(
+              icon: const Icon(Icons.filter_list),
+              onSelected: (filter) {
+                setState(() => _currentFilter = filter);
+                _loadTasks();
+              },
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: TaskFilter.all,
+                  child: Text('すべて'),
+                ),
+                const PopupMenuItem(
+                  value: TaskFilter.pending,
+                  child: Text('未完了'),
+                ),
+                const PopupMenuItem(
+                  value: TaskFilter.completed,
+                  child: Text('完了済み'),
+                ),
+                const PopupMenuItem(
+                  value: TaskFilter.today,
+                  child: Text('今日'),
+                ),
+              ],
+            ),
+          ],
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _tasks.isEmpty
+                ? _buildEmptyState(context)
+                : RefreshIndicator(
+                    onRefresh: _loadTasks,
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _tasks.length,
+                      itemBuilder: (context, index) =>
+                          _buildTaskCard(context, _tasks[index]),
+                    ),
                   ),
-                ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _onAddTask,
-        icon: const Icon(Icons.add),
-        label: const Text('タスク追加'),
-      ),
-    );
-  }
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: _onAddTask,
+          icon: const Icon(Icons.add),
+          label: const Text('タスク追加'),
+        ),
+      );
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.task_alt,
-            size: 80,
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'タスクがありません',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.6),
-                ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '新しいタスクを追加してみましょう',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .colorScheme
-                      .onSurface
-                      .withValues(alpha: 0.5),
-                ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildEmptyState(BuildContext context) => Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.task_alt,
+              size: 80,
+              color:
+                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'タスクがありません',
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.6),
+                  ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '新しいタスクを追加してみましょう',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.5),
+                  ),
+            ),
+          ],
+        ),
+      );
 
   Widget _buildTaskCard(BuildContext context, Task task) {
     final theme = Theme.of(context);

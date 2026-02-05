@@ -111,201 +111,192 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 
-  Widget _buildTaskInfoCard(ThemeData theme) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // タイトル
-            Row(
-              children: [
-                Checkbox(
-                  value: widget.task.isCompleted,
-                  onChanged: (value) => _onTaskCheckChanged(value ?? false),
-                  shape: const CircleBorder(),
-                ),
-                Expanded(
-                  child: Text(
-                    widget.task.title,
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      decoration: widget.task.isCompleted
-                          ? TextDecoration.lineThrough
-                          : null,
+  Widget _buildTaskInfoCard(ThemeData theme) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // タイトル
+              Row(
+                children: [
+                  Checkbox(
+                    value: widget.task.isCompleted,
+                    onChanged: (value) => _onTaskCheckChanged(value ?? false),
+                    shape: const CircleBorder(),
+                  ),
+                  Expanded(
+                    child: Text(
+                      widget.task.title,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        decoration: widget.task.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
                     ),
                   ),
+                ],
+              ),
+
+              if (widget.task.description != null) ...[
+                const SizedBox(height: 16),
+                const Divider(),
+                const SizedBox(height: 16),
+                Text(
+                  '詳細',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.task.description!,
+                  style: theme.textTheme.bodyMedium,
                 ),
               ],
-            ),
 
-            if (widget.task.description != null) ...[
               const SizedBox(height: 16),
               const Divider(),
               const SizedBox(height: 16),
+
+              // メタ情報
+              _buildMetaInfo(theme),
+            ],
+          ),
+        ),
+      );
+
+  Widget _buildMetaInfo(ThemeData theme) => Wrap(
+        spacing: 16,
+        runSpacing: 12,
+        children: [
+          if (widget.task.estimatedMinutes != null)
+            _buildMetaChip(
+              theme,
+              Icons.timer_outlined,
+              '${widget.task.estimatedMinutes}分',
+              theme.colorScheme.primary,
+            ),
+          if (widget.task.dueDate != null)
+            _buildMetaChip(
+              theme,
+              Icons.calendar_today,
+              _formatDate(widget.task.dueDate!),
+              widget.task.isOverdue
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          _buildMetaChip(
+            theme,
+            Icons.flag,
+            _getPriorityLabel(widget.task.priority),
+            _getPriorityColor(theme, widget.task.priority),
+          ),
+          if (widget.task.context != null)
+            _buildMetaChip(
+              theme,
+              Icons.label,
+              widget.task.context!,
+              theme.colorScheme.secondary,
+            ),
+        ],
+      );
+
+  Widget _buildMetaChip(
+          ThemeData theme, IconData icon, String label, Color color) =>
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
+
+  Widget _buildMicroTasksSection(ThemeData theme) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.splitscreen,
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
               Text(
-                '詳細',
-                style: theme.textTheme.titleSmall?.copyWith(
+                'マイクロタスク',
+                style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Spacer(),
+              if (_microTasks.isEmpty && !_isLoadingMicroTasks)
+                TextButton.icon(
+                  onPressed: _isDecomposing ? null : _onDecomposeTask,
+                  icon: _isDecomposing
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_awesome),
+                  label: Text(_isDecomposing ? '分解中...' : 'AI分解'),
+                ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (_isLoadingMicroTasks)
+            const Center(child: CircularProgressIndicator())
+          else if (_microTasks.isEmpty)
+            _buildEmptyMicroTasks(theme)
+          else
+            _buildMicroTasksList(theme),
+        ],
+      );
+
+  Widget _buildEmptyMicroTasks(ThemeData theme) => Card(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                size: 48,
+                color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'マイクロタスクがありません',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                widget.task.description!,
-                style: theme.textTheme.bodyMedium,
+                'AIがタスクを5分以内の\n実行可能なステップに分解します',
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                ),
               ),
             ],
-
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 16),
-
-            // メタ情報
-            _buildMetaInfo(theme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMetaInfo(ThemeData theme) {
-    return Wrap(
-      spacing: 16,
-      runSpacing: 12,
-      children: [
-        if (widget.task.estimatedMinutes != null)
-          _buildMetaChip(
-            theme,
-            Icons.timer_outlined,
-            '${widget.task.estimatedMinutes}分',
-            theme.colorScheme.primary,
           ),
-        if (widget.task.dueDate != null)
-          _buildMetaChip(
-            theme,
-            Icons.calendar_today,
-            _formatDate(widget.task.dueDate!),
-            widget.task.isOverdue
-                ? theme.colorScheme.error
-                : theme.colorScheme.onSurface.withValues(alpha: 0.6),
-          ),
-        _buildMetaChip(
-          theme,
-          Icons.flag,
-          _getPriorityLabel(widget.task.priority),
-          _getPriorityColor(theme, widget.task.priority),
         ),
-        if (widget.task.context != null)
-          _buildMetaChip(
-            theme,
-            Icons.label,
-            widget.task.context!,
-            theme.colorScheme.secondary,
-          ),
-      ],
-    );
-  }
-
-  Widget _buildMetaChip(
-      ThemeData theme, IconData icon, String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMicroTasksSection(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(
-              Icons.splitscreen,
-              size: 20,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'マイクロタスク',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const Spacer(),
-            if (_microTasks.isEmpty && !_isLoadingMicroTasks)
-              TextButton.icon(
-                onPressed: _isDecomposing ? null : _onDecomposeTask,
-                icon: _isDecomposing
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.auto_awesome),
-                label: Text(_isDecomposing ? '分解中...' : 'AI分解'),
-              ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        if (_isLoadingMicroTasks)
-          const Center(child: CircularProgressIndicator())
-        else if (_microTasks.isEmpty)
-          _buildEmptyMicroTasks(theme)
-        else
-          _buildMicroTasksList(theme),
-      ],
-    );
-  }
-
-  Widget _buildEmptyMicroTasks(ThemeData theme) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Icon(
-              Icons.lightbulb_outline,
-              size: 48,
-              color: theme.colorScheme.primary.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'マイクロタスクがありません',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'AIがタスクを5分以内の\n実行可能なステップに分解します',
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+      );
 
   Widget _buildMicroTasksList(ThemeData theme) {
     final completedCount = _microTasks.where((task) => task.isCompleted).length;
@@ -356,82 +347,81 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
     );
   }
 
-  Widget _buildMicroTaskCard(ThemeData theme, Task microTask, int stepNumber) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: CheckboxListTile(
-        value: microTask.isCompleted,
-        onChanged: (value) =>
-            _onMicroTaskCheckChanged(microTask, value ?? false),
-        title: Row(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: microTask.isCompleted
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.primary.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: Text(
-                  '$stepNumber',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: microTask.isCompleted
-                        ? Colors.white
-                        : theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                microTask.title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  decoration:
-                      microTask.isCompleted ? TextDecoration.lineThrough : null,
-                ),
-              ),
-            ),
-          ],
-        ),
-        subtitle: microTask.description != null
-            ? Padding(
-                padding: const EdgeInsets.only(left: 36, top: 4),
-                child: Text(
-                  microTask.description!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-              )
-            : null,
-        secondary: microTask.estimatedMinutes != null
-            ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  Widget _buildMicroTaskCard(ThemeData theme, Task microTask, int stepNumber) =>
+      Card(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: CheckboxListTile(
+          value: microTask.isCompleted,
+          onChanged: (value) =>
+              _onMicroTaskCheckChanged(microTask, value ?? false),
+          title: Row(
+            children: [
+              Container(
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: microTask.isCompleted
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
                 ),
-                child: Text(
-                  '${microTask.estimatedMinutes}分',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+                child: Center(
+                  child: Text(
+                    '$stepNumber',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: microTask.isCompleted
+                          ? Colors.white
+                          : theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              )
-            : null,
-      ),
-    );
-  }
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  microTask.title,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    decoration: microTask.isCompleted
+                        ? TextDecoration.lineThrough
+                        : null,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          subtitle: microTask.description != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 36, top: 4),
+                  child: Text(
+                    microTask.description!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                )
+              : null,
+          secondary: microTask.estimatedMinutes != null
+              ? Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${microTask.estimatedMinutes}分',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              : null,
+        ),
+      );
 
-  String _formatDate(DateTime date) {
-    return '${date.year}/${date.month}/${date.day}';
-  }
+  String _formatDate(DateTime date) => '${date.year}/${date.month}/${date.day}';
 
   String _getPriorityLabel(TaskPriority priority) {
     switch (priority) {
@@ -550,148 +540,146 @@ class _TaskDetailScreenState extends State<TaskDetailScreen> {
 
     final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('タスクを編集'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // タイトル
-                    TextField(
-                      controller: titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'タイトル',
-                        border: OutlineInputBorder(),
-                      ),
-                      autofocus: true,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: const Text('タスクを編集'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // タイトル
+                  TextField(
+                    controller: titleController,
+                    decoration: const InputDecoration(
+                      labelText: 'タイトル',
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 16),
+                    autofocus: true,
+                  ),
+                  const SizedBox(height: 16),
 
-                    // 説明
-                    TextField(
-                      controller: descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: '説明（任意）',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
+                  // 説明
+                  TextField(
+                    controller: descriptionController,
+                    decoration: const InputDecoration(
+                      labelText: '説明（任意）',
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 16),
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 16),
 
-                    // 見積もり時間
-                    TextField(
-                      controller: estimatedMinutesController,
-                      decoration: const InputDecoration(
-                        labelText: '見積もり時間（分）',
-                        border: OutlineInputBorder(),
-                      ),
-                      keyboardType: TextInputType.number,
+                  // 見積もり時間
+                  TextField(
+                    controller: estimatedMinutesController,
+                    decoration: const InputDecoration(
+                      labelText: '見積もり時間（分）',
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 16),
+                    keyboardType: TextInputType.number,
+                  ),
+                  const SizedBox(height: 16),
 
-                    // 優先度
-                    DropdownButtonFormField<TaskPriority>(
-                      value: selectedPriority,
-                      decoration: const InputDecoration(
-                        labelText: '優先度',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: TaskPriority.values.map((priority) {
-                        return DropdownMenuItem(
-                          value: priority,
-                          child: Text(_getPriorityLabel(priority)),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setDialogState(() {
-                            selectedPriority = value;
-                          });
-                        }
-                      },
+                  // 優先度
+                  DropdownButtonFormField<TaskPriority>(
+                    value: selectedPriority,
+                    decoration: const InputDecoration(
+                      labelText: '優先度',
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 16),
+                    items: TaskPriority.values.map((priority) {
+                      return DropdownMenuItem(
+                        value: priority,
+                        child: Text(_getPriorityLabel(priority)),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        setDialogState(() {
+                          selectedPriority = value;
+                        });
+                      }
+                    },
+                  ),
+                  const SizedBox(height: 16),
 
-                    // 期限日
-                    ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      title: const Text('期限日'),
-                      subtitle: Text(
-                        selectedDueDate != null
-                            ? '${selectedDueDate!.year}/${selectedDueDate!.month}/${selectedDueDate!.day}'
-                            : '未設定',
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
+                  // 期限日
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('期限日'),
+                    subtitle: Text(
+                      selectedDueDate != null
+                          ? '${selectedDueDate!.year}/${selectedDueDate!.month}/${selectedDueDate!.day}'
+                          : '未設定',
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () async {
+                            final date = await showDatePicker(
+                              context: context,
+                              initialDate: selectedDueDate ?? DateTime.now(),
+                              firstDate: DateTime.now(),
+                              lastDate:
+                                  DateTime.now().add(const Duration(days: 365)),
+                            );
+                            if (date != null) {
+                              setDialogState(() {
+                                selectedDueDate = date;
+                              });
+                            }
+                          },
+                        ),
+                        if (selectedDueDate != null)
                           IconButton(
-                            icon: const Icon(Icons.calendar_today),
-                            onPressed: () async {
-                              final date = await showDatePicker(
-                                context: context,
-                                initialDate: selectedDueDate ?? DateTime.now(),
-                                firstDate: DateTime.now(),
-                                lastDate: DateTime.now()
-                                    .add(const Duration(days: 365)),
-                              );
-                              if (date != null) {
-                                setDialogState(() {
-                                  selectedDueDate = date;
-                                });
-                              }
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setDialogState(() {
+                                selectedDueDate = null;
+                              });
                             },
                           ),
-                          if (selectedDueDate != null)
-                            IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                setDialogState(() {
-                                  selectedDueDate = null;
-                                });
-                              },
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(null),
-                  child: const Text('キャンセル'),
-                ),
-                FilledButton(
-                  onPressed: () {
-                    if (titleController.text.trim().isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('タイトルを入力してください')),
-                      );
-                      return;
-                    }
-                    Navigator.of(context).pop({
-                      'title': titleController.text.trim(),
-                      'description': descriptionController.text.trim().isEmpty
-                          ? null
-                          : descriptionController.text.trim(),
-                      'estimatedMinutes': int.tryParse(
-                        estimatedMinutesController.text,
-                      ),
-                      'priority': selectedPriority,
-                      'dueDate': selectedDueDate,
-                    });
-                  },
-                  child: const Text('保存'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(null),
+                child: const Text('キャンセル'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  if (titleController.text.trim().isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('タイトルを入力してください')),
+                    );
+                    return;
+                  }
+                  Navigator.of(context).pop({
+                    'title': titleController.text.trim(),
+                    'description': descriptionController.text.trim().isEmpty
+                        ? null
+                        : descriptionController.text.trim(),
+                    'estimatedMinutes': int.tryParse(
+                      estimatedMinutesController.text,
+                    ),
+                    'priority': selectedPriority,
+                    'dueDate': selectedDueDate,
+                  });
+                },
+                child: const Text('保存'),
+              ),
+            ],
+          );
+        },
+      ),
     );
 
     if (result != null) {

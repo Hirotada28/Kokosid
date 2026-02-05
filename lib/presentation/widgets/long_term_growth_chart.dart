@@ -55,8 +55,8 @@ class _LongTermGrowthChartState extends State<LongTermGrowthChart> {
       }
 
       // 成長率を計算
-      double growthRate = 0.0;
-      bool isOnTrack = false;
+      var growthRate = 0.0;
+      var isOnTrack = false;
       if (currentAverage != null && previousAverage != null) {
         growthRate = currentAverage - previousAverage;
         isOnTrack = growthRate >= 0.15; // 目標: +0.15ポイント
@@ -241,71 +241,68 @@ class _LongTermGrowthChartState extends State<LongTermGrowthChart> {
     );
   }
 
-  Widget _buildSmallProgressIndicators(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '小さな進歩の記録',
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: [
-            _buildProgressChip(
-              theme,
-              '継続中',
-              Icons.local_fire_department,
-              Colors.orange,
-            ),
-            _buildProgressChip(
-              theme,
-              '安定成長',
-              Icons.trending_up,
-              Colors.green,
-            ),
-            if (_isOnTrack)
-              _buildProgressChip(
-                theme,
-                '目標達成',
-                Icons.emoji_events,
-                Colors.amber,
-              ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProgressChip(
-      ThemeData theme, String label, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+  Widget _buildSmallProgressIndicators(ThemeData theme) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 16, color: color),
-          const SizedBox(width: 6),
           Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: color,
+            '小さな進歩の記録',
+            style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildProgressChip(
+                theme,
+                '継続中',
+                Icons.local_fire_department,
+                Colors.orange,
+              ),
+              _buildProgressChip(
+                theme,
+                '安定成長',
+                Icons.trending_up,
+                Colors.green,
+              ),
+              if (_isOnTrack)
+                _buildProgressChip(
+                  theme,
+                  '目標達成',
+                  Icons.emoji_events,
+                  Colors.amber,
+                ),
+            ],
+          ),
         ],
-      ),
-    );
-  }
+      );
+
+  Widget _buildProgressChip(
+          ThemeData theme, String label, IconData icon, Color color) =>
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: color.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      );
 }

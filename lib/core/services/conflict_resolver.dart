@@ -237,38 +237,32 @@ class ConflictResolver {
   }
 
   /// タスクをMapに変換
-  Map<String, dynamic> _taskToMap(Task task) {
-    return {
-      'uuid': task.uuid,
-      'title': task.title,
-      'description': task.description,
-      'completed_at': task.completedAt?.toIso8601String(),
-      'status': task.status.name,
-      'created_at': task.createdAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> _taskToMap(Task task) => {
+        'uuid': task.uuid,
+        'title': task.title,
+        'description': task.description,
+        'completed_at': task.completedAt?.toIso8601String(),
+        'status': task.status.name,
+        'created_at': task.createdAt.toIso8601String(),
+      };
 
   /// ユーザーをMapに変換
-  Map<String, dynamic> _userToMap(models.User user) {
-    return {
-      'uuid': user.uuid,
-      'name': user.name,
-      'timezone': user.timezone,
-      'onboarding_completed': user.onboardingCompleted,
-      'created_at': user.createdAt.toIso8601String(),
-      'last_active_at': user.lastActiveAt?.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> _userToMap(models.User user) => {
+        'uuid': user.uuid,
+        'name': user.name,
+        'timezone': user.timezone,
+        'onboarding_completed': user.onboardingCompleted,
+        'created_at': user.createdAt.toIso8601String(),
+        'last_active_at': user.lastActiveAt?.toIso8601String(),
+      };
 
   /// 日記エントリをMapに変換
-  Map<String, dynamic> _journalEntryToMap(JournalEntry entry) {
-    return {
-      'uuid': entry.uuid,
-      'encrypted_content': entry.encryptedContent,
-      'emotion_detected': entry.emotionDetected?.name,
-      'created_at': entry.createdAt.toIso8601String(),
-    };
-  }
+  Map<String, dynamic> _journalEntryToMap(JournalEntry entry) => {
+        'uuid': entry.uuid,
+        'encrypted_content': entry.encryptedContent,
+        'emotion_detected': entry.emotionDetected?.name,
+        'created_at': entry.createdAt.toIso8601String(),
+      };
 
   /// 競合ログをクリア
   void clearLogs() {
@@ -366,8 +360,7 @@ class ConflictStatistics {
   int fieldMergeResolutions = 0;
 
   @override
-  String toString() {
-    return '''
+  String toString() => '''
 競合統計:
   総競合数: $totalConflicts
   - タスク完了: $taskCompletionConflicts
@@ -381,5 +374,4 @@ class ConflictStatistics {
   - Multi-Value: $multiValueResolutions
   - Field-Merge: $fieldMergeResolutions
 ''';
-  }
 }

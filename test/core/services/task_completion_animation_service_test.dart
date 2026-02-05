@@ -145,7 +145,7 @@ void main() {
 
     group('getAnimationDescription', () {
       test('各アニメーションタイプに対応する説明を返す', () {
-        final sparkleConfig = CompletionAnimationConfig(
+        const sparkleConfig = CompletionAnimationConfig(
           type: CompletionAnimationType.sparkle,
           duration: const Duration(seconds: 1),
         );
@@ -154,7 +154,7 @@ void main() {
           equals('タスク完了！'),
         );
 
-        final confettiConfig = CompletionAnimationConfig(
+        const confettiConfig = CompletionAnimationConfig(
           type: CompletionAnimationType.confetti,
           duration: const Duration(milliseconds: 1500),
         );
@@ -163,7 +163,7 @@ void main() {
           equals('素晴らしい！'),
         );
 
-        final streakConfig = CompletionAnimationConfig(
+        const streakConfig = CompletionAnimationConfig(
           type: CompletionAnimationType.streakFlame,
           duration: null,
           streakCount: 5,

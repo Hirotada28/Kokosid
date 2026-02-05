@@ -49,28 +49,28 @@ void main() {
             title: 'タスク1',
           )
             ..status = TaskStatus.completed
-            ..completedAt = DateTime(now.year, now.month, now.day - 5, 14, 0),
+            ..completedAt = DateTime(now.year, now.month, now.day - 5, 14),
           Task.create(
             uuid: 'task-2',
             userUuid: 'user-1',
             title: 'タスク2',
           )
             ..status = TaskStatus.completed
-            ..completedAt = DateTime(now.year, now.month, now.day - 4, 14, 0),
+            ..completedAt = DateTime(now.year, now.month, now.day - 4, 14),
           Task.create(
             uuid: 'task-3',
             userUuid: 'user-1',
             title: 'タスク3',
           )
             ..status = TaskStatus.completed
-            ..completedAt = DateTime(now.year, now.month, now.day - 3, 14, 0),
+            ..completedAt = DateTime(now.year, now.month, now.day - 3, 14),
           Task.create(
             uuid: 'task-4',
             userUuid: 'user-1',
             title: 'タスク4',
           )
             ..status = TaskStatus.completed
-            ..completedAt = DateTime(now.year, now.month, now.day - 2, 9, 0),
+            ..completedAt = DateTime(now.year, now.month, now.day - 2, 9),
         ];
 
         when(mockTaskRepository.getTasksByDateRange(any, any, any))
@@ -150,7 +150,7 @@ void main() {
             title: 'タスク1',
           )
             ..status = TaskStatus.completed
-            ..completedAt = DateTime(now.year, now.month, now.day - 1, 9, 0),
+            ..completedAt = DateTime(now.year, now.month, now.day - 1, 9),
           Task.create(
             uuid: 'task-2',
             userUuid: 'user-1',
@@ -164,7 +164,7 @@ void main() {
             title: 'タスク3',
           )
             ..status = TaskStatus.completed
-            ..completedAt = DateTime(now.year, now.month, now.day - 3, 14, 0),
+            ..completedAt = DateTime(now.year, now.month, now.day - 3, 14),
         ];
 
         when(mockTaskRepository.getTasksByDateRange(any, any, any))
@@ -319,7 +319,7 @@ void main() {
     test('プロパティ8: 十分なデータがある場合、過去30日間のパターンから最適時間を学習する（100回反復）', () async {
       final random = Random(42);
       const iterations = 100;
-      int successCount = 0;
+      var successCount = 0;
 
       for (var i = 0; i < iterations; i++) {
         // Given: 十分な完了タスクデータ（最低10個以上）
@@ -517,7 +517,7 @@ void main() {
           predictedHour,
           equals(peakHour),
           reason:
-              'Iteration $i: ピーク時間帯${peakHour}時が選択されませんでした（予測: ${predictedHour}時）',
+              'Iteration $i: ピーク時間帯$peakHour時が選択されませんでした（予測: $predictedHour時）',
         );
       }
     });
